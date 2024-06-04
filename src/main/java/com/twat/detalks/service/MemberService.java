@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -23,14 +22,24 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
+    // 이메일 중복체크
+    public void duplicateEmailCheck(String email) {
+        boolean result = memberRepository.existsByMemberEmail(email);
+        if (result) {
+            throw new IllegalArgumentException("중복된 이메일 입니다.");
+        }
+    }
+
+    // 이름 중복체크
+    public void duplicateNameCheck(String name) {
+        boolean result = memberRepository.existsByMemberName(name);
+        if (result) {
+            throw new IllegalArgumentException("중복된 이름 입니다.");
+        }
+    }
     // 회원가입
-    public MemberEntity saveMember(MemberDto memberDTO) {
-        // 이메일 중복 여부 체크
-        memberRepository.findByMemberEmail(memberDTO.getMemberEmail())
-            .ifPresent(member -> {
-                throw new RuntimeException("이미 사용중인 이메일입니다.");
-            });
-        return memberRepository.save(MemberEntity.builder()
+    public void saveMember(MemberDto memberDTO) {
+        memberRepository.save(MemberEntity.builder()
             .memberEmail(memberDTO.getMemberEmail())
             .memberPwd(memberDTO.getMemberPwd())
             .memberName(memberDTO.getMemberName())
@@ -41,6 +50,6 @@ public class MemberService {
     public MemberEntity findByMemberId(String id) {
         Long memberId = Long.parseLong(id);
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new RuntimeException("없는 회원입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
     }
 }

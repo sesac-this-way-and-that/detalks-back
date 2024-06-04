@@ -3,5 +3,6 @@ show databases;
 use detalks;
 show tables;
 
+drop table if exists Members;
 desc Members;
 select * from Members;

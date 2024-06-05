@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
             ResDto.builder()
                 .result(false)
                 .msg(Objects.requireNonNull(fieldError).getDefaultMessage())
-                .type(e.getClass().toString())
+                .errorType(e.getClass().toString())
                 .build());
     }
 
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
             ResDto.builder()
                 .result(false)
                 .msg(e.getMessage())
-                .type(e.getClass().toString())
+                .errorType(e.getClass().toString())
                 .build());
     }
 }

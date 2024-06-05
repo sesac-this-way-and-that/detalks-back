@@ -20,16 +20,11 @@ public class MemberService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    // 전체회원목록 조회
-    public List<MemberEntity> findAll() {
-        return memberRepository.findAll();
-    }
-
     // 이메일 중복체크
     public void duplicateEmailCheck(String email) {
         boolean result = memberRepository.existsByMemberEmail(email);
         if (result) {
-            throw new IllegalArgumentException("중복된 이메일 입니다.");
+            throw new IllegalArgumentException("사용 불가능한 이메일 입니다.");
         }
     }
 
@@ -37,7 +32,7 @@ public class MemberService {
     public void duplicateNameCheck(String name) {
         boolean result = memberRepository.existsByMemberName(name);
         if (result) {
-            throw new IllegalArgumentException("중복된 이름 입니다.");
+            throw new IllegalArgumentException("사용 불가능한 이름 입니다.");
         }
     }
 
@@ -54,7 +49,7 @@ public class MemberService {
     public MemberEntity findByMemberId(String id) {
         Long memberId = Long.parseLong(id);
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
     public MemberEntity getByCredentials(String memberEmail, String memberPwd) {

@@ -7,11 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Entity
 @Builder
-@Table(name="Members")
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name="Members")
 public class MemberEntity {
 
     @Id @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -26,6 +26,13 @@ public class MemberEntity {
 
     @Column(name = "member_name", nullable = false)
     private String memberName;
+
+    @Column(name = "member_isdeleted", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private boolean memberIsDeleted = false;
+
+    @Column(name = "member_reason", nullable = true)
+    private String memberReason;
 }
 
 

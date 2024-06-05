@@ -1,12 +1,14 @@
 package com.twat.detalks.controller;
 
-import com.twat.detalks.dto.MemberDto;
-import com.twat.detalks.dto.ResDto;
+import com.twat.detalks.dto.*;
 import com.twat.detalks.entity.MemberEntity;
+import com.twat.detalks.security.TokenProvider;
 import com.twat.detalks.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -15,14 +17,21 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class MemberController {
 
-    @Autowired
+
+    private TokenProvider tokenProvider;
     private MemberService memberService;
 
+    @Autowired
+    public MemberController(MemberService memberService, TokenProvider tokenProvider){
+        this.memberService = memberService;
+        this.tokenProvider = tokenProvider;
+    }
     // POST http://localhost:8080/api/member/signup
     // 회원가입
     // 폼전송
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUp(MemberDto memberDTO) {
+
+    @PostMapping("signup")
+    public ResponseEntity<?> signUp(@Valid MemberCreateDto memberDTO) {
         memberService.duplicateEmailCheck(memberDTO.getMemberEmail());
         memberService.duplicateNameCheck(memberDTO.getMemberName());
         memberService.saveMember(memberDTO);
@@ -36,10 +45,18 @@ public class MemberController {
     // POST http://localhost:8080/api/member/signin
     // 로그인
     // 폼전송
-    @PostMapping("/signin")
-    public ResponseEntity<?> signIn() {
-        // TODO
-        return null;
+    @PostMapping("signin")
+    public ResponseEntity<?> signIn(
+        @RequestParam String email, @RequestParam String password) {
+        MemberEntity member = memberService.getByCredentials(email, password);
+        String token = tokenProvider.create(member);
+        return ResponseEntity.ok().body(
+            ResDto.builder()
+                .msg("로그인 성공")
+                .result(true)
+                // .data(data)
+                .token(token)
+                .build());
     }
 
     // GET http://localhost:8080/api/member/{id}
@@ -48,7 +65,7 @@ public class MemberController {
     public ResponseEntity<?> getMember(@PathVariable String id) {
 
         MemberEntity result = memberService.findByMemberId(id);
-        MemberDto data = MemberDto.builder()
+        MemberCreateDto data = MemberCreateDto.builder()
             .memberEmail(result.getMemberEmail())
             // .memberPwd(result.getMemberPwd())
             .memberName(result.getMemberName())
@@ -84,4 +101,33 @@ public class MemberController {
                 .result(true)
                 .build());
     }
+
+    // PATCH http://localhost:8080/api/member
+    // 회원정보 수정
+    // 폼전송
+    // 인증필요
+    @PatchMapping
+    public ResponseEntity<?> updateMember(@AuthenticationPrincipal String id, @Valid MemberUpdateDto memberUpdateDto) {
+        memberService.updateMember(id, memberUpdateDto);
+        return ResponseEntity.ok().body(
+            ResDto.builder()
+                .msg("회원 정보 수정 성공")
+                .result(true)
+                .build());
+    }
+
+    // DELETE http://localhost:8080/api/member
+    // 회원탈퇴
+    // 입력받을 정보 : 비밀번호, 탈퇴 사유
+    // 폼전송
+    @DeleteMapping
+    public ResponseEntity<?> deleteMember(@AuthenticationPrincipal String id, @Valid MemberDeleteDto memberDeleteDto) {
+        memberService.deleteMember(id, memberDeleteDto);
+        return ResponseEntity.ok().body(
+            ResDto.builder()
+                .msg("회원 탈퇴 성공")
+                .result(true)
+                .build());
+    }
+
 }

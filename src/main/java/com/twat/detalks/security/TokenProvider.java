@@ -16,8 +16,12 @@ import java.util.Date;
 @Component
 public class TokenProvider {
 
-    @Autowired
     private JwtProperties jwtProperties;
+
+    @Autowired
+    public TokenProvider(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 
     public String create(MemberEntity memberEntity) {
         Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
@@ -29,8 +33,9 @@ public class TokenProvider {
             .setIssuedAt(new Date())
             .compact();
     }
+
     // 입력된 token 에서 payload 에 있는 memberIdx 가져오기
-    public String validateAndGetUserId(String token){
+    public String validateAndGetUserId(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(jwtProperties.getSecretKey())
             .parseClaimsJws(token) // 토큰이 위조되지 않았다면 payload 를 return

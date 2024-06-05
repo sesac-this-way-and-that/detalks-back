@@ -14,4 +14,5 @@ public class ResDto {
     private String msg;
     private Object data;
     private String errorType; // 에러 타입
+    private String token;
 }

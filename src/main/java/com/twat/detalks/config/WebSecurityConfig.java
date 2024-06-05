@@ -4,6 +4,7 @@ import com.twat.detalks.security.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,13 +22,15 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+    private JwtAuthFilter jwtAuthFilter;
 
     @Autowired
-    private JwtAuthFilter jwtAuthFilter;
+    public WebSecurityConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -41,6 +44,8 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // IF_REQUIRED 가 디폴트
             // 토큰 인증 인가 방식에서는 session 을 사용하지 않기 때문에 설정
             .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(HttpMethod.PATCH,"/api/member").authenticated()
+                .requestMatchers(HttpMethod.DELETE,"/api/member").authenticated()
                 .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );

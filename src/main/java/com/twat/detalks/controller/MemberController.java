@@ -91,9 +91,10 @@ public class MemberController {
     }
 
     // POST http://localhost:8080/api/member/signin
+    // 로그인
     @PostMapping("signin")
     public ResponseEntity<?> signIn(MemberDto memberDto){
-        memberService.duplicateEmailCheck(memberDto);
+        memberService.duplicateEmailCheck(memberDto.getMemberEmail());
         return null;
     }
 

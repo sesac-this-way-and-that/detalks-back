@@ -8,5 +8,5 @@ import lombok.Getter;
 public class QuestionCreateDto {
     private String questionTitle;
     private String questionContent;
-    private String memberIdx;
+    private Long memberIdx;
 }

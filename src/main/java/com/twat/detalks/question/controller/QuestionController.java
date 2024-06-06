@@ -8,7 +8,9 @@ import com.twat.detalks.question.service.QuestionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class QuestionController {
     private QuestionService questionService;
 
     // 질문 리스트 조회
+    // GET http://localhost:8080/api/questions
     @GetMapping("")
     public ResponseEntity<List<QuestionDto>> getQuestions() {
         List<QuestionDto> questions = questionService.getQuestions();
@@ -27,19 +30,21 @@ public class QuestionController {
     }
 
     // 특정 질문 조회
-    @GetMapping("/{question_id}")
-    public ResponseEntity<QuestionDto> getQuestionById(@PathVariable Long question_id) {
-        QuestionDto questionDTO = questionService.getQuestionById(question_id);
+    // GET http://localhost:8080/api/questions/{questionId}
+    @GetMapping("/{questionId}")
+    public ResponseEntity<QuestionDto> getQuestionById(@PathVariable Long questionId) {
+        QuestionDto questionDTO = questionService.getQuestionById(questionId);
         return ResponseEntity.ok(questionDTO);
     }
 
-    // 추가
+    // 질문 생성
+    // POST http://localhost:8080/api/questions
     @PostMapping("")
     public ResponseEntity<?> createQuestion(
             @AuthenticationPrincipal String id,
-            @Valid @RequestBody QuestionCreateDto question) {
+            @RequestBody QuestionCreateDto questionCreateDto) {
         try{
-            QuestionEntity newQuestion = questionService.createQuestion(id, question);
+            QuestionDto newQuestion = questionService.createQuestion(id, questionCreateDto);
             return ResponseEntity.ok(newQuestion);
         }
         catch (Exception e) {
@@ -51,31 +56,37 @@ public class QuestionController {
         }
     }
 
-    // 수정
-    @PatchMapping("/{question_id}")
+
+    // 질문 수정
+    // Patch http://localhost:8080/api/questions/{questionId}
+    @PatchMapping("/{questionId}")
     public ResponseEntity<?> updateQuestion(
-            @AuthenticationPrincipal String id,
-            @PathVariable Long question_id,
-            @RequestBody QuestionCreateDto question
-    ) {
+            @PathVariable Long questionId,
+            @RequestBody QuestionCreateDto questionCreateDto,
+            @AuthenticationPrincipal String id) {
         try {
-            // Long tempMem = 2L;
-            return ResponseEntity.ok(questionService.updateQuestion(id, question_id, question));
-            // return ResponseEntity.ok(questionService.updateQuestion(tempMem, question_id, question));
-        } catch (Exception e) {
+            QuestionDto updatedQuestion = questionService.updateQuestion(questionId, questionCreateDto, id);
+            return ResponseEntity.ok(updatedQuestion); }
+        catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResErrorDto.builder().error(e.getMessage()).build()
             );
         }
     }
 
-    @DeleteMapping("/{question_id}")
+
+    // 질문 삭제
+    // Patch http://localhost:8080/api/questions/{questionId}
+    @DeleteMapping("/{questionId}")
     public ResponseEntity<?> deleteQuestion(
-            @PathVariable Long question_id
-    ) {
+            @PathVariable Long questionId,
+            @AuthenticationPrincipal String id) {
+
         try {
-            return ResponseEntity.ok(questionService.deleteQuestion(question_id));
-        } catch (Exception e) {
+            questionService.deleteQuestion(questionId, id);
+            return ResponseEntity.noContent().build();
+        }
+        catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResErrorDto.builder().error(e.getMessage()).build()
             );

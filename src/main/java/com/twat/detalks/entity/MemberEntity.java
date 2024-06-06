@@ -1,10 +1,17 @@
 package com.twat.detalks.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.twat.detalks.question.entity.QuestionEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -12,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name="Members")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "memberIdx")
 public class MemberEntity {
 
     @Id @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -33,6 +41,10 @@ public class MemberEntity {
 
     @Column(name = "member_reason", nullable = true)
     private String memberReason;
+
+    @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<QuestionEntity> questions;
 }
 
 

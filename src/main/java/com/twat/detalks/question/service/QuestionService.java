@@ -12,6 +12,7 @@ import com.twat.detalks.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Member;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
@@ -39,9 +41,14 @@ public class QuestionService {
 
     // 상세 질문 조회
     public QuestionDto getQuestionById(Long questionId) {
-        return questionRepository.findById(questionId)
+        QuestionDto findQuestion = questionRepository.findById(questionId)
                 .map(this::convertToDTO)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
+
+        // 조회수 업데이트
+        questionRepository.updateViewCount(questionId);
+
+        return findQuestion;
     }
 
 
@@ -89,7 +96,7 @@ public class QuestionService {
     }
 
 
-
+    // 질문 리스트에 원하는 멤버 데이터 convert
     private QuestionDto convertToDTO(QuestionEntity questionEntity) {
         return QuestionDto.builder()
                 .questionId(questionEntity.getQuestionId())
@@ -107,33 +114,4 @@ public class QuestionService {
                 .answerList(questionEntity.getAnswerList())
                 .build();
     }
-
-    // 질문 리스트에 원하는 멤버 데이터 컨버트
-    // private QuestionDto convertToDTO(QuestionEntity question) {
-    //     MemberQuestionDto memberQuestionDto = MemberQuestionDto.builder()
-    //             .memberIdx(question.getMembers().getMemberIdx())
-    //             .memberName(question.getMembers().getMemberName())
-    //             .build();
-    //
-    //     // List<AnswerDTO> answerList = question.getAnswerList().stream()
-    //     //         .map(answer -> AnswerDTO.builder()
-    //     //                 .answerId(answer.getAnswerId())
-    //     //                 .answerContent(answer.getAnswerContent())
-    //     //                 .build())
-    //     //         .collect(Collectors.toList());
-    //
-    //     return QuestionDto.builder()
-    //             .questionId(question.getQuestionId())
-    //             .questionTitle(question.getQuestionTitle())
-    //             .questionContent(question.getQuestionContent())
-    //             .createdAt(question.getCreatedAt())
-    //             .modifiedAt(question.getModifiedAt())
-    //             .viewCount(question.getViewCount())
-    //             .voteCount(question.getVoteCount())
-    //             .questionState(question.getQuestionState())
-    //             .isSolved(question.getIsSolved())
-    //             .author(memberQuestionDto)
-    //             // .answerList(answerList)
-    //             .build();
-    // }
 }

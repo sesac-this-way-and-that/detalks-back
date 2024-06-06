@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,7 +45,11 @@ public class MemberEntity {
 
     @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<QuestionEntity> questions;
+    private List<QuestionEntity> questionList;
+
+    @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<AnswerEntity> answerList;
 }
 
 

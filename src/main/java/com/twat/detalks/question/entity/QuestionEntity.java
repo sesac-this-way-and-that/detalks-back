@@ -1,9 +1,8 @@
 package com.twat.detalks.question.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,7 +55,7 @@ public class QuestionEntity {
     private Boolean isSolved = false;
 
     @ManyToOne
-    @JsonBackReference // 이걸 사용하면 memberIdx가 나오지 않고 사용하면 members가 순환참조 됨..
+    @JsonBackReference
     @JoinColumn(name = "memberIdx", nullable = false)  // 차후에 탈퇴 회원 관리시 nullable을 true로 바꿀 필요있음
     private MemberEntity members;
 

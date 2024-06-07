@@ -46,7 +46,7 @@ public class AnswerEntity {
     private Boolean isSelected = false;
 
     @ManyToOne
-    @JoinColumn(name = "question_id", nullable = false)
+    @JoinColumn(name = "question_id", nullable = true)
     @JsonBackReference
     private QuestionEntity questions;
 

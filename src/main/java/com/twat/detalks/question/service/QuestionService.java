@@ -1,6 +1,7 @@
 package com.twat.detalks.question.service;
 
 import com.twat.detalks.answer.dto.AnswerDto;
+import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.question.dto.MemberQuestionDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.dto.QuestionCreateDto;
@@ -10,15 +11,18 @@ import com.twat.detalks.question.repository.QuestionRepository;
 import com.twat.detalks.member.repository.MemberRepository;
 import com.twat.detalks.security.TokenProvider;
 import com.twat.detalks.member.service.MemberService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
@@ -63,7 +67,7 @@ public class QuestionService {
                 .members(member)
                 .build();
 
-        return convertToDTO(questionRepository.save(newQuestion));
+                return convertToDTO(questionRepository.save(newQuestion));
     }
 
     // 질문 수정
@@ -96,7 +100,7 @@ public class QuestionService {
 
     // 질문 entity를 dto로 변환
     private QuestionDto convertToDTO(QuestionEntity questionEntity) {
-        List<AnswerDto> answerDtoList = questionEntity.getAnswerList().stream()
+        List<AnswerDto> answerDtoList = (questionEntity.getAnswerList() != null ? questionEntity.getAnswerList() : new ArrayList<AnswerEntity>()).stream()
                 .map(answer -> AnswerDto.builder()
                         .answerId(answer.getAnswerId())
                         .answerContent(answer.getAnswerContent())

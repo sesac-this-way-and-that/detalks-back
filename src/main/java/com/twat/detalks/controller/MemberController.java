@@ -36,6 +36,7 @@ public class MemberController {
     // POST http://localhost:8080/api/member/signup
     // 회원가입
     // 폼전송
+    // 이메일(필수), 비밀번호(필수), 이름(필수)
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@Valid MemberCreateDto memberDTO) {
         memberService.duplicateEmailCheck(memberDTO.getMemberEmail());
@@ -51,6 +52,7 @@ public class MemberController {
     // POST http://localhost:8080/api/member/signin
     // 로그인
     // 폼전송
+    // 이메일(필수), 비밀번호(필수)
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(
         @RequestParam String email, @RequestParam String password) {
@@ -67,9 +69,9 @@ public class MemberController {
 
     // GET http://localhost:8080/api/member/{id}
     // 회원 정보 조회
-    // 인증 X
+    // 회원 ID (필수)
     @GetMapping("/{id}")
-    public ResponseEntity<?> getMember(@PathVariable(required = false) String id) {
+    public ResponseEntity<?> getMember(@PathVariable String id) {
         MemberEntity result = memberService.findByMemberId(id);
         MemberReadDto data = MemberReadDto.builder()
             // .memberIdx(result.getMemberIdx())
@@ -99,6 +101,7 @@ public class MemberController {
 
     // GET http://localhost:8080/api/member/email/{email}
     // 이메일 중복조회
+    // 이메일(필수)
     @GetMapping("/email/{email}")
     public ResponseEntity<?> checkEmail(
         @PathVariable
@@ -114,6 +117,7 @@ public class MemberController {
 
     // GET http://localhost:8080/api/member/name/{name}
     // 이름 중복조회
+    // 이름(필수)
     @GetMapping("/name/{name}")
     public ResponseEntity<?> checkName(@PathVariable String name) {
         memberService.duplicateNameCheck(name);
@@ -161,6 +165,7 @@ public class MemberController {
     // PATCH http://localhost:8080/api/member/auth
     // 회원정보 수정
     // 폼전송
+    // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
     @PatchMapping("/auth")
     public ResponseEntity<?> updateMemberAuth(@AuthenticationPrincipal String id, @Valid MemberUpdateDto memberUpdateDto) {
         memberService.updateMember(id, memberUpdateDto);
@@ -185,8 +190,8 @@ public class MemberController {
 
     // DELETE http://localhost:8080/api/member/auth
     // 회원탈퇴
-    // 입력받을 정보 : 비밀번호, 탈퇴 사유
     // 폼전송
+    // 비밀번호(필수), 탈퇴 사유
     @DeleteMapping("/auth")
     public ResponseEntity<?> deleteMemberProfile(@AuthenticationPrincipal String id, @Valid MemberDeleteDto memberDeleteDto) {
         memberService.deleteMember(id, memberDeleteDto);
@@ -200,5 +205,6 @@ public class MemberController {
     // TODO 비밀번호 변경
     // TODO 소셜로그인
     // TODO 유저목록 검색필터링, 페이지네이션
-
+    // TODO 이미지 업로드
+    // TODO 활성여부컬럼 체크 후 예외처리
 }

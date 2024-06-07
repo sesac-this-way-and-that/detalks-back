@@ -33,9 +33,9 @@ public class MemberService {
     }
 
     // 이메일 유효성 검사
-    public void regexEmailCheck(final String email){
+    public void regexEmailCheck(final String email) {
         Matcher matcher = EMAIL_PATTERN.matcher(email);
-        if(!matcher.matches()){
+        if (!matcher.matches()) {
             throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
         }
     }
@@ -56,6 +56,12 @@ public class MemberService {
         }
     }
 
+    // 비밀번호 검증
+    public void checkPassword(final String password, final String memberPwd) {
+        boolean matches = passwordEncoder.matches(password, memberPwd);
+        if (!matches) throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+    }
+
     // 회원가입
     public void saveMember(final MemberCreateDto memberDTO) {
         memberRepository.save(MemberEntity.builder()
@@ -65,12 +71,13 @@ public class MemberService {
             .build());
     }
 
-    // 회원정보조회(memberId)
+    // 회원정보조회(id)
     public MemberEntity findByMemberId(final String id) {
         Long memberId = Long.parseLong(id);
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
+
 
     // 로그인
     public MemberEntity getByCredentials(final String memberEmail, final String memberPwd) {
@@ -78,58 +85,61 @@ public class MemberService {
         // 이메일 조회
         MemberEntity loginMember = memberRepository.findByMemberEmail(memberEmail)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        // 비밀번호 검사
-        boolean matches = passwordEncoder.matches(memberPwd, loginMember.getMemberPwd());
-        // 예외처리
-        if (!matches) throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-
-        // TODO 활성여부컬럼 체크 후 예외처리
-
-        return loginMember;
+        // 비밀번호 검증
+        checkPassword(memberPwd, loginMember.getMemberPwd());
+        // 방문일자 수정 후 반환
+        MemberEntity updateVisited = loginMember.toBuilder()
+            .memberVisited(LocalDateTime.now())
+            .build();
+        memberRepository.save(updateVisited);
+        return updateVisited;
     }
 
     // 회원 정보 수정
     public void updateMember(final String id, final MemberUpdateDto memberUpdateDto) {
         // 아이디로 회원 조회
         MemberEntity prevMember = findByMemberId(id);
-        // 새로운 엔티티 생성
+        // 변경 가능 정보
+        // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
+        // 수동 변경
+        // 정보 수정 날짜
         MemberEntity updateMember = prevMember.toBuilder()
-            .memberPwd(passwordEncoder.encode(memberUpdateDto.getMemberPwd())) // 수정 가능, 암호화
             .memberName(memberUpdateDto.getMemberName())
+            .memberImg(memberUpdateDto.getMemberImg())
+            .memberSummary(memberUpdateDto.getMemberSummary())
+            .memberAbout(memberUpdateDto.getMemberAbout())
+            .memberUpdated(LocalDateTime.now())
             .build();
+
         memberRepository.save(updateMember);
     }
 
     // 회원 탈퇴
     public void deleteMember(final String id, final MemberDeleteDto memberDeleteDto) {
-
-        // 토큰값으로 로그인 유무 판별
+        // 아이디로 회원 조회
         MemberEntity existMember = findByMemberId(id);
         // 비밀번호 검증
-        boolean matches = passwordEncoder.matches(memberDeleteDto.getMemberPwd(), existMember.getMemberPwd());
-        if (!matches) throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
-
+        checkPassword(memberDeleteDto.getMemberPwd(), existMember.getMemberPwd());
+        // 논리 삭제
         MemberEntity deleteMember = existMember.toBuilder()
             .memberIsDeleted(true)
             .memberDeleted(LocalDateTime.now())
             .memberReason(memberDeleteDto.getMemberReason())
             .build();
-        // 컬럼 비활성화
+
         memberRepository.save(deleteMember);
     }
 
-    //회원 탈퇴 복구
+    // 회원 탈퇴 복구
     public void restoreMember(final String id) {
-
-        // 토큰값으로 로그인 유무 판별
+        // 아이디로 회원 조회
         MemberEntity existMember = findByMemberId(id);
-
+        // 복구
         MemberEntity restoreMember = existMember.toBuilder()
             .memberIsDeleted(false)
             .memberDeleted(null)
             .memberReason(null)
             .build();
-        // 컬럼 비활성화
         memberRepository.save(restoreMember);
     }
 }

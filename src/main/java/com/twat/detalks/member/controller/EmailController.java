@@ -21,7 +21,7 @@ public class EmailController {
 
     @PostMapping
     public String mailConfirm(@RequestBody @Valid VerifyEmailDto verifyEmailDto) {
-        int num = emailService.sendEmail(verifyEmailDto.getMemberEmail());
+        int num = emailService.sendEmail(verifyEmailDto.getEmail());
         return "인증 코드 :: " + num;
     }
 }

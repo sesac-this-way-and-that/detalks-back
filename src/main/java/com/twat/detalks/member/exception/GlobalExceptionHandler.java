@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
             ResDto.builder()
                 .result(false)
+                .status("400")
                 .msg(Objects.requireNonNull(fieldError).getDefaultMessage())
                 .errorType(e.getClass().toString())
                 .build());
@@ -34,6 +35,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
             ResDto.builder()
                 .result(false)
+                .status("400")
                 .msg(e.getMessage())
                 .errorType(e.getClass().toString())
                 .build());
@@ -54,6 +56,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
             ResDto.builder()
                 .result(false)
+                .status("404")
                 .msg(errorMessage)
                 .errorType(e.getClass().toString())
                 .build());

@@ -8,20 +8,20 @@ import lombok.Getter;
 @Getter
 @Builder
 public class MemberReadDto {
-    private Long memberIdx;
-    private String memberEmail;
-    private String memberName;
-    private Boolean memberIsDeleted;
-    private String memberReason;
-    private Boolean memberState;
-    private String memberImg;
-    private String memberSummary;
-    private String memberAbout;
-    private Integer memberRep;
-    private Social memberSocial;
-    private Integer memberQcount;
-    private Integer memberAcount;
-    private String memberCreated;
-    private String memberVisited;
-    private String memberUpdated;
+    private Long idx;
+    private String email;
+    private String name;
+    private Boolean isDeleted;
+    private String reason;
+    private Boolean state;
+    private String img;
+    private String summary;
+    private String about;
+    private Integer rep;
+    private Social social;
+    private Integer qCount;
+    private Integer aCount;
+    private String created;
+    private String visited;
+    private String updated;
 }

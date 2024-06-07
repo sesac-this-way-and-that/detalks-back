@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public class MemberUpdateDto {
     @NotBlank(message = "이름은 필수 입력 값입니다.")
     @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,10}$", message = "닉네임은 특수문자를 제외한 2~10자리여야 합니다.")
-    private String memberName;
+    private String name;
 
     @NotBlank(message = "이미지 경로는 필수 입력 값입니다.")
-    private String memberImg;
+    private String img;
 
-    private String memberSummary;
+    private String summary;
 
-    private String memberAbout;
+    private String about;
 
-    private LocalDateTime memberUpdated;
+    private LocalDateTime updated;
 }

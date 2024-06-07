@@ -23,7 +23,7 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
 
     @Autowired
     public JwtAuthFilter(TokenProvider tokenProvider) {

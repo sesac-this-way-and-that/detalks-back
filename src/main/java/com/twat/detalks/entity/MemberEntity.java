@@ -44,11 +44,11 @@ public class MemberEntity {
     private String memberReason;
 
     @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonManagedReference
     private List<QuestionEntity> questionList;
 
     @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonManagedReference
     private List<AnswerEntity> answerList;
 }
 

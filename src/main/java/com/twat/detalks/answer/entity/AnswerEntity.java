@@ -46,12 +46,12 @@ public class AnswerEntity {
     private Boolean isSelected = false;
 
     @ManyToOne
-    @JoinColumn(name = "questionId", nullable = false)
+    @JoinColumn(name = "question_id", nullable = false)
     @JsonBackReference
     private QuestionEntity questions;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "memberIdx", nullable = false)  // 차후에 탈퇴 회원 관리시 nullable을 true로 바꿀 필요있음
+    @JoinColumn(name = "member_idx", nullable = false)  // 차후에 탈퇴 회원 관리시 nullable을 true로 바꿀 필요있음
     private MemberEntity members;
 }

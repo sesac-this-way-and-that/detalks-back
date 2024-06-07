@@ -1,5 +1,6 @@
 package com.twat.detalks.question.dto;
 
+import com.twat.detalks.answer.dto.AnswerDto;
 import com.twat.detalks.dto.MemberQuestionDto;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import lombok.Builder;
@@ -23,5 +24,5 @@ public class QuestionDto {
     private Boolean questionState;
     private Boolean isSolved;
     private MemberQuestionDto author;
-    private List<AnswerEntity> answerList;
+    private List<AnswerDto> answerList;
 }

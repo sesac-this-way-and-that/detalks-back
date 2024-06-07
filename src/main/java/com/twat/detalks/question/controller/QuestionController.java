@@ -41,10 +41,10 @@ public class QuestionController {
     // POST http://localhost:8080/api/questions
     @PostMapping("")
     public ResponseEntity<?> createQuestion(
-            @AuthenticationPrincipal String id,
+            @AuthenticationPrincipal String memberIdx,
             @RequestBody QuestionCreateDto questionCreateDto) {
         try{
-            QuestionDto newQuestion = questionService.createQuestion(id, questionCreateDto);
+            QuestionDto newQuestion = questionService.createQuestion(memberIdx, questionCreateDto);
             return ResponseEntity.ok(newQuestion);
         }
         catch (Exception e) {
@@ -63,9 +63,9 @@ public class QuestionController {
     public ResponseEntity<?> updateQuestion(
             @PathVariable Long questionId,
             @RequestBody QuestionCreateDto questionCreateDto,
-            @AuthenticationPrincipal String id) {
+            @AuthenticationPrincipal String memberIdx) {
         try {
-            QuestionDto updatedQuestion = questionService.updateQuestion(questionId, questionCreateDto, id);
+            QuestionDto updatedQuestion = questionService.updateQuestion(questionId, questionCreateDto, memberIdx);
             return ResponseEntity.ok(updatedQuestion); }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(
@@ -80,10 +80,10 @@ public class QuestionController {
     @DeleteMapping("/{questionId}")
     public ResponseEntity<?> deleteQuestion(
             @PathVariable Long questionId,
-            @AuthenticationPrincipal String id) {
+            @AuthenticationPrincipal String memberIdx) {
 
         try {
-            questionService.deleteQuestion(questionId, id);
+            questionService.deleteQuestion(questionId, memberIdx);
             return ResponseEntity.noContent().build();
         }
         catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.twat.detalks.question.service;
 
+import com.twat.detalks.answer.dto.AnswerDto;
 import com.twat.detalks.dto.MemberQuestionDto;
 import com.twat.detalks.entity.MemberEntity;
 import com.twat.detalks.question.dto.QuestionCreateDto;
@@ -96,8 +97,23 @@ public class QuestionService {
     }
 
 
-    // 질문 리스트에 원하는 멤버 데이터 convert
+    // 질문 entity를 dto로 변환
     private QuestionDto convertToDTO(QuestionEntity questionEntity) {
+        List<AnswerDto> answerDtoList = questionEntity.getAnswerList().stream()
+                .map(answer -> AnswerDto.builder()
+                        .answerId(answer.getAnswerId())
+                        .answerContent(answer.getAnswerContent())
+                        .createdAt(answer.getCreatedAt())
+                        .modifiedAt(answer.getModifiedAt())
+                        .answerState(answer.getAnswerState())
+                        .voteCount(answer.getVoteCount())
+                        .isSelected(answer.getIsSelected())
+                        .author(new MemberQuestionDto(
+                                answer.getMembers().getMemberIdx(),
+                                answer.getMembers().getMemberName()))
+                        .build())
+                .collect(Collectors.toList());
+
         return QuestionDto.builder()
                 .questionId(questionEntity.getQuestionId())
                 .questionTitle(questionEntity.getQuestionTitle())
@@ -111,7 +127,7 @@ public class QuestionService {
                 .author(new MemberQuestionDto(
                         questionEntity.getMembers().getMemberIdx(),
                         questionEntity.getMembers().getMemberName()))
-                .answerList(questionEntity.getAnswerList())
+                .answerList(answerDtoList)
                 .build();
     }
 }

@@ -5,12 +5,14 @@ import com.twat.detalks.member.dto.MemberCreateDto;
 import com.twat.detalks.member.dto.MemberUpdateDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.repository.MemberRepository;
+import com.twat.detalks.member.vo.Social;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +26,9 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+    private static final String PASSWORD_REGEX = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}";
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
+
 
     @Autowired
     public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder) {
@@ -61,6 +66,14 @@ public class MemberService {
         if (!matches) throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
     }
 
+    // 비밀번호 유효성 검사
+    public void regexPwdCheck(final String password) {
+        Matcher matcher = PASSWORD_PATTERN.matcher(password);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다.");
+        }
+    }
+
     // 회원가입
     public void saveMember(final MemberCreateDto memberDTO) {
         memberRepository.save(MemberEntity.builder()
@@ -77,7 +90,6 @@ public class MemberService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
-
     // 로그인
     public MemberEntity getByCredentials(final String memberEmail, final String memberPwd) {
         // 암호화한 비밀번호 검증해서 존재하면 엔티티 반환 아니면 예외처리
@@ -86,6 +98,10 @@ public class MemberService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         // 비밀번호 검증
         checkPassword(memberPwd, loginMember.getMemberPwd());
+        // 계정 상태 확인
+        if(!loginMember.getMemberState()){
+            throw new IllegalArgumentException("비활성화된 계정입니다.");
+        }
         // 방문일자 수정 후 반환
         MemberEntity updateVisited = loginMember.toBuilder()
             .memberVisited(LocalDateTime.now())
@@ -99,7 +115,7 @@ public class MemberService {
         // 아이디로 회원 조회
         MemberEntity prevMember = findByMemberId(id);
         // 변경 가능 정보
-        // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
+        // 이름(필수), 비밀번호(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
         // 수동 변경
         // 정보 수정 날짜
         MemberEntity updateMember = prevMember.toBuilder()
@@ -140,5 +156,33 @@ public class MemberService {
             .memberReason(null)
             .build();
         memberRepository.save(restoreMember);
+    }
+
+    // 비밀번호 변경
+    public void changePassword(final String id, final String currentPwd, final String changePwd) {
+        // 아이디로 회원 조회
+        MemberEntity prevMember = findByMemberId(id);
+        // 소셜 회원 여부 조회
+        if(prevMember.getMemberSocial() != Social.NONE) {
+            throw new IllegalArgumentException("소셜 로그인 유저는 비밀번호를 변경할 수 없습니다.");
+        }
+        // 기존 비밀번호 검증
+        checkPassword(currentPwd, prevMember.getMemberPwd());
+        // 새 비밀번호 유효성 검사
+        regexPwdCheck(changePwd);
+        // 새 비밀번호로 변경
+        MemberEntity updateMember = prevMember.toBuilder()
+            .memberPwd(passwordEncoder.encode(changePwd))
+            .build();
+
+        memberRepository.save(updateMember);
+    }
+
+
+
+    // 비밀번호 찾기
+    // 난수생성 ?
+    // 이메일 인증
+    public void findPassword(final String id) {
     }
 }

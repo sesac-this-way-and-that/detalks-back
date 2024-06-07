@@ -128,7 +128,7 @@ public class MemberController {
 
 
     // GET http://localhost:8080/api/member/auth
-    // 회원 정보 조회 (로그인 유저)
+    // 회원정보조회 (로그인 유저)
     @GetMapping("/auth")
     public ResponseEntity<?> getMemberAuth(@AuthenticationPrincipal String id) {
         MemberEntity result = memberService.findByMemberId(id);
@@ -158,7 +158,7 @@ public class MemberController {
     }
 
     // PATCH http://localhost:8080/api/member/auth
-    // 회원정보 수정
+    // 회원정보수정
     // 폼전송
     // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
     @PatchMapping("/auth")
@@ -197,9 +197,27 @@ public class MemberController {
                 .build());
     }
 
-    // TODO 비밀번호 변경
+    // PATCH http://localhost:8080/api/member/password
+    // 비밀번호변경
+    // 폼전송
+    // 현재 비밀번호(필수), 바꿀 비밀번호(필수)
+    // 소셜 로그인 제외
+    @PatchMapping("/auth/password")
+    public ResponseEntity<?> changePassword(
+        @AuthenticationPrincipal String id,
+        @RequestParam String currentPwd,
+        @RequestParam String changePwd){
+        memberService.changePassword(id,currentPwd,changePwd);
+        return ResponseEntity.ok().body(
+            ResDto.builder()
+                .msg("비밀번호 변경 성공")
+                .result(true)
+                .build());
+    }
+
     // TODO 소셜로그인
+
     // TODO 유저목록 검색필터링, 페이지네이션
+
     // TODO 이미지 업로드
-    // TODO 활성여부컬럼 체크 후 예외처리
 }

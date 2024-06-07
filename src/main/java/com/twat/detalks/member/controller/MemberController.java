@@ -197,7 +197,7 @@ public class MemberController {
                 .build());
     }
 
-    // PATCH http://localhost:8080/api/member/password
+    // PATCH http://localhost:8080/api/member/auth/password
     // 비밀번호변경
     // 폼전송
     // 현재 비밀번호(필수), 바꿀 비밀번호(필수)
@@ -215,9 +215,11 @@ public class MemberController {
                 .build());
     }
 
+    // TODO 이미지 업로드
+
     // TODO 소셜로그인
 
     // TODO 유저목록 검색필터링, 페이지네이션
 
-    // TODO 이미지 업로드
+    // TODO 이메일 인증
 }

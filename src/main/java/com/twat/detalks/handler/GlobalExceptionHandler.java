@@ -8,14 +8,19 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Objects;
 
 @RestControllerAdvice
+// 전역 예외처리를 위한 클래스
 public class GlobalExceptionHandler {
 
-    // DTO 유효성 검사 예외처리 핸들러
+    // 파라미터 유효성 검사 예외처리
+
+
+    // DTO 유효성 검사 예외처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> bindExceptionHandler(final MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
@@ -28,7 +33,7 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // 파라미터 예외처리 핸들러
+    // 서비스 예외처리 핸들러
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> illegalArgumentExceptionHandler(final IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(
@@ -47,7 +52,7 @@ public class GlobalExceptionHandler {
             errorMessage = "페이지를 찾을 수 없습니다.";
         } else if (e instanceof NumberFormatException) {
             errorMessage = "잘못된 형식의 요청 입니다.";
-        }else {
+        } else {
             errorMessage = "알 수 없는 오류가 발생했습니다.";
         }
 

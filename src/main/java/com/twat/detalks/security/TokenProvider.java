@@ -28,6 +28,7 @@ public class TokenProvider {
         return Jwts.builder()
             .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
             .setSubject(String.valueOf(memberEntity.getMemberIdx()))
+            .claim("memberName",memberEntity.getMemberName())
             .setIssuer(jwtProperties.getSecretKey())
             .setExpiration(expiredDate)
             .setIssuedAt(new Date())

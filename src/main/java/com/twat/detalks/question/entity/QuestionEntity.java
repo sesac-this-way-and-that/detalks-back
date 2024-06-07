@@ -3,7 +3,7 @@ package com.twat.detalks.question.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.twat.detalks.answer.entity.AnswerEntity;
-import com.twat.detalks.entity.MemberEntity;
+import com.twat.detalks.member.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

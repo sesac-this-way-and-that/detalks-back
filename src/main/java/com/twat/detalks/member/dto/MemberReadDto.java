@@ -1,6 +1,6 @@
-package com.twat.detalks.dto.member;
+package com.twat.detalks.member.dto;
 
-import com.twat.detalks.vo.Social;
+import com.twat.detalks.member.vo.Social;
 import lombok.Builder;
 import lombok.Getter;
 

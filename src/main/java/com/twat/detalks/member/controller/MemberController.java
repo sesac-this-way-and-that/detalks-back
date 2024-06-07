@@ -1,19 +1,14 @@
-package com.twat.detalks.controller;
+package com.twat.detalks.member.controller;
 
-import com.twat.detalks.dto.*;
-import com.twat.detalks.dto.member.*;
-import com.twat.detalks.entity.MemberEntity;
+import com.twat.detalks.member.entity.MemberEntity;
+import com.twat.detalks.member.dto.*;
 import com.twat.detalks.security.TokenProvider;
-import com.twat.detalks.service.MemberService;
+import com.twat.detalks.member.service.MemberService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;

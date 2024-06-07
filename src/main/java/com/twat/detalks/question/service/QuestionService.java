@@ -1,23 +1,20 @@
 package com.twat.detalks.question.service;
 
 import com.twat.detalks.answer.dto.AnswerDto;
-import com.twat.detalks.dto.MemberQuestionDto;
-import com.twat.detalks.entity.MemberEntity;
+import com.twat.detalks.question.dto.MemberQuestionDto;
+import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.dto.QuestionCreateDto;
 import com.twat.detalks.question.dto.QuestionDto;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
-import com.twat.detalks.repository.MemberRepository;
+import com.twat.detalks.member.repository.MemberRepository;
 import com.twat.detalks.security.TokenProvider;
-import com.twat.detalks.service.MemberService;
+import com.twat.detalks.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Member;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

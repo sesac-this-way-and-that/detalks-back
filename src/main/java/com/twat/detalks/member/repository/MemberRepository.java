@@ -1,6 +1,6 @@
-package com.twat.detalks.repository;
+package com.twat.detalks.member.repository;
 
-import com.twat.detalks.entity.MemberEntity;
+import com.twat.detalks.member.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

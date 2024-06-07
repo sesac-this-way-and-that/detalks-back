@@ -1,7 +1,7 @@
 package com.twat.detalks.answer.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.twat.detalks.entity.MemberEntity;
+import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import jakarta.persistence.*;
 import lombok.*;

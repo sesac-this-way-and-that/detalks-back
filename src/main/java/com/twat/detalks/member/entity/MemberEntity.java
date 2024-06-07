@@ -1,18 +1,14 @@
-package com.twat.detalks.entity;
+package com.twat.detalks.member.entity;
 
-import com.twat.detalks.vo.Social;
+import com.twat.detalks.member.vo.Social;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-
-import java.util.List;
 
 @Getter
 @Builder(toBuilder = true)

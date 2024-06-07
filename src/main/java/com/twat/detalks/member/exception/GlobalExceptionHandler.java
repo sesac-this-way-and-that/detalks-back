@@ -15,9 +15,6 @@ import java.util.Objects;
 // 전역 예외처리를 위한 클래스
 public class GlobalExceptionHandler {
 
-    // 파라미터 유효성 검사 예외처리
-
-
     // DTO 유효성 검사 예외처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> bindExceptionHandler(final MethodArgumentNotValidException e) {
@@ -26,6 +23,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
             ResDto.builder()
                 .result(false)
+                .status("400")
                 .msg(Objects.requireNonNull(fieldError).getDefaultMessage())
                 .errorType(e.getClass().toString())
                 .build());
@@ -37,6 +35,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
             ResDto.builder()
                 .result(false)
+                .status("400")
                 .msg(e.getMessage())
                 .errorType(e.getClass().toString())
                 .build());
@@ -57,6 +56,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
             ResDto.builder()
                 .result(false)
+                .status("404")
                 .msg(errorMessage)
                 .errorType(e.getClass().toString())
                 .build());

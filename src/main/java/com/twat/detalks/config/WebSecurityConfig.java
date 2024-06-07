@@ -45,7 +45,12 @@ public class WebSecurityConfig {
             // 토큰 인증 인가 방식에서는 session 을 사용하지 않기 때문에 설정
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/member/auth").authenticated()
-                // .requestMatchers(HttpMethod.DELETE,"/api/member/profile").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/questions/**").authenticated()
+                .requestMatchers(HttpMethod.PATCH,"/api/questions/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE,"/api/questions/**").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/answers/**").authenticated()
+                .requestMatchers(HttpMethod.PATCH,"/api/answers/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE,"/api/answers/**").authenticated()
                 .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );

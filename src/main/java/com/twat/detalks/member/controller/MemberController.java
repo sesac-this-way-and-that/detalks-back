@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
@@ -23,9 +22,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @Autowired
-    public MemberController(MemberService memberService, TokenProvider tokenProvider) {
-        this.memberService = memberService;
+    public MemberController(TokenProvider tokenProvider, MemberService memberService) {
         this.tokenProvider = tokenProvider;
+        this.memberService = memberService;
     }
 
     // POST http://localhost:8080/api/member/signup
@@ -34,13 +33,14 @@ public class MemberController {
     // 이메일(필수), 비밀번호(필수), 이름(필수)
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@Valid MemberCreateDto memberDTO) {
-        memberService.duplicateEmailCheck(memberDTO.getMemberEmail());
-        memberService.duplicateNameCheck(memberDTO.getMemberName());
+        memberService.duplicateEmailCheck(memberDTO.getEmail());
+        memberService.duplicateNameCheck(memberDTO.getName());
         memberService.saveMember(memberDTO);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("회원 가입 성공")
                 .result(true)
+                .status("200")
                 .build());
     }
 
@@ -50,46 +50,41 @@ public class MemberController {
     // 이메일(필수), 비밀번호(필수)
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(
-        @RequestParam String email, @RequestParam String password) {
-        MemberEntity member = memberService.getByCredentials(email, password);
+        @RequestParam String email, @RequestParam String pwd) {
+        MemberEntity member = memberService.getByCredentials(email, pwd);
         String token = tokenProvider.create(member);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("로그인 성공")
                 .result(true)
-                // .data(data)
+                .status("200")
                 .token(token)
                 .build());
     }
 
     // GET http://localhost:8080/api/member/{id}
     // 회원 정보 조회
-    // 회원 ID (필수)
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getMember(@PathVariable String id) {
-        MemberEntity result = memberService.findByMemberId(id);
+    // 회원 IDX (필수)
+    @GetMapping("/{idx}")
+    public ResponseEntity<?> getMember(@PathVariable String idx) {
+        MemberEntity result = memberService.findByMemberId(idx);
         MemberReadDto data = MemberReadDto.builder()
-            // .memberIdx(result.getMemberIdx())
-            // .memberEmail(result.getMemberEmail())
-            .memberName(result.getMemberName())
-            // .memberIsDeleted(result.getMemberIsDeleted())
-            // .memberReason(result.getMemberReason())
-            .memberState(result.getMemberState())
-            .memberImg(result.getMemberImg())
-            .memberSummary(result.getMemberSummary())
-            .memberAbout(result.getMemberAbout())
-            .memberRep(result.getMemberRep())
-            // .memberSocial(result.getMemberSocial())
-            .memberQcount(result.getMemberQcount())
-            .memberAcount(result.getMemberAcount())
-            .memberCreated(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-            .memberVisited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-            // .memberUpdated(result.getMemberUpdated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .name(result.getMemberName())
+            .state(result.getMemberState())
+            .img(result.getMemberImg())
+            .summary(result.getMemberSummary())
+            .about(result.getMemberAbout())
+            .rep(result.getMemberRep())
+            .qCount(result.getMemberQcount())
+            .aCount(result.getMemberAcount())
+            .created(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .visited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .build();
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("회원 정보 조회 성공")
                 .result(true)
+                .status("200")
                 .data(data)
                 .build());
     }
@@ -107,6 +102,7 @@ public class MemberController {
             ResDto.builder()
                 .msg("사용 가능한 이메일 입니다.")
                 .result(true)
+                .status("200")
                 .build());
     }
 
@@ -120,86 +116,14 @@ public class MemberController {
             ResDto.builder()
                 .msg("사용 가능한 이름입니다.")
                 .result(true)
+                .status("200")
                 .build());
     }
-
-
-    // ------------------------------ 로그인 필요 ------------------------------ //
-
-
-    // GET http://localhost:8080/api/member/auth
-    // 회원 정보 조회 (로그인 유저)
-    @GetMapping("/auth")
-    public ResponseEntity<?> getMemberAuth(@AuthenticationPrincipal String id) {
-        MemberEntity result = memberService.findByMemberId(id);
-        MemberReadDto data = MemberReadDto.builder()
-            .memberIdx(result.getMemberIdx())
-            .memberEmail(result.getMemberEmail())
-            .memberName(result.getMemberName())
-            .memberIsDeleted(result.getMemberIsDeleted())
-            .memberReason(result.getMemberReason())
-            .memberState(result.getMemberState())
-            .memberImg(result.getMemberImg())
-            .memberSummary(result.getMemberSummary())
-            .memberAbout(result.getMemberAbout())
-            .memberRep(result.getMemberRep())
-            .memberSocial(result.getMemberSocial())
-            .memberQcount(result.getMemberQcount())
-            .memberAcount(result.getMemberAcount())
-            .memberCreated(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-            .memberVisited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-            .build();
-        return ResponseEntity.ok().body(
-            ResDto.builder()
-                .msg("회원 정보 조회(로그인 유저) 성공")
-                .result(true)
-                .data(data)
-                .build());
-    }
-
-    // PATCH http://localhost:8080/api/member/auth
-    // 회원정보 수정
-    // 폼전송
-    // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
-    @PatchMapping("/auth")
-    public ResponseEntity<?> updateMemberAuth(@AuthenticationPrincipal String id, @Valid MemberUpdateDto memberUpdateDto) {
-        memberService.updateMember(id, memberUpdateDto);
-        return ResponseEntity.ok().body(
-            ResDto.builder()
-                .msg("회원 정보 수정 성공")
-                .result(true)
-                .build());
-    }
-
-    // POST http://localhost:8080/api/member/auth
-    // 회원탈퇴복구
-    @PostMapping("/auth")
-    public ResponseEntity<?> restoreMemberAuth(@AuthenticationPrincipal String id) {
-        memberService.restoreMember(id);
-        return ResponseEntity.ok().body(
-            ResDto.builder()
-                .msg("회원 복구 성공")
-                .result(true)
-                .build());
-    }
-
-    // DELETE http://localhost:8080/api/member/auth
-    // 회원탈퇴
-    // 폼전송
-    // 비밀번호(필수), 탈퇴 사유
-    @DeleteMapping("/auth")
-    public ResponseEntity<?> deleteMemberProfile(@AuthenticationPrincipal String id, @Valid MemberDeleteDto memberDeleteDto) {
-        memberService.deleteMember(id, memberDeleteDto);
-        return ResponseEntity.ok().body(
-            ResDto.builder()
-                .msg("회원 탈퇴 성공")
-                .result(true)
-                .build());
-    }
-
-    // TODO 비밀번호 변경
-    // TODO 소셜로그인
-    // TODO 유저목록 검색필터링, 페이지네이션
     // TODO 이미지 업로드
-    // TODO 활성여부컬럼 체크 후 예외처리
+
+    // TODO 소셜로그인
+
+    // TODO 유저목록 검색필터링, 페이지네이션
+
+    // TODO 이메일 인증
 }

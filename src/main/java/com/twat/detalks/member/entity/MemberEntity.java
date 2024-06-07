@@ -48,8 +48,7 @@ public class MemberEntity {
     private Boolean memberState = true;
 
     @Column(name ="member_img" ,nullable = false)
-    @Builder.Default
-    private String memberImg = "/img/default.png";
+    private String memberImg;
 
     @Column(name="member_summary")
     private String memberSummary;

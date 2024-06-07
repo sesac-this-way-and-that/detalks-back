@@ -7,12 +7,14 @@ import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
 import com.twat.detalks.member.repository.MemberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@Slf4j
 public class AnswerService {
     @Autowired
     private MemberRepository memberRepository;
@@ -32,6 +34,11 @@ public class AnswerService {
 
         if (question.getMembers().getMemberIdx().equals(member.getMemberIdx())) {
             throw new RuntimeException("자신의 질문에는 답변할 수 없습니다.");
+        }
+
+        // 사용자가 이미 해당 질문에 대해 답변을 작성했는지 확인
+        if (answerRepositroy.findByQuestionsAndMembers(question, member).isPresent()) {
+            throw new RuntimeException("해당 질문에 이미 답변을 작성했습니다.");
         }
 
         AnswerEntity newAnswer = AnswerEntity.builder()

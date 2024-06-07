@@ -1,4 +1,4 @@
-package com.twat.detalks.dto;
+package com.twat.detalks.question.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

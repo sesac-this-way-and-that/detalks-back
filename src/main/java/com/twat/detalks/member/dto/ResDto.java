@@ -1,4 +1,4 @@
-package com.twat.detalks.dto;
+package com.twat.detalks.member.dto;
 
 import lombok.Builder;
 import lombok.Getter;

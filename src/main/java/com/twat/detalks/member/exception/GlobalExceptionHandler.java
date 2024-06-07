@@ -1,14 +1,12 @@
-package com.twat.detalks.handler;
+package com.twat.detalks.member.exception;
 
-import com.twat.detalks.dto.ResDto;
-import io.jsonwebtoken.MalformedJwtException;
+import com.twat.detalks.member.dto.ResDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Objects;

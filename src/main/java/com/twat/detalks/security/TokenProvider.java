@@ -1,7 +1,7 @@
 package com.twat.detalks.security;
 
 import com.twat.detalks.config.jwt.JwtProperties;
-import com.twat.detalks.entity.MemberEntity;
+import com.twat.detalks.member.entity.MemberEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

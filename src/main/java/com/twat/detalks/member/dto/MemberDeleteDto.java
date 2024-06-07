@@ -1,4 +1,4 @@
-package com.twat.detalks.dto.member;
+package com.twat.detalks.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

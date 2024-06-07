@@ -1,8 +1,6 @@
 package com.twat.detalks.question.dto;
 
 import com.twat.detalks.answer.dto.AnswerDto;
-import com.twat.detalks.dto.MemberQuestionDto;
-import com.twat.detalks.answer.entity.AnswerEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

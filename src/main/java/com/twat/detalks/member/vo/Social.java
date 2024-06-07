@@ -1,4 +1,4 @@
-package com.twat.detalks.vo;
+package com.twat.detalks.member.vo;
 
 import lombok.Getter;
 

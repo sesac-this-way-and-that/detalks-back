@@ -12,6 +12,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import java.util.List;
+
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor

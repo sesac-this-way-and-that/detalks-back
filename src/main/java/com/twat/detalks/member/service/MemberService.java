@@ -90,6 +90,8 @@ public class MemberService {
         MemberEntity updateVisited = loginMember.toBuilder()
             .memberVisited(LocalDateTime.now())
             .build();
+
+        log.warn("login {}", updateVisited.getMemberIdx());
         memberRepository.save(updateVisited);
         return updateVisited;
     }

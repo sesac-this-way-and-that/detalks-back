@@ -44,8 +44,8 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // IF_REQUIRED 가 디폴트
             // 토큰 인증 인가 방식에서는 session 을 사용하지 않기 때문에 설정
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.PATCH,"/api/member").authenticated()
-                .requestMatchers(HttpMethod.DELETE,"/api/member").authenticated()
+                .requestMatchers("/api/member/auth").authenticated()
+                // .requestMatchers(HttpMethod.DELETE,"/api/member/profile").authenticated()
                 .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );

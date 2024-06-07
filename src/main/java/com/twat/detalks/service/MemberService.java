@@ -1,26 +1,43 @@
 package com.twat.detalks.service;
 
-import com.twat.detalks.dto.MemberDeleteDto;
-import com.twat.detalks.dto.MemberCreateDto;
-import com.twat.detalks.dto.MemberUpdateDto;
+import com.twat.detalks.dto.member.MemberDeleteDto;
+import com.twat.detalks.dto.member.MemberCreateDto;
+import com.twat.detalks.dto.member.MemberUpdateDto;
 import com.twat.detalks.entity.MemberEntity;
 import com.twat.detalks.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
+@Transactional
 public class MemberService {
 
-    private MemberRepository memberRepository;
-    private BCryptPasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$";
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     @Autowired
     public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    // 이메일 유효성 검사
+    public void regexEmailCheck(final String email) {
+        Matcher matcher = EMAIL_PATTERN.matcher(email);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+        }
     }
 
     // 이메일 중복체크
@@ -39,6 +56,12 @@ public class MemberService {
         }
     }
 
+    // 비밀번호 검증
+    public void checkPassword(final String password, final String memberPwd) {
+        boolean matches = passwordEncoder.matches(password, memberPwd);
+        if (!matches) throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+    }
+
     // 회원가입
     public void saveMember(final MemberCreateDto memberDTO) {
         memberRepository.save(MemberEntity.builder()
@@ -48,12 +71,13 @@ public class MemberService {
             .build());
     }
 
-    // 회원정보조회(memberId)
+    // 회원정보조회(id)
     public MemberEntity findByMemberId(final String id) {
         Long memberId = Long.parseLong(id);
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
+
 
     // 로그인
     public MemberEntity getByCredentials(final String memberEmail, final String memberPwd) {
@@ -61,45 +85,61 @@ public class MemberService {
         // 이메일 조회
         MemberEntity loginMember = memberRepository.findByMemberEmail(memberEmail)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        // 비밀번호 검사
-        boolean matches = passwordEncoder.matches(memberPwd, loginMember.getMemberPwd());
-        // 예외처리
-        if(!matches) throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        return loginMember;
+        // 비밀번호 검증
+        checkPassword(memberPwd, loginMember.getMemberPwd());
+        // 방문일자 수정 후 반환
+        MemberEntity updateVisited = loginMember.toBuilder()
+            .memberVisited(LocalDateTime.now())
+            .build();
+        memberRepository.save(updateVisited);
+        return updateVisited;
     }
 
     // 회원 정보 수정
     public void updateMember(final String id, final MemberUpdateDto memberUpdateDto) {
         // 아이디로 회원 조회
         MemberEntity prevMember = findByMemberId(id);
-        // 새로운 엔티티 생성
-        MemberEntity updateMember = MemberEntity.builder()
-            .memberIdx(prevMember.getMemberIdx()) // 기존 값
-            .memberEmail(prevMember.getMemberEmail()) // 수정 불가
-            .memberPwd(passwordEncoder.encode(memberUpdateDto.getMemberPwd())) // 수정 가능, 암호화
+        // 변경 가능 정보
+        // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
+        // 수동 변경
+        // 정보 수정 날짜
+        MemberEntity updateMember = prevMember.toBuilder()
             .memberName(memberUpdateDto.getMemberName())
+            .memberImg(memberUpdateDto.getMemberImg())
+            .memberSummary(memberUpdateDto.getMemberSummary())
+            .memberAbout(memberUpdateDto.getMemberAbout())
+            .memberUpdated(LocalDateTime.now())
             .build();
+
         memberRepository.save(updateMember);
     }
 
     // 회원 탈퇴
     public void deleteMember(final String id, final MemberDeleteDto memberDeleteDto) {
-
-        // 토큰값으로 로그인 유무 판별
+        // 아이디로 회원 조회
         MemberEntity existMember = findByMemberId(id);
         // 비밀번호 검증
-        boolean matches = passwordEncoder.matches(memberDeleteDto.getMemberPwd(), existMember.getMemberPwd());
-        if(!matches) throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
-
-        // 컬럼 비활성화
-        MemberEntity deleteMember = MemberEntity.builder()
-            .memberIdx(existMember.getMemberIdx())
-            .memberEmail(existMember.getMemberEmail())
-            .memberPwd(existMember.getMemberPwd())
-            .memberName(existMember.getMemberName())
+        checkPassword(memberDeleteDto.getMemberPwd(), existMember.getMemberPwd());
+        // 논리 삭제
+        MemberEntity deleteMember = existMember.toBuilder()
             .memberIsDeleted(true)
+            .memberDeleted(LocalDateTime.now())
             .memberReason(memberDeleteDto.getMemberReason())
             .build();
+
         memberRepository.save(deleteMember);
+    }
+
+    // 회원 탈퇴 복구
+    public void restoreMember(final String id) {
+        // 아이디로 회원 조회
+        MemberEntity existMember = findByMemberId(id);
+        // 복구
+        MemberEntity restoreMember = existMember.toBuilder()
+            .memberIsDeleted(false)
+            .memberDeleted(null)
+            .memberReason(null)
+            .build();
+        memberRepository.save(restoreMember);
     }
 }

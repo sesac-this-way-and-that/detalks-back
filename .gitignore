@@ -39,3 +39,4 @@ application.properties
 
 ## etc ##
 .DS_Store
+/images/**

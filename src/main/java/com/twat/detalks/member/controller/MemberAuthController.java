@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
 
@@ -21,13 +22,11 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class MemberAuthController {
 
-    private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
     @Autowired
-    public MemberAuthController(MemberService memberService, TokenProvider tokenProvider) {
+    public MemberAuthController(MemberService memberService) {
         this.memberService = memberService;
-        this.tokenProvider = tokenProvider;
     }
 
     // GET http://localhost:8080/api/member/auth
@@ -65,8 +64,13 @@ public class MemberAuthController {
     // 폼전송
     // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
     @PatchMapping("/auth")
-    public ResponseEntity<?> updateMemberAuth(@AuthenticationPrincipal String idx, @Valid MemberUpdateDto memberUpdateDto) {
-        memberService.updateMember(idx, memberUpdateDto);
+    public ResponseEntity<?> updateMemberAuth(
+        @AuthenticationPrincipal String idx,
+        @Valid MemberUpdateDto memberUpdateDto,
+        @RequestPart(required = false) MultipartFile img) {
+        log.warn("memberUpdateDto {}",memberUpdateDto);
+        log.warn("img file name {}",img.getOriginalFilename());
+        memberService.updateMember(idx, memberUpdateDto, img);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("회원 정보 수정 성공")
@@ -112,8 +116,8 @@ public class MemberAuthController {
     public ResponseEntity<?> changePassword(
         @AuthenticationPrincipal String idx,
         @RequestParam String pwd,
-        @RequestParam String changePwd){
-        memberService.changePassword(idx,pwd,changePwd);
+        @RequestParam String changePwd) {
+        memberService.changePassword(idx, pwd, changePwd);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("비밀번호 변경 성공")

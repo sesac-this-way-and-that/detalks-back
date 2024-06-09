@@ -5,15 +5,23 @@ import com.twat.detalks.member.dto.MemberCreateDto;
 import com.twat.detalks.member.dto.MemberUpdateDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.repository.MemberRepository;
+import com.twat.detalks.member.utils.FileNameUtils;
 import com.twat.detalks.member.vo.Social;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.naming.AuthenticationException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,16 +32,22 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$";
+    private final Path fileStorageLocation;
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
     private static final String PASSWORD_REGEX = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}";
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
 
-
     @Autowired
-    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder) {
+    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder, @Value("${file.upload-dir}") String uploadDir) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+        this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(this.fileStorageLocation); // 파일 저장 디렉토리가 없으면 생성
+        } catch (Exception e) {
+            throw new RuntimeException("디렉토리 생성 오류");
+        }
     }
 
     // 이메일 유효성 검사
@@ -80,7 +94,7 @@ public class MemberService {
             .memberEmail(memberDTO.getEmail())
             .memberPwd(passwordEncoder.encode(memberDTO.getPwd()))
             .memberName(memberDTO.getName())
-            .memberImg("default" + String.valueOf((int) (Math.random() * (5)) + 1) + ".png")
+            .memberImg("default" + (int) (Math.random() * 5 + 1) + ".png")
             .build());
     }
 
@@ -114,16 +128,36 @@ public class MemberService {
     }
 
     // 회원 정보 수정
-    public void updateMember(final String idx, final MemberUpdateDto memberUpdateDto) {
+    public void updateMember(final String idx, final MemberUpdateDto memberUpdateDto, MultipartFile img) {
         // 아이디로 회원 조회
         MemberEntity prevMember = findByMemberId(idx);
-        // 변경 가능 정보
-        // 이름(필수), 비밀번호(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
-        // 수동 변경
-        // 정보 수정 날짜
+
+        // 기존 db에 저장된 값 불러오기
+        String dbFileName = prevMember.getMemberImg();
+
+        // 프로필 이미지가 넘어왔을 경우
+        if (img != null && !Objects.requireNonNull(img.getOriginalFilename()).isEmpty()) {
+            try {
+                // UUID 적용해서 파일이름 수정
+                String UUIDFileName = FileNameUtils.fileNameConvert(img.getOriginalFilename());
+                // 실제 저장되는 경로 설정
+                String fullPath = this.fileStorageLocation.resolve(UUIDFileName).toString();
+
+                log.warn("fullPath {}", fullPath);
+
+                // 파일 생성
+                img.transferTo(new File(fullPath));
+                dbFileName = UUIDFileName; // 업로드 된 이미지로 변경
+
+            } catch (IOException e) {
+                throw new RuntimeException("이미지 저장에 실패하였습니다.", e);
+            }
+        }
+
+        // 회원 정보 업데이트
         MemberEntity updateMember = prevMember.toBuilder()
             .memberName(memberUpdateDto.getName())
-            .memberImg(memberUpdateDto.getImg())
+            .memberImg(dbFileName) // 변경된 이미지
             .memberSummary(memberUpdateDto.getSummary())
             .memberAbout(memberUpdateDto.getAbout())
             .memberUpdated(LocalDateTime.now())
@@ -131,6 +165,8 @@ public class MemberService {
 
         memberRepository.save(updateMember);
     }
+
+
 
     // 회원 탈퇴
     public void deleteMember(final String idx, final MemberDeleteDto memberDeleteDto) {
@@ -181,5 +217,4 @@ public class MemberService {
         memberRepository.save(updateMember);
     }
 
-    // TODO 비밀번호 찾기
 }

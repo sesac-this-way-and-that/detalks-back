@@ -16,6 +16,7 @@ import com.twat.detalks.tag.entity.TagEntity;
 import com.twat.detalks.tag.repository.QuestionTagRepository;
 import com.twat.detalks.tag.repository.TagRepository;
 import com.twat.detalks.tag.service.TagService;
+import com.twat.detalks.vote.repository.VoteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class QuestionService {
     private TagRepository tagRepository;
 
     @Autowired
+    private VoteRepository voteRepository;
+
+    @Autowired
     private MemberService memberService;
 
     @Autowired
@@ -57,15 +61,25 @@ public class QuestionService {
 
     // 상세 질문 조회
     public QuestionDto getQuestionById(Long questionId) {
-        QuestionDto findQuestion = questionRepository.findById(questionId)
-                .map(this::convertToDTO)
+        QuestionEntity findQuestion = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
         // 조회수 업데이트
         questionRepository.updateViewCount(questionId);
 
-        return findQuestion;
+        // 좋아요와 싫어요 수 계산
+        int likeCount = voteRepository.countByQuestions_QuestionIdAndVoteState(questionId, true);
+        int dislikeCount = voteRepository.countByQuestions_QuestionIdAndVoteState(questionId, false);
+
+        // 질문에 대한 총 투표 수 업데이트
+        int voteSum = likeCount - dislikeCount;
+
+        findQuestion.setVoteCount(voteSum);
+        questionRepository.save(findQuestion);
+
+        return convertToDTO(findQuestion);
     }
+
 
 
     // 질문 생성

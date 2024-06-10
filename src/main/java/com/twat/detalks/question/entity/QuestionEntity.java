@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.tag.entity.QuestionTagEntity;
+import com.twat.detalks.vote.entity.QuestionVoteEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -67,4 +68,7 @@ public class QuestionEntity {
     @JsonManagedReference
     private List<QuestionTagEntity> questionTagList;
 
+    @OneToMany(mappedBy = "questions")
+    @JsonManagedReference
+    private List<QuestionVoteEntity> questionVoteList;
 }

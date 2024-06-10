@@ -20,4 +20,6 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Long> 
     @Modifying
     @Query("UPDATE QuestionEntity q SET q.viewCount = q.viewCount + 1 WHERE q.id = :questionId")
     void updateViewCount(@Param("questionId") Long questionId);
+
+    // int countByQuestionIdAndVoteState(Long questionId, Boolean voteState);
 }

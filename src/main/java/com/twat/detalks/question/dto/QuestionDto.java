@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -15,12 +15,13 @@ public class QuestionDto {
     private Long questionId;
     private String questionTitle;
     private String questionContent;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
     private int viewCount;
     private int voteCount;
     private Boolean questionState;
     private Boolean isSolved;
     private MemberQuestionDto author;
     private List<AnswerDto> answerList;
+    private List<String> tagNameList;
 }

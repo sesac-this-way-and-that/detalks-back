@@ -1,14 +1,17 @@
 package com.twat.detalks.answer.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
+import com.twat.detalks.question.entity.QuestionVoteEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,11 +31,11 @@ public class AnswerEntity {
 
     @CreationTimestamp
     @Column(name = "a_created_at", nullable = false)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "a_modified_at", nullable = false)
-    private Timestamp modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @Column(name = "answer_state", nullable = false)
     @Builder.Default
@@ -54,4 +57,8 @@ public class AnswerEntity {
     @JsonBackReference
     @JoinColumn(name = "member_idx", nullable = false)  // 차후에 탈퇴 회원 관리시 nullable을 true로 바꿀 필요있음
     private MemberEntity members;
+
+    @OneToMany(mappedBy = "answer")
+    @JsonManagedReference
+    private List<AnswerVoteEntity> answerVoteList;
 }

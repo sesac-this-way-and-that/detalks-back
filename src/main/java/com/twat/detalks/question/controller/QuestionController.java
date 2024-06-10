@@ -41,10 +41,11 @@ public class QuestionController {
     // POST http://localhost:8080/api/questions
     @PostMapping("")
     public ResponseEntity<?> createQuestion(
+
             @AuthenticationPrincipal String memberIdx,
             @RequestBody QuestionCreateDto questionCreateDto) {
         try{
-            QuestionDto newQuestion = questionService.createQuestion(memberIdx, questionCreateDto);
+            QuestionDto newQuestion = questionService.createQuestion(Long.valueOf(memberIdx), questionCreateDto);
             return ResponseEntity.ok(newQuestion);
         }
         catch (Exception e) {
@@ -65,7 +66,7 @@ public class QuestionController {
             @RequestBody QuestionCreateDto questionCreateDto,
             @AuthenticationPrincipal String memberIdx) {
         try {
-            QuestionDto updatedQuestion = questionService.updateQuestion(questionId, questionCreateDto, memberIdx);
+            QuestionDto updatedQuestion = questionService.updateQuestion(questionId, questionCreateDto, Long.valueOf(memberIdx));
             return ResponseEntity.ok(updatedQuestion); }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(
@@ -76,14 +77,14 @@ public class QuestionController {
 
 
     // 질문 삭제
-    // Patch http://localhost:8080/api/questions/{questionId}
+    // DELETE http://localhost:8080/api/questions/{questionId}
     @DeleteMapping("/{questionId}")
     public ResponseEntity<?> deleteQuestion(
             @PathVariable Long questionId,
             @AuthenticationPrincipal String memberIdx) {
 
         try {
-            questionService.deleteQuestion(questionId, memberIdx);
+            questionService.deleteQuestion(questionId, Long.valueOf(memberIdx));
             return ResponseEntity.noContent().build();
         }
         catch (Exception e) {

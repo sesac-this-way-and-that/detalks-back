@@ -27,7 +27,6 @@ public class AnswerController {
              @RequestBody AnswerCreateDto answerCreateDto) {
         try {
             AnswerEntity newAnswer = answerService.createAnswer(memberId, questionId, answerCreateDto);
-            log.warn("newAnswer >> " + newAnswer);
             return ResponseEntity.ok(newAnswer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(

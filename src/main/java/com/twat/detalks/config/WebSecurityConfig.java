@@ -22,7 +22,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    private JwtAuthFilter jwtAuthFilter;
+   final private JwtAuthFilter jwtAuthFilter;
 
     @Autowired
     public WebSecurityConfig(JwtAuthFilter jwtAuthFilter) {

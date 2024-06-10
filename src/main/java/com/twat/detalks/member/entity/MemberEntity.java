@@ -2,9 +2,10 @@ package com.twat.detalks.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.twat.detalks.answer.entity.AnswerEntity;
+import com.twat.detalks.answer.entity.AnswerVoteEntity;
 import com.twat.detalks.member.vo.Social;
 import com.twat.detalks.question.entity.QuestionEntity;
-import com.twat.detalks.vote.entity.QuestionVoteEntity;
+import com.twat.detalks.question.entity.QuestionVoteEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -99,5 +100,9 @@ public class MemberEntity {
     @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<QuestionVoteEntity> questionVoteList;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<AnswerVoteEntity> answerVoteList;
 }
 

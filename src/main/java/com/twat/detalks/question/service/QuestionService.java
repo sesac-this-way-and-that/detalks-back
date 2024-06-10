@@ -16,7 +16,7 @@ import com.twat.detalks.tag.entity.TagEntity;
 import com.twat.detalks.tag.repository.QuestionTagRepository;
 import com.twat.detalks.tag.repository.TagRepository;
 import com.twat.detalks.tag.service.TagService;
-import com.twat.detalks.vote.repository.VoteRepository;
+import com.twat.detalks.question.repository.QuestionVoteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class QuestionService {
     private TagRepository tagRepository;
 
     @Autowired
-    private VoteRepository voteRepository;
+    private QuestionVoteRepository voteRepository;
 
     @Autowired
     private MemberService memberService;

@@ -24,7 +24,12 @@ public class QuestionVoteController {
                                   @AuthenticationPrincipal String memberIdx) {
         try {
             voteService.vote(questionId, Long.parseLong(memberIdx), voteState);
-            return ResponseEntity.ok().build();
+            String msg = "";
+            if (voteState) {
+                msg = "질문에 찬성했습니다.";
+            }
+            else msg = "질문에 반대 했습니다.";
+            return ResponseEntity.ok(msg);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResErrorDto.builder().error(e.getMessage()).build()
@@ -40,7 +45,9 @@ public class QuestionVoteController {
             @AuthenticationPrincipal String memberIdx) {
         try {
             voteService.removeVote(questionId, Long.parseLong(memberIdx));
-            return ResponseEntity.ok().build();
+            String msg = "질문에 대한 투표가 취소되었습니다.";
+            return ResponseEntity.ok(msg);
+            // return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResErrorDto.builder().error(e.getMessage()).build()

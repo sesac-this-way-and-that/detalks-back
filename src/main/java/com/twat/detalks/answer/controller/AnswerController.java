@@ -77,10 +77,10 @@ public class AnswerController {
             @PathVariable Long questionId,
             @PathVariable Long answerId,
             @AuthenticationPrincipal String memberIdx) {
-        log.warn("Selecting answer {} for question {} by member {}", answerId, questionId, memberIdx);
         try {
             answerService.selectAnswer(questionId, answerId, Long.parseLong(memberIdx));
-            return ResponseEntity.ok().build();
+            String msg = "답변을 채택하였습니다.";
+            return ResponseEntity.ok(msg);
         } catch (Exception e) {
             log.error("Error selecting answer: {}", e.getMessage());
             return ResponseEntity.badRequest().body(

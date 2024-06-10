@@ -35,11 +35,9 @@ public class AnswerVoteService {
         // 투표 존재 여부 확인
         AnswerVoteEntity existingVote = answerVoteRepository.findByAnswer_AnswerIdAndMember_MemberIdx(answerId, memberIdx).orElse(null);
         if (existingVote != null) {
-            // 기존 투표가 존재하면 투표 상태를 수정합니다.
             existingVote.setVoteState(voteState);
             answerVoteRepository.save(existingVote);
         } else {
-            // 새로운 투표를 생성합니다.
             AnswerVoteEntity vote = AnswerVoteEntity.builder()
                     .answer(answer)
                     .member(member)

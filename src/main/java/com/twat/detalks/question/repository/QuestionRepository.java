@@ -1,5 +1,6 @@
 package com.twat.detalks.question.repository;
 
+import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,13 +14,14 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<QuestionEntity, Long> {
     Optional<QuestionEntity> findById(Long questionId);
-    Optional<List<QuestionEntity>> findByMembersMemberIdx(Long memberIdx);
+    // Optional<List<QuestionEntity>> findByMembersMemberIdx(Long memberIdx);
+    List<QuestionEntity> findByMembers_MemberIdx(Long memberIdx);
 
+    // List<AnswerEntity> findByQuestion_QuestionId(Long questionId);
 
+    List<QuestionEntity> findByMembers_MemberIdxOrderByCreatedAtDesc(Long memberIdx);
     // 조회수 업데이트
     @Modifying
     @Query("UPDATE QuestionEntity q SET q.viewCount = q.viewCount + 1 WHERE q.id = :questionId")
     void updateViewCount(@Param("questionId") Long questionId);
-
-    // int countByQuestionIdAndVoteState(Long questionId, Boolean voteState);
 }

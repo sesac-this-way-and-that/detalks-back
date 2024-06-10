@@ -13,6 +13,8 @@ public class AnswerVoteController {
     @Autowired
     private AnswerVoteService answerVoteService;
 
+    // 답변 투표
+    // POST /api/votes/answer/{answerId}
     @PostMapping("/answer/{answerId}")
     public ResponseEntity<?> voteAnswer(
             @PathVariable Long answerId,
@@ -28,6 +30,8 @@ public class AnswerVoteController {
         }
     }
 
+    // 답변 투표 취소
+    // DELETE /api/votes/answer/{answerId}
     @DeleteMapping("/answer/{answerId}")
     public ResponseEntity<?> removeVote(
             @PathVariable Long answerId,

@@ -16,6 +16,8 @@ public class QuestionVoteController {
     @Autowired
     private QuestionVoteService voteService;
 
+    // 질문 투표
+    // POST /api/votes/question/{questionId}
     @PostMapping("/question/{questionId}")
     public ResponseEntity<?> vote(@PathVariable Long questionId,
                                   @RequestParam Boolean voteState,
@@ -30,6 +32,8 @@ public class QuestionVoteController {
         }
     }
 
+    // 질문 투표 삭제
+    // DELETE /api/votes/question/{questionId}
     @DeleteMapping("/question/{questionId}")
     public ResponseEntity<?> removeVote(
             @PathVariable Long questionId,

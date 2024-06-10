@@ -59,7 +59,7 @@ public class QuestionController {
 
 
     // 질문 수정
-    // Patch http://localhost:8080/api/questions/{questionId}
+    // PATCH http://localhost:8080/api/questions/{questionId}
     @PatchMapping("/{questionId}")
     public ResponseEntity<?> updateQuestion(
             @PathVariable Long questionId,

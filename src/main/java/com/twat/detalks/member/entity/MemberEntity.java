@@ -19,12 +19,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="Members")
+@Table(name = "Members")
 @DynamicUpdate
 public class MemberEntity {
 
-    @Id @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    @Column(name="member_idx", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_idx", nullable = false)
     private Long memberIdx;
 
     @Column(name = "member_email", nullable = false)
@@ -41,49 +42,53 @@ public class MemberEntity {
     private Boolean memberIsDeleted = false;
 
     @Column(name = "member_reason")
-    private String memberReason;
+    @Builder.Default
+    private String memberReason = "";
 
-    @Column(name ="member_state" ,nullable = false)
+    @Column(name = "member_state", nullable = false)
     @Builder.Default
     private Boolean memberState = true;
 
-    @Column(name ="member_img" ,nullable = false)
+    @Column(name = "member_img", nullable = false)
     private String memberImg;
 
-    @Column(name="member_summary")
-    private String memberSummary;
+    @Column(name = "member_summary")
+    @Builder.Default
+    private String memberSummary = "";
 
-    @Column(name="member_about")
-    private String memberAbout;
+    @Column(name = "member_about")
+    @Builder.Default
+    private String memberAbout = "";
 
-    @Column(name="member_rep",nullable = false)
+    @Column(name = "member_rep", nullable = false)
     @Builder.Default
     private int memberRep = 1;
 
-    @Column(name="member_social", nullable = false)
+    @Column(name = "member_social", nullable = false)
     @Builder.Default
     private Social memberSocial = Social.NONE;
 
-    @Column(name="member_q_count", nullable = false)
+    @Column(name = "member_q_count", nullable = false)
     @Builder.Default
     private Integer memberQcount = 0;
 
-    @Column(name="member_a_count", nullable = false)
+    @Column(name = "member_a_count", nullable = false)
     @Builder.Default
     private Integer memberAcount = 0;
 
-    @Column(name="member_created", nullable = false)
+    @Column(name = "member_created", nullable = false)
     @Builder.Default
     private LocalDateTime memberCreated = LocalDateTime.now();
 
-    @Column(name="member_visited", nullable = false)
+    @Column(name = "member_visited", nullable = false)
     @Builder.Default
-    private LocalDateTime memberVisited = LocalDateTime.now();;
+    private LocalDateTime memberVisited = LocalDateTime.now();
+    ;
 
-    @Column(name="member_updated")
+    @Column(name = "member_updated")
     private LocalDateTime memberUpdated;
 
-    @Column(name="member_deleted")
+    @Column(name = "member_deleted")
     private LocalDateTime memberDeleted;
 
     @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, orphanRemoval = true)

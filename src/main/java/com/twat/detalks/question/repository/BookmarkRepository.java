@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface BookmarkRepository extends JpaRepository<BookmarkEntity, Long> {
     Optional<BookmarkEntity> findByMemberAndQuestion(MemberEntity member, QuestionEntity question);
     List<BookmarkEntity> findByMember(MemberEntity member);
-    Boolean existsByQuestionIdAndMemberIdx(Long questionId, Long memberIdx);
-    BookmarkEntity findByQuestionIdAndMemberIdx(Long questionId, Long memberIdx);
+    // Boolean existsByQuestionIdAndMemberIdx(Long questionId, Long memberIdx);
+    // BookmarkEntity findByQuestionIdAndMemberIdx(Long questionId, Long memberIdx);
 }

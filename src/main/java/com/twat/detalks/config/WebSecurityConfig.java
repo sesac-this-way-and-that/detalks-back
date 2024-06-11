@@ -1,34 +1,46 @@
 package com.twat.detalks.config;
 
-import com.twat.detalks.security.JwtAuthFilter;
+import com.twat.detalks.oauth2.jwt.JWTFilter;
+import com.twat.detalks.oauth2.service.CustomOAuth2UserService;
+import com.twat.detalks.oauth2.CustomSuccessHandler;
+import com.twat.detalks.oauth2.jwt.JWTUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-   final private JwtAuthFilter jwtAuthFilter;
+
+    // private final JwtAuthFilter jwtAuthFilter;
+    // public WebSecurityConfig(JwtAuthFilter jwtAuthFilter, CustomOAuth2UserService customOAuth2UserService) {
+    //     this.jwtAuthFilter = jwtAuthFilter;
+    //     this.customOAuth2UserService = customOAuth2UserService;
+    // }
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
+    private final JWTUtil jwtUtil;
 
     @Autowired
-    public WebSecurityConfig(JwtAuthFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
+    public WebSecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customSuccessHandler = customSuccessHandler;
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -36,50 +48,86 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean // 메소드에 다는 어노테이션. 스프링 컨테이너가 관리할 수 있도록 등록
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
-            .cors(Customizer.withDefaults())
-            .csrf(CsrfConfigurer::disable)
-            .sessionManagement(sessionManagement->sessionManagement
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // IF_REQUIRED 가 디폴트
-            // 토큰 인증 인가 방식에서는 session 을 사용하지 않기 때문에 설정
+            .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+
+                @Override
+                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+
+                    CorsConfiguration configuration = new CorsConfiguration();
+
+                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                    configuration.setAllowedMethods(Collections.singletonList("*"));
+                    configuration.setAllowCredentials(true);
+                    configuration.setAllowedHeaders(Collections.singletonList("*"));
+                    configuration.setMaxAge(3600L);
+
+                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                    return configuration;
+                }
+            }));
+        //csrf disable
+        http
+            .csrf(AbstractHttpConfigurer::disable);
+        //Form 로그인 방식 disable
+        http
+            .formLogin(AbstractHttpConfigurer::disable);
+        //HTTP Basic 인증 방식 disable
+        http
+            .httpBasic(AbstractHttpConfigurer::disable);
+        //JWTFilter 추가
+        http
+            .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+        //oauth2
+        http
+            .oauth2Login((oauth2) -> oauth2
+                .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                    .userService(customOAuth2UserService))
+                .successHandler(customSuccessHandler)
+            );
+        //세션 설정 : STATELESS
+        http
+            .sessionManagement((session) -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        //경로별 인가 작업
+        http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/member/auth").authenticated()
-                .requestMatchers(HttpMethod.POST,"/api/questions/**").authenticated()
-                .requestMatchers(HttpMethod.PATCH,"/api/questions/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE,"/api/questions/**").authenticated()
-                .requestMatchers(HttpMethod.POST,"/api/answers/**").authenticated()
-                .requestMatchers(HttpMethod.PATCH,"/api/answers/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE,"/api/answers/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/questions/**").authenticated()
+                .requestMatchers(HttpMethod.PATCH, "/api/questions/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/questions/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/answers/**").authenticated()
+                .requestMatchers(HttpMethod.PATCH, "/api/answers/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/answers/**").authenticated()
                 .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );
-
-        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        // http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 원본에서의 요청을 허용하는 설정
-        config.setAllowedMethods(Arrays.asList("HEAD", "POST", "PATCH", "DELETE", "PUT", "GET"));
-        config.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더의 요청을 허용
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return source;
-    }
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
+
+    // @Bean
+    // public CorsConfigurationSource corsConfigurationSource() {
+    //     CorsConfiguration config = new CorsConfiguration();
+    //
+    //     config.setAllowCredentials(true);
+    //     config.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 원본에서의 요청을 허용하는 설정
+    //     config.setAllowedMethods(Arrays.asList("HEAD", "POST", "PATCH", "DELETE", "PUT", "GET"));
+    //     config.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더의 요청을 허용
+    //
+    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    //     source.registerCorsConfiguration("/**", config);
+    //
+    //     return source;
+    // }
+
 }

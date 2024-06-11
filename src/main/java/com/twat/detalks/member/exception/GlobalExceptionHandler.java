@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
             ResDto.builder()
                 .result(false)
-                .status("404")
+                .status("400")
                 .msg(errorMessage)
                 .errorType(e.getClass().toString())
                 .build());

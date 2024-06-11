@@ -12,7 +12,6 @@ public class TestController {
 
     @GetMapping
     public String testApi(){
-        LocalDateTime time = LocalDateTime.now();
-        return time.toString();
+        return "test api";
     }
 }

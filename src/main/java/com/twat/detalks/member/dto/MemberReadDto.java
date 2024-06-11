@@ -24,4 +24,5 @@ public class MemberReadDto {
     private String created;
     private String visited;
     private String updated;
+    private String role;
 }

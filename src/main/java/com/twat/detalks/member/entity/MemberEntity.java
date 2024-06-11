@@ -3,6 +3,7 @@ package com.twat.detalks.member.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.entity.AnswerVoteEntity;
+import com.twat.detalks.member.vo.Role;
 import com.twat.detalks.member.vo.Social;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.entity.QuestionVoteEntity;
@@ -66,10 +67,6 @@ public class MemberEntity {
     @Builder.Default
     private int memberRep = 1;
 
-    @Column(name = "member_social", nullable = false)
-    @Builder.Default
-    private Social memberSocial = Social.NONE;
-
     @Column(name = "member_q_count", nullable = false)
     @Builder.Default
     private Integer memberQcount = 0;
@@ -85,7 +82,6 @@ public class MemberEntity {
     @Column(name = "member_visited", nullable = false)
     @Builder.Default
     private LocalDateTime memberVisited = LocalDateTime.now();
-    ;
 
     @Column(name = "member_updated")
     private LocalDateTime memberUpdated;
@@ -108,5 +104,45 @@ public class MemberEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<AnswerVoteEntity> answerVoteList;
+
+    @Column(name = "member_role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Role memberRole = Role.USER;
+
+    @Column(name = "member_social", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Social memberSocial = Social.NONE;
+
+
+    @Override
+    public String toString() {
+        return "MemberEntity{" +
+            "memberIdx=" + memberIdx +
+            ", memberEmail='" + memberEmail + '\'' +
+            ", memberPwd='" + memberPwd + '\'' +
+            ", memberName='" + memberName + '\'' +
+            ", memberIsDeleted=" + memberIsDeleted +
+            ", memberReason='" + memberReason + '\'' +
+            ", memberState=" + memberState +
+            ", memberImg='" + memberImg + '\'' +
+            ", memberSummary='" + memberSummary + '\'' +
+            ", memberAbout='" + memberAbout + '\'' +
+            ", memberRep=" + memberRep +
+            ", memberSocial=" + memberSocial +
+            ", memberQcount=" + memberQcount +
+            ", memberAcount=" + memberAcount +
+            ", memberCreated=" + memberCreated +
+            ", memberVisited=" + memberVisited +
+            ", memberUpdated=" + memberUpdated +
+            ", memberDeleted=" + memberDeleted +
+            ", questionList=" + questionList +
+            ", answerList=" + answerList +
+            ", questionVoteList=" + questionVoteList +
+            ", answerVoteList=" + answerVoteList +
+            ", memberRole=" + memberRole +
+            '}';
+    }
 }
 

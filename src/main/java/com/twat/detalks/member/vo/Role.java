@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Social {
-    NONE("NONE"),
-    GOOGLE("GOOGLE"),
-    GITHUB("GITHUB");
+public enum Role {
+    USER("ROLE_USER"),GUEST("ROLE_GUEST");
     private final String key;
 }

@@ -1,6 +1,6 @@
 package com.twat.detalks.oauth2;
 
-import com.twat.detalks.oauth2.dto.CustomOAuth2User;
+import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -29,7 +29,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         //OAuth2User
-        CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
+        CustomUserDetail customUserDetails = (CustomUserDetail) authentication.getPrincipal();
 
         // String username = customUserDetails.getUserName();
         String userId = customUserDetails.getUserIdx();
@@ -42,7 +42,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(createCookie("Authorization", token));
         // TODO 수정필요
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:3000/oauth2/google/redirect/header");
     }
 
     private Cookie createCookie(String key, String value) {

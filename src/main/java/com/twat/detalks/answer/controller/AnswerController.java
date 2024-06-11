@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/questions")
@@ -62,6 +64,25 @@ public class AnswerController {
             answerService.deleteAnswer(memberId, answerId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    ResErrorDto.builder().error(e.getMessage()).build()
+            );
+        }
+    }
+
+    // 답변 채택
+    // POST /api/questions/{questionId}/{answerId}/select
+    @PostMapping("/{questionId}/{answerId}/select")
+    public ResponseEntity<?> selectAnswer(
+            @PathVariable Long questionId,
+            @PathVariable Long answerId,
+            @AuthenticationPrincipal String memberIdx) {
+        try {
+            answerService.selectAnswer(questionId, answerId, Long.parseLong(memberIdx));
+            String msg = "답변을 채택하였습니다.";
+            return ResponseEntity.ok(msg);
+        } catch (Exception e) {
+            log.error("Error selecting answer: {}", e.getMessage());
             return ResponseEntity.badRequest().body(
                     ResErrorDto.builder().error(e.getMessage()).build()
             );

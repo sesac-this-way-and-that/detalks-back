@@ -4,6 +4,7 @@ import com.twat.detalks.question.dto.QuestionCreateDto;
 import com.twat.detalks.question.dto.QuestionDto;
 import com.twat.detalks.question.dto.ResErrorDto;
 import com.twat.detalks.question.entity.QuestionEntity;
+import com.twat.detalks.question.service.QuestionSearchService;
 import com.twat.detalks.question.service.QuestionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,11 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
+    @Autowired
+    private QuestionSearchService questionSearchService;
+
     // 질문 리스트 조회
-    // GET http://localhost:8080/api/questions
+    // GET /api/questions
     @GetMapping("")
     public ResponseEntity<List<QuestionDto>> getQuestions() {
         List<QuestionDto> questions = questionService.getQuestions();
@@ -38,7 +42,7 @@ public class QuestionController {
     }
 
     // 질문 생성
-    // POST http://localhost:8080/api/questions
+    // POST /api/questions
     @PostMapping("")
     public ResponseEntity<?> createQuestion(
 
@@ -59,7 +63,7 @@ public class QuestionController {
 
 
     // 질문 수정
-    // Patch http://localhost:8080/api/questions/{questionId}
+    // PATCH /api/questions/{questionId}
     @PatchMapping("/{questionId}")
     public ResponseEntity<?> updateQuestion(
             @PathVariable Long questionId,
@@ -77,7 +81,7 @@ public class QuestionController {
 
 
     // 질문 삭제
-    // DELETE http://localhost:8080/api/questions/{questionId}
+    // DELETE /api/questions/{questionId}
     @DeleteMapping("/{questionId}")
     public ResponseEntity<?> deleteQuestion(
             @PathVariable Long questionId,
@@ -92,5 +96,16 @@ public class QuestionController {
                     ResErrorDto.builder().error(e.getMessage()).build()
             );
         }
+    }
+
+    // 검색 기능 - title, content, tag
+    // GET /api/questions/search
+    @GetMapping("/search")
+    public ResponseEntity<List<QuestionDto>> searchQuestions(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) String tag) {
+        List<QuestionDto> questions = questionSearchService.searchQuestions(title, content, tag);
+        return ResponseEntity.ok(questions);
     }
 }

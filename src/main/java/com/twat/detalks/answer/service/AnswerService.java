@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @Slf4j
@@ -74,5 +76,38 @@ public class AnswerService {
         }
 
         answerRepositroy.delete(existingAnswer);
+    }
+
+    // 답변 채택
+    @Transactional
+    public void selectAnswer(Long questionId, Long answerId, Long memberIdx) {
+        QuestionEntity question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
+
+        if (!question.getMembers().getMemberIdx().equals(memberIdx)) {
+            throw new RuntimeException("채택 권한이 없습니다.");
+        }
+
+        if (question.getIsSolved()) {
+            throw new RuntimeException("이미 채택된 답변이 있습니다.");
+        }
+
+        AnswerEntity answer = answerRepositroy.findById(answerId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 답변입니다."));
+
+        if (!answer.getQuestions().getQuestionId().equals(questionId)) {
+            throw new RuntimeException("해당 질문의 답변이 아닙니다.");
+        }
+
+        question.setIsSolved(true);
+        answer.setIsSelected(true);
+
+        questionRepository.save(question);
+        answerRepositroy.save(answer);
+    }
+
+    // 회원 별로 답변 리스트 조회
+    public List<AnswerEntity> getAnswersByMember(Long memberIdx) {
+        return answerRepositroy.findByMembers_MemberIdx(memberIdx);
     }
 }

@@ -22,6 +22,10 @@ public class QuestionVoteEntity {
     @Column(name = "q_vote_state", nullable = true)
     private Boolean voteState;
 
+    public Boolean isVoteState() {
+        return voteState;
+    }
+
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
     @JsonBackReference

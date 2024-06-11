@@ -11,4 +11,5 @@ public interface QuestionVoteRepository extends JpaRepository<QuestionVoteEntity
     void deleteByQuestions_QuestionIdAndMembers_MemberIdx(Long questionId, Long memberIdx);
     int countByQuestions_QuestionIdAndVoteState(Long questionId, boolean voteState);
     List<QuestionVoteEntity> findByQuestions_QuestionId(Long questionId); // 총 투표 점수
+
 }

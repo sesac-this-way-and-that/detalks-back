@@ -80,8 +80,6 @@ public class QuestionService {
         return convertToDTO(findQuestion);
     }
 
-
-
     // 질문 생성
     public QuestionDto createQuestion(Long memberIdx, QuestionCreateDto questionCreateDto) {
         MemberEntity member = memberRepository.findById(memberIdx)
@@ -171,6 +169,12 @@ public class QuestionService {
 
         questionTagRepository.deleteByQuestion(existingQuestion);
         questionRepository.delete(existingQuestion);
+    }
+
+
+    // 회원 별로 질문 리스트 조회
+    public List<QuestionEntity> getQuestionsByMember(Long memberIdx) {
+        return questionRepository.findByMembers_MemberIdx(memberIdx);
     }
 
 

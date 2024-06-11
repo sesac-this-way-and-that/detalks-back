@@ -1,6 +1,7 @@
 package com.twat.detalks.answer.controller;
 
 import com.twat.detalks.answer.service.AnswerVoteService;
+import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.ResErrorDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,8 @@ public class AnswerVoteController {
     public ResponseEntity<?> voteAnswer(
             @PathVariable Long answerId,
             @RequestParam Boolean voteState,
-            @AuthenticationPrincipal String memberIdx) {
+            @AuthenticationPrincipal CustomUserDetail user) {
+        String memberIdx = user.getUserIdx();
         try {
             answerVoteService.voteAnswer(answerId, Long.parseLong(memberIdx), voteState);
             String msg = "";
@@ -40,7 +42,8 @@ public class AnswerVoteController {
     @DeleteMapping("/answer/{answerId}")
     public ResponseEntity<?> removeVote(
             @PathVariable Long answerId,
-            @AuthenticationPrincipal String memberIdx) {
+            @AuthenticationPrincipal CustomUserDetail user) {
+        String memberIdx = user.getUserIdx();
         try {
             answerVoteService.removeVote(answerId, Long.parseLong(memberIdx));
             String msg = "답변에 대한 투표가 취소되었습니다.";

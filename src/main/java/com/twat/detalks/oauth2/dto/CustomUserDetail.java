@@ -1,5 +1,6 @@
 package com.twat.detalks.oauth2.dto;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+@Slf4j
 public class CustomUserDetail implements OAuth2User, UserDetails {
 
     private final UserDTO userDTO;
@@ -43,7 +45,7 @@ public class CustomUserDetail implements OAuth2User, UserDetails {
     }
 
     public String getUserIdx() {
-        return String.valueOf(userDTO.getIdx());
+        return userDTO.getIdx();
     }
 
     @Override

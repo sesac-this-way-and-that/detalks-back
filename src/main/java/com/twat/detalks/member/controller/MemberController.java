@@ -60,7 +60,7 @@ public class MemberController {
     public ResponseEntity<?> signIn(
         @RequestParam String email, @RequestParam String pwd) {
         MemberEntity member = memberService.getByCredentials(email, pwd);
-        String token = jwtUtil.createJwtNone(member,60*60*60L);
+        String token = jwtUtil.createJwtNone(member,60*60*24*1000L);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("로그인 성공")
@@ -128,10 +128,4 @@ public class MemberController {
                 .build());
     }
     // TODO 이미지 업로드
-
-    // TODO 소셜로그인
-
-    // TODO 유저목록 검색필터링, 페이지네이션
-
-    // TODO 이메일 인증
 }

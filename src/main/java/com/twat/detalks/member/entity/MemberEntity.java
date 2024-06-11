@@ -65,7 +65,7 @@ public class MemberEntity {
 
     @Column(name = "member_rep", nullable = false)
     @Builder.Default
-    private int memberRep = 1;
+    private Integer memberRep = 1;
 
     @Column(name = "member_q_count", nullable = false)
     @Builder.Default

@@ -6,7 +6,9 @@ import com.twat.detalks.question.dto.MemberQuestionDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.dto.QuestionCreateDto;
 import com.twat.detalks.question.dto.QuestionDto;
+import com.twat.detalks.question.entity.BookmarkEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
+import com.twat.detalks.question.repository.BookmarkRepository;
 import com.twat.detalks.question.repository.QuestionRepository;
 import com.twat.detalks.member.repository.MemberRepository;
 // import com.twat.detalks.security.TokenProvider;
@@ -46,6 +48,9 @@ public class QuestionService {
     private QuestionVoteRepository voteRepository;
 
     @Autowired
+    private BookmarkRepository bookmarkRepository;
+
+    @Autowired
     private MemberService memberService;
 
     @Autowired
@@ -64,6 +69,14 @@ public class QuestionService {
         QuestionEntity findQuestion = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
+        // 북마크 상태 가져오기
+        // Boolean bookmarkState = false;
+        // if (memberIdx != null) {
+        //     BookmarkEntity bookmark = bookmarkRepository.findByQuestionIdAndMemberIdx(questionId, memberIdx);
+        //     if (bookmark != null) {
+        //         bookmarkState = bookmark.getBookmarkState();
+        //     }
+        // }
         // 조회수 업데이트
         questionRepository.updateViewCount(questionId);
 

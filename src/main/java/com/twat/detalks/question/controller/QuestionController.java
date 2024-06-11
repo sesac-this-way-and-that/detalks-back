@@ -37,7 +37,13 @@ public class QuestionController {
     // 특정 질문 조회
     // GET /api/questions/{questionId}
     @GetMapping("/{questionId}")
-    public ResponseEntity<QuestionDto> getQuestionById(@PathVariable Long questionId) {
+    public ResponseEntity<QuestionDto> getQuestionById(
+            @PathVariable Long questionId
+            // @AuthenticationPrincipal CustomUserDetail user
+    ) {
+        // 인증된 사용자가 없으면 user는 null
+        // String memberIdx = user != null ? user.getUserIdx() : null;
+
         QuestionDto questionDTO = questionService.getQuestionById(questionId);
         return ResponseEntity.ok(questionDTO);
     }

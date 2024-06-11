@@ -90,12 +90,14 @@ public class MemberService {
 
     // 회원가입
     public void saveMember(final MemberCreateDto memberDTO) {
-        memberRepository.save(MemberEntity.builder()
+        MemberEntity test = MemberEntity.builder()
             .memberEmail(memberDTO.getEmail())
             .memberPwd(passwordEncoder.encode(memberDTO.getPwd()))
             .memberName(memberDTO.getName())
             .memberImg("default" + (int) (Math.random() * 5 + 1) + ".png")
-            .build());
+            .build();
+        log.warn("test toString {}",test.toString());
+        memberRepository.save(test);
     }
 
     // 회원정보조회(id)

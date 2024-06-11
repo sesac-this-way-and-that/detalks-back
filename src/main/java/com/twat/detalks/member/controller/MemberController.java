@@ -2,8 +2,9 @@ package com.twat.detalks.member.controller;
 
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.dto.*;
-import com.twat.detalks.security.TokenProvider;
+// import com.twat.detalks.security.TokenProvider;
 import com.twat.detalks.member.service.MemberService;
+import com.twat.detalks.oauth2.jwt.JWTUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,21 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class MemberController {
 
-    private final TokenProvider tokenProvider;
+    // private final TokenProvider tokenProvider;
     private final MemberService memberService;
+    private final JWTUtil jwtUtil;
 
     @Autowired
-    public MemberController(TokenProvider tokenProvider, MemberService memberService) {
-        this.tokenProvider = tokenProvider;
+    public MemberController(MemberService memberService, JWTUtil jwtUtil) {
         this.memberService = memberService;
+        this.jwtUtil = jwtUtil;
     }
+
+    // public MemberController(TokenProvider tokenProvider, MemberService memberService) {
+    //     this.tokenProvider = tokenProvider;
+    //     this.memberService = memberService;
+    // }
+
 
     // POST http://localhost:8080/api/member/signup
     // 회원가입
@@ -52,7 +60,7 @@ public class MemberController {
     public ResponseEntity<?> signIn(
         @RequestParam String email, @RequestParam String pwd) {
         MemberEntity member = memberService.getByCredentials(email, pwd);
-        String token = tokenProvider.create(member);
+        String token = jwtUtil.createJwtNone(member,60*60*60L);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("로그인 성공")

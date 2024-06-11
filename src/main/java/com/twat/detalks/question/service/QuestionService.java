@@ -9,7 +9,7 @@ import com.twat.detalks.question.dto.QuestionDto;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
 import com.twat.detalks.member.repository.MemberRepository;
-import com.twat.detalks.security.TokenProvider;
+// import com.twat.detalks.security.TokenProvider;
 import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.tag.entity.QuestionTagEntity;
 import com.twat.detalks.tag.entity.TagEntity;
@@ -51,8 +51,8 @@ public class QuestionService {
     @Autowired
     private TagService tagService;
 
-    @Autowired
-    private TokenProvider tokenProvider;
+    // @Autowired
+    // private TokenProvider tokenProvider;
 
     // 질문 리스트 조회
     public List<QuestionDto> getQuestions() {

@@ -6,12 +6,17 @@ import com.twat.detalks.member.dto.MemberUpdateDto;
 import com.twat.detalks.member.dto.ResDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.service.MemberService;
-import com.twat.detalks.security.TokenProvider;
+// import com.twat.detalks.security.TokenProvider;
+import com.twat.detalks.oauth2.dto.CustomOAuth2User;
+import com.twat.detalks.oauth2.dto.UserDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,8 +37,9 @@ public class MemberAuthController {
     // GET http://localhost:8080/api/member/auth
     // 회원정보조회 (로그인 유저)
     @GetMapping("/auth")
-    public ResponseEntity<?> getMemberAuth(@AuthenticationPrincipal String idx) {
-        MemberEntity result = memberService.findByMemberId(idx);
+    public ResponseEntity<?> getMemberAuth(@AuthenticationPrincipal CustomOAuth2User user) {
+        log.warn("user.getidx :: {}" ,user.getUserIdx());
+        MemberEntity result = memberService.findByMemberId(user.getUserIdx());
         MemberReadDto data = MemberReadDto.builder()
             .idx(result.getMemberIdx())
             .email(result.getMemberEmail())
@@ -50,6 +56,7 @@ public class MemberAuthController {
             .aCount(result.getMemberAcount())
             .created(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .visited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .role(result.getMemberRole().getKey())
             .build();
         return ResponseEntity.ok().body(
             ResDto.builder()
@@ -68,8 +75,8 @@ public class MemberAuthController {
         @AuthenticationPrincipal String idx,
         @Valid MemberUpdateDto memberUpdateDto,
         @RequestPart(required = false) MultipartFile img) {
-        log.warn("memberUpdateDto {}",memberUpdateDto);
-        log.warn("img file name {}",img.getOriginalFilename());
+        log.warn("memberUpdateDto {}", memberUpdateDto);
+        log.warn("img file name {}", img.getOriginalFilename());
         memberService.updateMember(idx, memberUpdateDto, img);
         return ResponseEntity.ok().body(
             ResDto.builder()

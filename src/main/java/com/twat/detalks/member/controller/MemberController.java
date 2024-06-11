@@ -2,7 +2,6 @@ package com.twat.detalks.member.controller;
 
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.dto.*;
-// import com.twat.detalks.security.TokenProvider;
 import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
 import jakarta.validation.Valid;
@@ -19,7 +18,6 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class MemberController {
 
-    // private final TokenProvider tokenProvider;
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
 
@@ -28,12 +26,6 @@ public class MemberController {
         this.memberService = memberService;
         this.jwtUtil = jwtUtil;
     }
-
-    // public MemberController(TokenProvider tokenProvider, MemberService memberService) {
-    //     this.tokenProvider = tokenProvider;
-    //     this.memberService = memberService;
-    // }
-
 
     // POST http://localhost:8080/api/member/signup
     // 회원가입
@@ -127,5 +119,4 @@ public class MemberController {
                 .status("200")
                 .build());
     }
-    // TODO 이미지 업로드
 }

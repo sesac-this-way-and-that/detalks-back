@@ -3,6 +3,7 @@ package com.twat.detalks.question.repository;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface QuestionRepository extends JpaRepository<QuestionEntity, Long> {
+public interface QuestionRepository extends JpaRepository<QuestionEntity, Long>, JpaSpecificationExecutor<QuestionEntity> {
     Optional<QuestionEntity> findById(Long questionId);
     // Optional<List<QuestionEntity>> findByMembersMemberIdx(Long memberIdx);
     List<QuestionEntity> findByMembers_MemberIdx(Long memberIdx);

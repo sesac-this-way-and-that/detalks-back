@@ -12,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "questions")
@@ -65,7 +66,7 @@ public class QuestionEntity {
 
     @OneToMany(mappedBy = "question")
     @JsonManagedReference
-    private List<QuestionTagEntity> questionTagList;
+    private Set<QuestionTagEntity> questionTagList;
 
     @OneToMany(mappedBy = "questions")
     @JsonManagedReference

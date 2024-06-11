@@ -31,7 +31,7 @@ public class MypageController {
     // 특정 회원의 질문 리스트 조회
     // GET /api/mypage/{memberIdx}/questions
     @GetMapping("/{memberIdx}/questions")
-    public ResponseEntity<List<QuestionListDto>> getQuestionsByMemberId(@AuthenticationPrincipal String memberIdx) {
+    public ResponseEntity<List<QuestionListDto>> getQuestionsByMemberId(@PathVariable String memberIdx) {
         Long memberId = Long.parseLong(memberIdx);
         List<QuestionListDto> questions = questionListService.getQuestionsByMemberId(memberId);
         return ResponseEntity.ok(questions);
@@ -40,7 +40,7 @@ public class MypageController {
     // 특정 회원의 답변 리스트 조회
     // GET /api/mypage/{memberIdx}/answers
     @GetMapping("/{memberIdx}/answers")
-    public ResponseEntity<List<AnswerListDto>> getAnswersByMemberId(@AuthenticationPrincipal String memberIdx) {
+    public ResponseEntity<List<AnswerListDto>> getAnswersByMemberId(@PathVariable String memberIdx) {
         Long memberId = Long.parseLong(memberIdx);
         List<AnswerListDto> answers = answerListService.getAnswersByMemberId(memberId);
         return ResponseEntity.ok(answers);
@@ -49,7 +49,7 @@ public class MypageController {
     // (최신순) 특정 회원의 활동 리스트 조회
     // GET /api/mypage/{memberIdx}/activities/recent
     @GetMapping("/{memberIdx}/activities/recent")
-    public ResponseEntity<List<QuestionAnswerListDto>> getRecentQuestionsAndAnswersByMemberId(@AuthenticationPrincipal String memberIdx) {
+    public ResponseEntity<List<QuestionAnswerListDto>> getRecentQuestionsAndAnswersByMemberId(@PathVariable String memberIdx) {
         Long memberId = Long.parseLong(memberIdx);
         List<QuestionAnswerListDto> questionAnswerList = questionAnswerListService.getQuestionsAndAnswersByMemberIdOrderByCreatedAtDesc(memberId);
         return ResponseEntity.ok(questionAnswerList);
@@ -58,7 +58,7 @@ public class MypageController {
     // (투표순) 특정 회원의 활동 리스트 조회
     // GET /api/mypage/{memberIdx}/activities/top-votes
     @GetMapping("/{memberIdx}/activities/top-votes")
-    public ResponseEntity<List<QuestionAnswerListDto>> getTopVotedQuestionsAndAnswersByMemberId(@AuthenticationPrincipal String memberIdx) {
+    public ResponseEntity<List<QuestionAnswerListDto>> getTopVotedQuestionsAndAnswersByMemberId(@PathVariable String memberIdx) {
         Long memberId = Long.parseLong(memberIdx);
         List<QuestionAnswerListDto> questionAnswerList = questionAnswerListService.getQuestionsAndAnswersByMemberIdOrderByVoteCountDesc(memberId);
         return ResponseEntity.ok(questionAnswerList);

@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookmarkRepository extends JpaRepository<BookmarkEntity, Long> {
-    Optional<BookmarkEntity> findByMemberAndQuestion(MemberEntity member, QuestionEntity question);
-    List<BookmarkEntity> findByMember(MemberEntity member);
-    // Boolean existsByQuestionIdAndMemberIdx(Long questionId, Long memberIdx);
-    // BookmarkEntity findByQuestionIdAndMemberIdx(Long questionId, Long memberIdx);
+    Optional<BookmarkEntity> findByMember_MemberIdxAndQuestion_QuestionId(Long memberIdx, Long questionId);
+    List<BookmarkEntity> findByMember_MemberIdx(Long memberIdx);
+    boolean existsByMember_MemberIdxAndQuestion_QuestionId(Long memberIdx, Long questionId);
+
+    // Optional<BookmarkEntity> findByMemberAndQuestion(MemberEntity member, QuestionEntity question);
+    // List<BookmarkEntity> findByMember(MemberEntity member);
+
 }

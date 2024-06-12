@@ -26,8 +26,8 @@ public class BookmarkEntity {
     @JoinColumn(name = "question_id", nullable = false)
     private QuestionEntity question;
 
-    // @Column(name = "bookmark_state", nullable = false)
-    // @Builder.Default
-    // private Boolean bookmarkState = false;
+    @Column(name = "bookmark_state", nullable = false)
+    @Builder.Default
+    private Boolean bookmarkState = false;
 }
 

@@ -38,13 +38,18 @@ public class QuestionController {
     // GET /api/questions/{questionId}
     @GetMapping("/{questionId}")
     public ResponseEntity<QuestionDto> getQuestionById(
-            @PathVariable Long questionId
-            // @AuthenticationPrincipal CustomUserDetail user
+            @PathVariable Long questionId,
+            @AuthenticationPrincipal CustomUserDetail user
     ) {
         // 인증된 사용자가 없으면 user는 null
         // String memberIdx = user != null ? user.getUserIdx() : null;
 
-        QuestionDto questionDTO = questionService.getQuestionById(questionId);
+        Long memberIdx = null;
+        if (user != null) {
+            memberIdx = Long.valueOf(user.getUserIdx());
+        }
+
+        QuestionDto questionDTO = questionService.getQuestionById(questionId, memberIdx);
         return ResponseEntity.ok(questionDTO);
     }
 

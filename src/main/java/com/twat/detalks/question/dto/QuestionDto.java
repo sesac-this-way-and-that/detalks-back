@@ -24,5 +24,5 @@ public class QuestionDto {
     private MemberQuestionDto author;
     private List<AnswerDto> answerList;
     private List<String> tagNameList;
-    // private Boolean bookmarkState;
+    private Boolean bookmarkState;
 }

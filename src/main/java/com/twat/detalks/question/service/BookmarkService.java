@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,67 +29,41 @@ public class BookmarkService {
     @Autowired
     private QuestionRepository questionRepository;
 
-    public void addBookmark(Long memberId, Long questionId) {
-        MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
-        QuestionEntity question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Question not found"));
+    public BookmarkEntity addBookmark(Long memberIdx, Long questionId) {
+        MemberEntity member = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        QuestionEntity question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
-        BookmarkEntity bookmark = BookmarkEntity.builder()
-                .member(member)
-                .question(question)
-                .build();
+        Optional<BookmarkEntity> bookmarkOpt = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
+        BookmarkEntity bookmark;
 
-        bookmarkRepository.save(bookmark);
+        if (bookmarkOpt.isPresent()) {
+            bookmark = bookmarkOpt.get();
+            bookmark.setBookmarkState(true);
+        } else {
+            bookmark = BookmarkEntity.builder()
+                    .member(member)
+                    .question(question)
+                    .bookmarkState(true)
+                    .build();
+        }
+
+        return bookmarkRepository.save(bookmark);
     }
 
-    public void removeBookmark(Long memberId, Long questionId) {
-        MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
-        QuestionEntity question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Question not found"));
-
-        BookmarkEntity bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
-                .orElseThrow(() -> new RuntimeException("Bookmark not found"));
-
-        bookmarkRepository.delete(bookmark);
+    public void removeBookmark(Long memberIdx, Long questionId) {
+        Optional<BookmarkEntity> bookmarkOpt = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
+        if (bookmarkOpt.isPresent()) {
+            BookmarkEntity bookmark = bookmarkOpt.get();
+            bookmark.setBookmarkState(false);
+            bookmarkRepository.save(bookmark);
+        } else {
+            throw new RuntimeException("북마크가 존재하지 않습니다.");
+        }
     }
 
-    public List<BookmarkedQuestionDto> getBookmarksByMember(Long memberId) {
-        MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
-        List<BookmarkEntity> bookmarks = bookmarkRepository.findByMember(member);
-
-        return bookmarks.stream()
-                .map(bookmark -> BookmarkedQuestionDto.builder()
-                        .bookmarkId(bookmark.getBookmarkId())
-                        .question(toQuestionDto(bookmark.getQuestion()))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    private QuestionDto toQuestionDto(QuestionEntity questionEntity) {
-        return QuestionDto.builder()
-                .questionId(questionEntity.getQuestionId())
-                .questionTitle(questionEntity.getQuestionTitle())
-                .questionContent(questionEntity.getQuestionContent())
-                .createdAt(questionEntity.getCreatedAt())
-                .modifiedAt(questionEntity.getModifiedAt())
-                .viewCount(questionEntity.getViewCount())
-                .voteCount(questionEntity.getVoteCount())
-                .questionState(questionEntity.getQuestionState())
-                .isSolved(questionEntity.getIsSolved())
-                .author(MemberQuestionDto.builder()
-                        .memberIdx(questionEntity.getMembers().getMemberIdx())
-                        .memberName(questionEntity.getMembers().getMemberName())
-                        .build())
-                .answerList(questionEntity.getAnswerList().stream()
-                        .map(answer -> AnswerDto.builder()
-                                .answerId(answer.getAnswerId())
-                                .answerContent(answer.getAnswerContent())
-                                .createdAt(answer.getCreatedAt())
-                                .modifiedAt(answer.getModifiedAt())
-                                .isSelected(answer.getIsSelected())
-                                .build())
-                        .collect(Collectors.toList()))
-                .tagNameList(questionEntity.getQuestionTagList().stream()
-                        .map(tag -> tag.getTags().getTagName())
-                        .collect(Collectors.toList()))
-                .build();
+    public List<BookmarkEntity> getBookmarksByMember(Long memberIdx) {
+        return bookmarkRepository.findByMember_MemberIdx(memberIdx);
     }
 }

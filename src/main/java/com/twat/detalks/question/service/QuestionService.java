@@ -55,6 +55,9 @@ public class QuestionService {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private BookmarkService bookmarkService;
+
     // 질문 리스트 조회
     public List<QuestionDto> getQuestions() {
         return questionRepository.findAll().stream()
@@ -74,10 +77,13 @@ public class QuestionService {
         QuestionEntity findQuestion = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
-        Boolean bookmarkState = false;
-        if (memberIdx != null) {
-            bookmarkState = bookmarkRepository.existsByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
-        }
+        // Boolean bookmarkState = false;
+        // if (memberIdx != null) {
+        //     bookmarkState = bookmarkRepository.existsByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
+        // }
+
+        // 북마크 상태 업데이트
+        Boolean bookmarkState = bookmarkService.updateBookmarkState(memberIdx, questionId);
 
         // 조회수 업데이트
         questionRepository.updateViewCount(questionId);

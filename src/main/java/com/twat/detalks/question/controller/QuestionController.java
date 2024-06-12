@@ -42,8 +42,6 @@ public class QuestionController {
             @AuthenticationPrincipal CustomUserDetail user
     ) {
         // 인증된 사용자가 없으면 user는 null
-        // String memberIdx = user != null ? user.getUserIdx() : null;
-
         Long memberIdx = null;
         if (user != null) {
             memberIdx = Long.valueOf(user.getUserIdx());

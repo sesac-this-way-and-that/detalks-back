@@ -13,7 +13,5 @@ public interface BookmarkRepository extends JpaRepository<BookmarkEntity, Long> 
     List<BookmarkEntity> findByMember_MemberIdx(Long memberIdx);
     boolean existsByMember_MemberIdxAndQuestion_QuestionId(Long memberIdx, Long questionId);
 
-    // Optional<BookmarkEntity> findByMemberAndQuestion(MemberEntity member, QuestionEntity question);
-    // List<BookmarkEntity> findByMember(MemberEntity member);
-
+    List<BookmarkEntity> findByMember_MemberIdxAndBookmarkState(Long memberIdx, Boolean bookmarkState);
 }

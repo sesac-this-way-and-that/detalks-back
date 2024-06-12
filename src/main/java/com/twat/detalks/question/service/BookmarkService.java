@@ -29,6 +29,7 @@ public class BookmarkService {
     @Autowired
     private QuestionRepository questionRepository;
 
+    // 북마크 추가
     public BookmarkEntity addBookmark(Long memberIdx, Long questionId) {
         MemberEntity member = memberRepository.findById(memberIdx)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
@@ -52,6 +53,7 @@ public class BookmarkService {
         return bookmarkRepository.save(bookmark);
     }
 
+    // 북마크 삭제
     public void removeBookmark(Long memberIdx, Long questionId) {
         Optional<BookmarkEntity> bookmarkOpt = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
         if (bookmarkOpt.isPresent()) {
@@ -63,7 +65,21 @@ public class BookmarkService {
         }
     }
 
+    // 북마크 리스트 조회
     public List<BookmarkEntity> getBookmarksByMember(Long memberIdx) {
-        return bookmarkRepository.findByMember_MemberIdx(memberIdx);
+        return bookmarkRepository.findByMember_MemberIdxAndBookmarkState(memberIdx, true);
+    }
+
+    // 상세 질문 조회 시 북마크 상태 업데이트
+    public Boolean updateBookmarkState(Long memberIdx, Long questionId) {
+        Boolean bookmarkState = false;
+        if (memberIdx != null) {
+            BookmarkEntity bookmark = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId)
+                    .orElse(null);
+            if (bookmark != null) {
+                bookmarkState = bookmark.getBookmarkState();
+            }
+        }
+        return bookmarkState;
     }
 }

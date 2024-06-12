@@ -1,6 +1,7 @@
 package com.twat.detalks.member.exception;
 
 import com.twat.detalks.member.dto.ResDto;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -58,6 +59,18 @@ public class GlobalExceptionHandler {
                 .result(false)
                 .status("400")
                 .msg(errorMessage)
+                .errorType(e.getClass().toString())
+                .build());
+    }
+
+    // 토큰 만료 예외처리 핸들러
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> expiredJwtExceptionHandler(ExpiredJwtException e) {
+        return ResponseEntity.badRequest().body(
+            ResDto.builder()
+                .result(false)
+                .status("400")
+                .msg(e.getMessage())
                 .errorType(e.getClass().toString())
                 .build());
     }

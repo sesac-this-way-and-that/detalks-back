@@ -30,15 +30,37 @@ public class QuestionController {
     // 질문 리스트 조회
     // GET /api/questions
     @GetMapping("")
-    public ResponseEntity<List<QuestionDto>> getQuestions() {
+    public ResponseEntity<?> getQuestions() {
         List<QuestionDto> questions = questionService.getQuestions();
-        return ResponseEntity.ok(questions);
+        // return ResponseEntity.ok(questions);
+        if (questions.isEmpty()) {
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("질문이 없습니다.")
+                    .data(null)
+                    .status("404")
+                    .errorType("No Results Found")
+                    .token(null)
+                    .build();
+
+            return ResponseEntity.status(404).body(response);
+        }
+
+        ResDto response = ResDto.builder()
+                .result(true)
+                .msg("질문 리스트 조회 성공")
+                .data(questions)
+                .status("200")
+                .token(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     // 특정 질문 조회
     // GET /api/questions/{questionId}
     @GetMapping("/{questionId}")
-    public ResponseEntity<QuestionDto> getQuestionById(
+    public ResponseEntity<?> getQuestionById(
             @PathVariable Long questionId,
             @AuthenticationPrincipal CustomUserDetail user
     ) {
@@ -48,8 +70,30 @@ public class QuestionController {
             memberIdx = Long.valueOf(user.getUserIdx());
         }
 
-        QuestionDto questionDTO = questionService.getQuestionById(questionId, memberIdx);
-        return ResponseEntity.ok(questionDTO);
+        try{
+            QuestionDto questionDTO = questionService.getQuestionById(questionId, memberIdx);
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("질문 조회 성공")
+                    .data(questionDTO)
+                    .status("200")
+                    .token(String.valueOf(memberIdx))
+                    .build();
+
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e) {
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("질문 조회 실패")
+                    .data(null)
+                    .status("400")
+                    .errorType(e.getMessage())
+                    .token(String.valueOf(memberIdx))
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
+        }
     }
 
     // 질문 생성
@@ -61,16 +105,27 @@ public class QuestionController {
         String memberIdx = user.getUserIdx();
         try{
             QuestionDto newQuestion = questionService.createQuestion(Long.valueOf(memberIdx), questionCreateDto);
-            return ResponseEntity.ok(newQuestion);
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("질문 생성 성공")
+                    .data(newQuestion)
+                    .status("200")
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.ok(response);
         }
         catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ResDto.builder()
-                            .msg("질문 추가 실패")
-                            .status("400")
-                            .errorType(e.getMessage())
-                            .result(false)
-                            .build());
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("질문 생성 실패")
+                    .data(null)
+                    .status("400")
+                    .errorType(e.getMessage())
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
         }
     }
 
@@ -85,15 +140,27 @@ public class QuestionController {
         String memberIdx = user.getUserIdx();
         try {
             QuestionDto updatedQuestion = questionService.updateQuestion(questionId, questionCreateDto, Long.valueOf(memberIdx));
-            return ResponseEntity.ok(updatedQuestion); }
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("질문 수정 성공")
+                    .data(updatedQuestion)
+                    .status("200")
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        }
         catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ResDto.builder()
-                            .msg("질문 수정 실패")
-                            .status("400")
-                            .errorType(e.getMessage())
-                            .result(false)
-                            .build());
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("질문 수정 실패")
+                    .data(null)
+                    .status("400")
+                    .errorType(e.getMessage())
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
         }
     }
 
@@ -108,27 +175,59 @@ public class QuestionController {
         String memberIdx = user.getUserIdx();
         try {
             questionService.deleteQuestion(questionId, Long.valueOf(memberIdx));
-            return ResponseEntity.noContent().build();
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("질문 삭제 성공")
+                    .status("200")
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.ok(response);
         }
         catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ResDto.builder()
-                            .msg("질문 삭제 실패")
-                            .status("400")
-                            .errorType(e.getMessage())
-                            .result(false)
-                            .build());
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("질문 삭제 실패")
+                    .data(null)
+                    .status("400")
+                    .errorType(e.getMessage())
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
         }
     }
 
     // 검색 기능 - title, content, tag
     // GET /api/questions/search
     @GetMapping("/search")
-    public ResponseEntity<List<QuestionDto>> searchQuestions(
+    public ResponseEntity<?> searchQuestions(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content,
             @RequestParam(required = false) String tag) {
         List<QuestionDto> questions = questionSearchService.searchQuestions(title, content, tag);
-        return ResponseEntity.ok(questions);
+        // return ResponseEntity.ok(questions);
+        if (questions.isEmpty()) {
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("검색 결과가 없습니다.")
+                    .data(null)
+                    .status("404")
+                    .errorType("No Results Found")
+                    .token(null)
+                    .build();
+
+            return ResponseEntity.status(404).body(response);
+        }
+
+        ResDto response = ResDto.builder()
+                .result(true)
+                .msg("검색 결과가 있습니다.")
+                .data(questions)
+                .status("200")
+                .token(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }

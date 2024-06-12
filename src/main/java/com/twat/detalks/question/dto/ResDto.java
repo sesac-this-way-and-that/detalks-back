@@ -1,5 +1,13 @@
 package com.twat.detalks.question.dto;
 
+
+import lombok.*;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResDto {
     private boolean result;
     private String msg;

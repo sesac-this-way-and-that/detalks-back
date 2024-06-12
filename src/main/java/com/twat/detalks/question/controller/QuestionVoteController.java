@@ -32,15 +32,26 @@ public class QuestionVoteController {
                 msg = "질문에 찬성했습니다.";
             }
             else msg = "질문에 반대 했습니다.";
-            return ResponseEntity.ok(msg);
+            // return ResponseEntity.ok(msg);
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg(msg)
+                    .status("200")
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    ResDto.builder()
-                            .msg("질문 투표 추가 실패")
-                            .status("400")
-                            .errorType(e.getMessage())
-                            .result(false)
-                            .build());
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("질문 투표 실패")
+                    .data(null)
+                    .status("400")
+                    .errorType(e.getMessage())
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
         }
     }
 
@@ -57,18 +68,20 @@ public class QuestionVoteController {
             // String msg = "질문에 대한 투표가 취소되었습니다.";
             // return ResponseEntity.ok(msg);
             // return ResponseEntity.ok().build();
-            return ResponseEntity.ok().body(
-                    ResDto.builder()
-                            .msg("질문 투표 취소 성공")
-                            .result(true)
-                            .status("200")
-                            .build());
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("질문 투표 취소 성공")
+                    .status("200")
+                    .token(memberIdx)
+                    .build();
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResDto.builder()
                             .msg("질문 투표 취소 실패")
                             .status("400")
                             .errorType(e.getMessage())
+                            .token(memberIdx)
                             .result(false)
                             .build());
         }

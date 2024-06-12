@@ -34,20 +34,23 @@ public class BookmarkController {
         if (user != null) {
             Long memberIdx = Long.valueOf(user.getUserIdx());
             bookmarkService.addBookmark(memberIdx, questionId);
-            // return ResponseEntity.ok().build();
-            return ResponseEntity.ok().body(
-                    ResDto.builder()
-                            .msg("북마크 추가 성공")
-                            .result(true)
-                            .status("200")
-                            .build());
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("북마크 추가 성공")
+                    .status("200")
+                    .token(String.valueOf(memberIdx))
+                    .build();
+
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(401).body(
-                    ResDto.builder()
-                    .msg("로그인을 해주세요.")
+            ResDto response = ResDto.builder()
                     .result(false)
-                    .status("401")
-                    .build());
+                    .msg("북마크 추가 실패")
+                    .status("400")
+                    .token(null)
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
         }
     }
 
@@ -65,30 +68,48 @@ public class BookmarkController {
                             .msg("북마크 삭제 성공")
                             .result(true)
                             .status("200")
+                            .token(String.valueOf(memberIdx))
                             .build());
         } else {
-            return ResponseEntity.status(401).body(
-                    ResDto.builder()
-                            .msg("로그인을 해주세요.")
-                            .result(false)
-                            .status("401")
-                            .build());
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("북마크 삭제 실패")
+                    .status("400")
+                    .token(null)
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
         }
     }
 
     // 북마크 리스트 조회
     // GET /api/bookmarks
     @GetMapping
-    public ResponseEntity<List<QuestionDto>> getBookmarks(@AuthenticationPrincipal CustomUserDetail user) {
+    public ResponseEntity<?> getBookmarks(@AuthenticationPrincipal CustomUserDetail user) {
         if (user != null) {
             Long memberIdx = Long.valueOf(user.getUserIdx());
             List<BookmarkEntity> bookmarks = bookmarkService.getBookmarksByMember(memberIdx);
             List<QuestionDto> bookmarkedQuestions = bookmarks.stream()
                     .map(bookmark -> questionService.convertToDTO(bookmark.getQuestion(), bookmark.getBookmarkState()))
                     .collect(Collectors.toList());
-            return ResponseEntity.ok(bookmarkedQuestions);
+            // return ResponseEntity.ok(bookmarkedQuestions);
+            return ResponseEntity.ok().body(
+                    ResDto.builder()
+                            .msg("북마크 리스트 조회 성공")
+                            .data(bookmarkedQuestions)
+                            .result(true)
+                            .status("200")
+                            .token(String.valueOf(memberIdx))
+                            .build());
         } else {
-            return ResponseEntity.status(401).build();  // Unauthorized
+            ResDto response = ResDto.builder()
+                    .result(false)
+                    .msg("북마크 리스트 조회 실패")
+                    .status("400")
+                    .token(null)
+                    .build();
+
+            return ResponseEntity.status(400).body(response);
         }
     }
 }

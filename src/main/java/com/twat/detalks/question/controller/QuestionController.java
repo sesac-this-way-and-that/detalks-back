@@ -1,5 +1,6 @@
 package com.twat.detalks.question.controller;
 
+import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.QuestionCreateDto;
 import com.twat.detalks.question.dto.QuestionDto;
 import com.twat.detalks.question.dto.ResErrorDto;
@@ -34,10 +35,21 @@ public class QuestionController {
     }
 
     // 특정 질문 조회
-    // GET http://localhost:8080/api/questions/{questionId}
+    // GET /api/questions/{questionId}
     @GetMapping("/{questionId}")
-    public ResponseEntity<QuestionDto> getQuestionById(@PathVariable Long questionId) {
-        QuestionDto questionDTO = questionService.getQuestionById(questionId);
+    public ResponseEntity<QuestionDto> getQuestionById(
+            @PathVariable Long questionId,
+            @AuthenticationPrincipal CustomUserDetail user
+    ) {
+        // 인증된 사용자가 없으면 user는 null
+        // String memberIdx = user != null ? user.getUserIdx() : null;
+
+        Long memberIdx = null;
+        if (user != null) {
+            memberIdx = Long.valueOf(user.getUserIdx());
+        }
+
+        QuestionDto questionDTO = questionService.getQuestionById(questionId, memberIdx);
         return ResponseEntity.ok(questionDTO);
     }
 
@@ -45,9 +57,9 @@ public class QuestionController {
     // POST /api/questions
     @PostMapping("")
     public ResponseEntity<?> createQuestion(
-
-            @AuthenticationPrincipal String memberIdx,
+            @AuthenticationPrincipal CustomUserDetail user,
             @RequestBody QuestionCreateDto questionCreateDto) {
+        String memberIdx = user.getUserIdx();
         try{
             QuestionDto newQuestion = questionService.createQuestion(Long.valueOf(memberIdx), questionCreateDto);
             return ResponseEntity.ok(newQuestion);
@@ -68,7 +80,8 @@ public class QuestionController {
     public ResponseEntity<?> updateQuestion(
             @PathVariable Long questionId,
             @RequestBody QuestionCreateDto questionCreateDto,
-            @AuthenticationPrincipal String memberIdx) {
+            @AuthenticationPrincipal CustomUserDetail user) {
+        String memberIdx = user.getUserIdx();
         try {
             QuestionDto updatedQuestion = questionService.updateQuestion(questionId, questionCreateDto, Long.valueOf(memberIdx));
             return ResponseEntity.ok(updatedQuestion); }
@@ -85,8 +98,9 @@ public class QuestionController {
     @DeleteMapping("/{questionId}")
     public ResponseEntity<?> deleteQuestion(
             @PathVariable Long questionId,
-            @AuthenticationPrincipal String memberIdx) {
-
+            @AuthenticationPrincipal CustomUserDetail user
+            ) {
+        String memberIdx = user.getUserIdx();
         try {
             questionService.deleteQuestion(questionId, Long.valueOf(memberIdx));
             return ResponseEntity.noContent().build();

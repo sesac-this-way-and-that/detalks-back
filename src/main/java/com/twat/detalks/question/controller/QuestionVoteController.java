@@ -1,5 +1,6 @@
 package com.twat.detalks.question.controller;
 
+import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.ResErrorDto;
 import com.twat.detalks.question.service.QuestionVoteService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,8 @@ public class QuestionVoteController {
     @PostMapping("/question/{questionId}")
     public ResponseEntity<?> vote(@PathVariable Long questionId,
                                   @RequestParam Boolean voteState,
-                                  @AuthenticationPrincipal String memberIdx) {
+                                  @AuthenticationPrincipal CustomUserDetail user) {
+        String memberIdx = user.getUserIdx();
         try {
             voteService.vote(questionId, Long.parseLong(memberIdx), voteState);
             String msg = "";
@@ -42,7 +44,9 @@ public class QuestionVoteController {
     @DeleteMapping("/question/{questionId}")
     public ResponseEntity<?> removeVote(
             @PathVariable Long questionId,
-            @AuthenticationPrincipal String memberIdx) {
+            @AuthenticationPrincipal CustomUserDetail user
+    ) {
+        String memberIdx = user.getUserIdx();
         try {
             voteService.removeVote(questionId, Long.parseLong(memberIdx));
             String msg = "질문에 대한 투표가 취소되었습니다.";

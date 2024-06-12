@@ -3,6 +3,7 @@ package com.twat.detalks.answer.controller;
 import com.twat.detalks.answer.dto.AnswerCreateDto;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.service.AnswerService;
+import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.ResErrorDto;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +25,12 @@ public class AnswerController {
     // POST /api/questions/{questionId}/answers
     @PostMapping("/{questionId}/answers")
     public ResponseEntity<?> createAnswer(
-            @AuthenticationPrincipal String memberId,
+            @AuthenticationPrincipal CustomUserDetail user,
             @PathVariable Long questionId,
              @RequestBody AnswerCreateDto answerCreateDto) {
+        String memberIdx = user.getUserIdx();
         try {
-            AnswerEntity newAnswer = answerService.createAnswer(memberId, questionId, answerCreateDto);
+            AnswerEntity newAnswer = answerService.createAnswer(memberIdx, questionId, answerCreateDto);
             return ResponseEntity.ok(newAnswer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
@@ -41,11 +43,12 @@ public class AnswerController {
     // PATCH /api/questions/answers/{answerId}
     @PatchMapping("/answers/{answerId}")
     public ResponseEntity<?> updateAnswer(
-            @AuthenticationPrincipal String memberId,
+            @AuthenticationPrincipal CustomUserDetail user,
             @PathVariable Long answerId,
             @Valid @RequestBody AnswerCreateDto answerCreateDto) {
+        String memberIdx = user.getUserIdx();
         try {
-            AnswerEntity updatedAnswer = answerService.updateAnswer(memberId, answerId, answerCreateDto);
+            AnswerEntity updatedAnswer = answerService.updateAnswer(memberIdx, answerId, answerCreateDto);
             return ResponseEntity.ok(updatedAnswer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
@@ -58,10 +61,11 @@ public class AnswerController {
     // DELETE /api/questions/answers/{answerId}
     @DeleteMapping("/answers/{answerId}")
     public ResponseEntity<?> deleteAnswer(
-            @AuthenticationPrincipal String memberId,
+            @AuthenticationPrincipal CustomUserDetail user,
             @PathVariable Long answerId) {
+        String memberIdx = user.getUserIdx();
         try {
-            answerService.deleteAnswer(memberId, answerId);
+            answerService.deleteAnswer(memberIdx, answerId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
@@ -76,7 +80,8 @@ public class AnswerController {
     public ResponseEntity<?> selectAnswer(
             @PathVariable Long questionId,
             @PathVariable Long answerId,
-            @AuthenticationPrincipal String memberIdx) {
+            @AuthenticationPrincipal CustomUserDetail user) {
+        String memberIdx = user.getUserIdx();
         try {
             answerService.selectAnswer(questionId, answerId, Long.parseLong(memberIdx));
             String msg = "답변을 채택하였습니다.";

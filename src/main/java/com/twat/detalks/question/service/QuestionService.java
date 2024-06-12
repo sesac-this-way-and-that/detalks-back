@@ -20,8 +20,11 @@ import com.twat.detalks.question.repository.QuestionVoteRepository;
 import com.twat.detalks.tag.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,17 +62,9 @@ public class QuestionService {
     private BookmarkService bookmarkService;
 
     // 질문 리스트 조회
-    public List<QuestionDto> getQuestions() {
-        return questionRepository.findAll().stream()
-                .map(question -> {
-                    // Boolean bookmarkState = false;
-                    // if (memberIdx != null) {
-                    //     bookmarkState = bookmarkRepository.existsByMember_MemberIdxAndQuestion_QuestionId(memberIdx, question.getQuestionId());
-                    // }
-                    // return convertToDTO(question, bookmarkState);
-                    return convertToDTO(question, false);
-                })
-                .collect(Collectors.toList());
+    public Page<QuestionDto> getQuestions(Pageable pageable) {
+        return questionRepository.findAll(pageable)
+                .map(question -> convertToDTO(question, false));
     }
 
     // 상세 질문 조회

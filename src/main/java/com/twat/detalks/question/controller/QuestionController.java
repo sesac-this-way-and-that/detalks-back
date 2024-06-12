@@ -10,10 +10,10 @@ import com.twat.detalks.question.service.QuestionSearchService;
 import com.twat.detalks.question.service.QuestionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,10 +30,25 @@ public class QuestionController {
     // 질문 리스트 조회
     // GET /api/questions
     @GetMapping("")
-    public ResponseEntity<?> getQuestions() {
-        List<QuestionDto> questions = questionService.getQuestions();
-        // return ResponseEntity.ok(questions);
-        if (questions.isEmpty()) {
+    public ResponseEntity<?> getQuestions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        // List<QuestionDto> questions = questionService.getQuestions();
+        // if (questions.isEmpty()) {
+        //     ResDto response = ResDto.builder()
+        //             .result(false)
+        //             .msg("질문이 없습니다.")
+        //             .data(null)
+        //             .status("404")
+        //             .errorType("No Results Found")
+        //             .token(null)
+        //             .build();
+        //
+        //     return ResponseEntity.status(404).body(response);
+        // }
+
+        Page<QuestionDto> questionsPage = questionService.getQuestions(PageRequest.of(page, size));
+        if (questionsPage.isEmpty()) {
             ResDto response = ResDto.builder()
                     .result(false)
                     .msg("질문이 없습니다.")
@@ -46,10 +61,18 @@ public class QuestionController {
             return ResponseEntity.status(404).body(response);
         }
 
+
+        // ResDto response = ResDto.builder()
+        //         .result(true)
+        //         .msg("질문 리스트 조회 성공")
+        //         .data(questions)
+        //         .status("200")
+        //         .token(null)
+        //         .build();
         ResDto response = ResDto.builder()
                 .result(true)
                 .msg("질문 리스트 조회 성공")
-                .data(questions)
+                .data(questionsPage)
                 .status("200")
                 .token(null)
                 .build();
@@ -204,10 +227,12 @@ public class QuestionController {
     public ResponseEntity<?> searchQuestions(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content,
-            @RequestParam(required = false) String tag) {
-        List<QuestionDto> questions = questionSearchService.searchQuestions(title, content, tag);
-        // return ResponseEntity.ok(questions);
-        if (questions.isEmpty()) {
+            @RequestParam(required = false) String tag,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<QuestionDto> questionsPage = questionSearchService.searchQuestions(title, content, tag, page, size);
+        if (questionsPage.isEmpty()) {
             ResDto response = ResDto.builder()
                     .result(false)
                     .msg("검색 결과가 없습니다.")
@@ -223,7 +248,7 @@ public class QuestionController {
         ResDto response = ResDto.builder()
                 .result(true)
                 .msg("검색 결과가 있습니다.")
-                .data(questions)
+                .data(questionsPage)
                 .status("200")
                 .token(null)
                 .build();

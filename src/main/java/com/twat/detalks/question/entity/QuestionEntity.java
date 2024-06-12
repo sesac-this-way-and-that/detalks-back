@@ -74,4 +74,8 @@ public class QuestionEntity {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BookmarkEntity> bookmarks;
+
+    @Column(name = "question_rep", nullable = false)
+    @Builder.Default
+    private int questionRep = 0;
 }

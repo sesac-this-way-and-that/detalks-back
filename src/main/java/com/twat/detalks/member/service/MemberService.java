@@ -1,5 +1,6 @@
 package com.twat.detalks.member.service;
 
+import com.twat.detalks.answer.repository.AnswerRepositroy;
 import com.twat.detalks.member.dto.MemberDeleteDto;
 import com.twat.detalks.member.dto.MemberCreateDto;
 import com.twat.detalks.member.dto.MemberUpdateDto;
@@ -7,6 +8,7 @@ import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.repository.MemberRepository;
 import com.twat.detalks.member.utils.FileNameUtils;
 import com.twat.detalks.member.vo.Social;
+import com.twat.detalks.question.repository.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,8 @@ import java.util.regex.Pattern;
 @Transactional
 public class MemberService {
 
+    private final QuestionRepository questionRepository;
+    private final AnswerRepositroy answerRepositroy;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final Path fileStorageLocation;
@@ -39,10 +43,17 @@ public class MemberService {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
 
     @Autowired
-    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder passwordEncoder, @Value("${file.upload-dir}") String uploadDir) {
+    public MemberService(MemberRepository memberRepository,
+                         QuestionRepository questionRepository,
+                         AnswerRepositroy answerRepositroy,
+                         BCryptPasswordEncoder passwordEncoder,
+                         @Value("${file.upload-dir}") String uploadDir) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+        this.questionRepository = questionRepository;
+        this.answerRepositroy = answerRepositroy;
+
         try {
             Files.createDirectories(this.fileStorageLocation); // 파일 저장 디렉토리가 없으면 생성
         } catch (Exception e) {
@@ -293,5 +304,17 @@ public class MemberService {
         memberRepository.save(member.toBuilder()
             .memberRep(currRep)
             .build());
+    }
+
+    // 회원이 작성한 질문수 반환 메서드
+    public long getQuestionCount(final String idx) {
+        MemberEntity member = findByMemberId(idx);
+        return questionRepository.countAllByMembersEquals(member);
+    }
+
+    // 회원이 작성한 답변수 반환 메서드
+    public long getAnswerCount(final String idx) {
+        MemberEntity member = findByMemberId(idx);
+        return answerRepositroy.countAllByMembersEquals(member);
     }
 }

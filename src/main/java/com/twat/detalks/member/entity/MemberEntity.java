@@ -67,13 +67,13 @@ public class MemberEntity {
     @Builder.Default
     private Integer memberRep = 1;
 
-    @Column(name = "member_q_count", nullable = false)
-    @Builder.Default
-    private Integer memberQcount = 0;
-
-    @Column(name = "member_a_count", nullable = false)
-    @Builder.Default
-    private Integer memberAcount = 0;
+    // @Column(name = "member_q_count", nullable = false)
+    // @Builder.Default
+    // private Integer memberQcount = 0;
+    //
+    // @Column(name = "member_a_count", nullable = false)
+    // @Builder.Default
+    // private Integer memberAcount = 0;
 
     @Column(name = "member_created", nullable = false)
     @Builder.Default
@@ -115,34 +115,5 @@ public class MemberEntity {
     @Builder.Default
     private Social memberSocial = Social.NONE;
 
-
-    @Override
-    public String toString() {
-        return "MemberEntity{" +
-            "memberIdx=" + memberIdx +
-            ", memberEmail='" + memberEmail + '\'' +
-            ", memberPwd='" + memberPwd + '\'' +
-            ", memberName='" + memberName + '\'' +
-            ", memberIsDeleted=" + memberIsDeleted +
-            ", memberReason='" + memberReason + '\'' +
-            ", memberState=" + memberState +
-            ", memberImg='" + memberImg + '\'' +
-            ", memberSummary='" + memberSummary + '\'' +
-            ", memberAbout='" + memberAbout + '\'' +
-            ", memberRep=" + memberRep +
-            ", memberSocial=" + memberSocial +
-            ", memberQcount=" + memberQcount +
-            ", memberAcount=" + memberAcount +
-            ", memberCreated=" + memberCreated +
-            ", memberVisited=" + memberVisited +
-            ", memberUpdated=" + memberUpdated +
-            ", memberDeleted=" + memberDeleted +
-            ", questionList=" + questionList +
-            ", answerList=" + answerList +
-            ", questionVoteList=" + questionVoteList +
-            ", answerVoteList=" + answerVoteList +
-            ", memberRole=" + memberRole +
-            '}';
-    }
 }
 

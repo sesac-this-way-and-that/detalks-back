@@ -8,7 +8,6 @@ import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.oauth2.dto.GoogleResponse;
 import com.twat.detalks.oauth2.dto.OAuth2Response;
 import com.twat.detalks.oauth2.dto.UserDTO;
-import com.twat.detalks.oauth2.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -37,7 +36,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.warn("oAuth2User :: {}", oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = null;
+        OAuth2Response oAuth2Response;
         if (registrationId.equals("google")) {
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());

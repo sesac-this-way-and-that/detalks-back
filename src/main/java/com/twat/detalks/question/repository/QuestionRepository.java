@@ -1,6 +1,7 @@
 package com.twat.detalks.question.repository;
 
 import com.twat.detalks.answer.entity.AnswerEntity;
+import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -25,4 +26,6 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Long>,
     @Modifying
     @Query("UPDATE QuestionEntity q SET q.viewCount = q.viewCount + 1 WHERE q.id = :questionId")
     void updateViewCount(@Param("questionId") Long questionId);
+
+    long countAllByMembersEquals(MemberEntity members);
 }

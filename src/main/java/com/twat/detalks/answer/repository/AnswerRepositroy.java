@@ -16,5 +16,5 @@ public interface AnswerRepositroy extends JpaRepository<AnswerEntity, Long> {
 
     List<AnswerEntity> findByQuestions_QuestionId(Long questionId);
 
-    List<AnswerEntity> findByQuestions_QuestionIdOrderByCreatedAtDesc(Long questionId);
+    long countAllByMembersEquals(MemberEntity members);
 }

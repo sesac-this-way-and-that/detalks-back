@@ -1,5 +1,6 @@
 package com.twat.detalks.question.controller;
 
+import com.twat.detalks.member.dto.ResDto;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.QuestionCreateDto;
 import com.twat.detalks.question.dto.QuestionDto;
@@ -64,10 +65,12 @@ public class QuestionController {
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ResErrorDto.builder()
-                            .error(e.getMessage())
-                            .build()
-            );
+                    ResDto.builder()
+                            .msg("질문 추가 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
 
@@ -85,8 +88,12 @@ public class QuestionController {
             return ResponseEntity.ok(updatedQuestion); }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ResErrorDto.builder().error(e.getMessage()).build()
-            );
+                    ResDto.builder()
+                            .msg("질문 수정 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
 
@@ -105,8 +112,12 @@ public class QuestionController {
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ResErrorDto.builder().error(e.getMessage()).build()
-            );
+                    ResDto.builder()
+                            .msg("질문 삭제 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
 

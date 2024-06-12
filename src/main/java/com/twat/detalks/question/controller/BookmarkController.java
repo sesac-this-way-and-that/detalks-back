@@ -1,5 +1,6 @@
 package com.twat.detalks.question.controller;
 
+import com.twat.detalks.member.dto.ResDto;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.BookmarkedQuestionDto;
 import com.twat.detalks.question.dto.QuestionDto;
@@ -27,30 +28,51 @@ public class BookmarkController {
     // 북마크 추가
     // POST /api/bookmarks/{questionId}
     @PostMapping("/{questionId}")
-    public ResponseEntity<Void> addBookmark(
+    public ResponseEntity<ResDto> addBookmark(
             @PathVariable Long questionId,
             @AuthenticationPrincipal CustomUserDetail user) {
         if (user != null) {
             Long memberIdx = Long.valueOf(user.getUserIdx());
             bookmarkService.addBookmark(memberIdx, questionId);
-            return ResponseEntity.ok().build();
+            // return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(
+                    ResDto.builder()
+                            .msg("북마크 추가 성공")
+                            .result(true)
+                            .status("200")
+                            .build());
         } else {
-            return ResponseEntity.status(401).build();  // Unauthorized
+            return ResponseEntity.status(401).body(
+                    ResDto.builder()
+                    .msg("로그인을 해주세요.")
+                    .result(false)
+                    .status("401")
+                    .build());
         }
     }
 
     // 북마크 삭제
     // DELETE /api/bookmarks/{questionId}
     @DeleteMapping("/{questionId}")
-    public ResponseEntity<Void> removeBookmark(
+    public ResponseEntity<ResDto> removeBookmark(
             @PathVariable Long questionId,
             @AuthenticationPrincipal CustomUserDetail user) {
         if (user != null) {
             Long memberIdx = Long.valueOf(user.getUserIdx());
             bookmarkService.removeBookmark(memberIdx, questionId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(
+                    ResDto.builder()
+                            .msg("북마크 삭제 성공")
+                            .result(true)
+                            .status("200")
+                            .build());
         } else {
-            return ResponseEntity.status(401).build();  // Unauthorized
+            return ResponseEntity.status(401).body(
+                    ResDto.builder()
+                            .msg("로그인을 해주세요.")
+                            .result(false)
+                            .status("401")
+                            .build());
         }
     }
 

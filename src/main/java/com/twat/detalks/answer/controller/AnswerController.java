@@ -3,6 +3,7 @@ package com.twat.detalks.answer.controller;
 import com.twat.detalks.answer.dto.AnswerCreateDto;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.service.AnswerService;
+import com.twat.detalks.member.dto.ResDto;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.ResErrorDto;
 import jakarta.validation.Valid;
@@ -34,8 +35,12 @@ public class AnswerController {
             return ResponseEntity.ok(newAnswer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ResErrorDto.builder().error(e.getMessage()).build()
-            );
+                    ResDto.builder()
+                            .msg("답변 생성 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
 
@@ -52,8 +57,12 @@ public class AnswerController {
             return ResponseEntity.ok(updatedAnswer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ResErrorDto.builder().error(e.getMessage()).build()
-            );
+                    ResDto.builder()
+                            .msg("답변 수정 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
 
@@ -66,11 +75,20 @@ public class AnswerController {
         String memberIdx = user.getUserIdx();
         try {
             answerService.deleteAnswer(memberIdx, answerId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().body(
+                    ResDto.builder()
+                            .msg("답변 삭제 성공")
+                            .result(true)
+                            .status("200")
+                            .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ResErrorDto.builder().error(e.getMessage()).build()
-            );
+                    ResDto.builder()
+                            .msg("답변 삭제 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
 
@@ -84,13 +102,20 @@ public class AnswerController {
         String memberIdx = user.getUserIdx();
         try {
             answerService.selectAnswer(questionId, answerId, Long.parseLong(memberIdx));
-            String msg = "답변을 채택하였습니다.";
-            return ResponseEntity.ok(msg);
+            return ResponseEntity.ok().body(
+                    ResDto.builder()
+                            .msg("답변 채택 성공")
+                            .result(true)
+                            .status("200")
+                            .build());
         } catch (Exception e) {
-            log.error("Error selecting answer: {}", e.getMessage());
             return ResponseEntity.badRequest().body(
-                    ResErrorDto.builder().error(e.getMessage()).build()
-            );
+                    ResDto.builder()
+                            .msg("답변 채택 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
 }

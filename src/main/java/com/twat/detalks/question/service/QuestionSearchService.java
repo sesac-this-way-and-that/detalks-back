@@ -11,6 +11,9 @@ import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
 import com.twat.detalks.tag.entity.QuestionTagEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,9 @@ public class QuestionSearchService {
     private final QuestionRepository questionRepository;
     private final AnswerRepositroy answerRepository;
 
-    public List<QuestionDto> searchQuestions(String title, String content, String tag) {
+    public Page<QuestionDto> searchQuestions(String title, String content, String tag, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
         Specification<QuestionEntity> spec = Specification.where(null);
 
         if (title != null && !title.isEmpty()) {
@@ -36,8 +41,8 @@ public class QuestionSearchService {
             spec = spec.and(QuestionSpecification.hasTag(tag));
         }
 
-        List<QuestionEntity> questions = questionRepository.findAll(spec);
-        return questions.stream().map(this::convertToDto).collect(Collectors.toList());
+        Page<QuestionEntity> page = questionRepository.findAll(spec, pageable);
+        return page.map(this::convertToDto);
     }
 
     private QuestionDto convertToDto(QuestionEntity question) {

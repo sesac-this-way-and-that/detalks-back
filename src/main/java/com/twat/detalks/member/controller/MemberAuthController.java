@@ -132,6 +132,9 @@ public class MemberAuthController {
                 .build());
     }
 
+
+    // GET http://localhost:8080/api/member/auth/header
+    // 소셜 로그인 토큰저장 쿠키 -> 헤더 변경 API
     @GetMapping("/auth/header")
     public ResponseEntity<?> changeHeader(
         HttpServletRequest request

@@ -245,7 +245,7 @@ public class MemberService {
         }
     }
 
-    // 평판 수정
+    // 바운티 적용
     private void updateMemberReputation(MemberEntity member, int bounty) {
         int updatedRep = member.getMemberRep() - bounty;
         if (updatedRep < 1) {
@@ -254,4 +254,44 @@ public class MemberService {
         memberRepository.save(member.toBuilder().memberRep(updatedRep).build());
     }
 
+
+    // 평판 증감
+    // 평판 점수 증가표
+    // 질문 / 답변 작성시 + 5 , action = "WRITE"
+    // 답변 채택시 + 20 , action = "ACCEPTED"
+    // 질문 / 답변 투표 UP + 10 , action = "VOTE_UP"
+    // 질문 / 투표 DOWN - 5 , action = "VOTE_DOWN"
+    // 평판은 1이하로 떨어지지 않음
+    // 반환값 boolean
+    public void actionMemberReputation(final String idx, final String action) {
+        MemberEntity member = findByMemberId(idx);
+        int currRep = member.getMemberRep();
+
+        switch (action) {
+            case "WRITE":
+                currRep += 5;
+                break;
+            case "ACCEPTED":
+                currRep += 20;
+                break;
+            case "VOTE_UP":
+                currRep += 10;
+                break;
+            case "VOTE_DOWN":
+                currRep -= 10;
+                break;
+            default:
+                log.warn("알수없는 액션 타입 {}", action);
+                return;
+        }
+
+        // 평판 점수 하한선
+        if (currRep < 1) {
+            currRep = 1;
+        }
+
+        memberRepository.save(member.toBuilder()
+            .memberRep(currRep)
+            .build());
+    }
 }

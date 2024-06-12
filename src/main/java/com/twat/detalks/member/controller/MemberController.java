@@ -52,7 +52,7 @@ public class MemberController {
     public ResponseEntity<?> signIn(
         @RequestParam String email, @RequestParam String pwd) {
         MemberEntity member = memberService.getByCredentials(email, pwd);
-        String token = jwtUtil.createJwtNone(member,60*60*24*1000L);
+        String token = jwtUtil.createJwtNone(member, 60 * 60 * 24 * 1000L);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("로그인 성공")
@@ -68,6 +68,8 @@ public class MemberController {
     @GetMapping("/{idx}")
     public ResponseEntity<?> getMember(@PathVariable String idx) {
         MemberEntity result = memberService.findByMemberId(idx);
+        long questionCount = memberService.getQuestionCount(idx);
+        long answerCount = memberService.getAnswerCount(idx);
         MemberReadDto data = MemberReadDto.builder()
             .name(result.getMemberName())
             .state(result.getMemberState())
@@ -75,8 +77,8 @@ public class MemberController {
             .summary(result.getMemberSummary())
             .about(result.getMemberAbout())
             .rep(result.getMemberRep())
-            .qCount(result.getMemberQcount())
-            .aCount(result.getMemberAcount())
+            .qCount(questionCount)
+            .aCount(answerCount)
             .created(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .visited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .build();

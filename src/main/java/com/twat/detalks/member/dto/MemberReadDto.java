@@ -19,10 +19,11 @@ public class MemberReadDto {
     private String about;
     private Integer rep;
     private Social social;
-    private Integer qCount;
-    private Integer aCount;
+    private Long qCount;
+    private Long aCount;
     private String created;
     private String visited;
     private String updated;
     private String role;
+
 }

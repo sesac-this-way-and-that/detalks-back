@@ -13,8 +13,8 @@ import java.util.Optional;
 public interface AnswerRepositroy extends JpaRepository<AnswerEntity, Long> {
     Optional<AnswerEntity> findByQuestionsAndMembers(QuestionEntity question, MemberEntity member);
     List<AnswerEntity> findByMembers_MemberIdx(Long memberIdx);
-
     List<AnswerEntity> findByQuestions_QuestionId(Long questionId);
-
+  
     long countAllByMembersEquals(MemberEntity members);
+
 }

@@ -41,6 +41,8 @@ public class MemberAuthController {
     @GetMapping("/auth")
     public ResponseEntity<?> getMemberAuth(@AuthenticationPrincipal CustomUserDetail user) {
         MemberEntity result = memberService.findByMemberId(user.getUserIdx());
+        long questionCount = memberService.getQuestionCount(user.getUserIdx());
+        long answerCount = memberService.getAnswerCount(user.getUserIdx());
         MemberReadDto data = MemberReadDto.builder()
             .idx(result.getMemberIdx())
             .email(result.getMemberEmail())
@@ -53,8 +55,8 @@ public class MemberAuthController {
             .about(result.getMemberAbout())
             .rep(result.getMemberRep())
             .social(result.getMemberSocial())
-            .qCount(result.getMemberQcount())
-            .aCount(result.getMemberAcount())
+            .qCount(questionCount)
+            .aCount(answerCount)
             .created(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .visited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .role(result.getMemberRole().getKey())

@@ -22,7 +22,8 @@ public class QuestionDto {
     private Boolean questionState;
     private Boolean isSolved;
     private MemberQuestionDto author;
+    private Boolean bookmarkState;
+    private int answerCount; // 추가 answerList의 인덱스 총 개수
     private List<AnswerDto> answerList;
     private List<String> tagNameList;
-    private Boolean bookmarkState;
 }

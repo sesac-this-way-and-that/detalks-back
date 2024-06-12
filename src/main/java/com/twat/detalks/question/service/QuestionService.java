@@ -77,11 +77,6 @@ public class QuestionService {
         QuestionEntity findQuestion = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
-        // Boolean bookmarkState = false;
-        // if (memberIdx != null) {
-        //     bookmarkState = bookmarkRepository.existsByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
-        // }
-
         // 북마크 상태 업데이트
         Boolean bookmarkState = bookmarkService.updateBookmarkState(memberIdx, questionId);
 
@@ -232,6 +227,7 @@ public class QuestionService {
                         questionEntity.getMembers().getMemberIdx(),
                         questionEntity.getMembers().getMemberName()))
                 .answerList(answerDtoList)
+                .answerCount(answerDtoList.size())
                 .tagNameList(tagNameList)
                 .bookmarkState(bookmarkState)
                 .build();

@@ -11,7 +11,6 @@ import com.twat.detalks.oauth2.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +132,9 @@ public class MemberAuthController {
                 .build());
     }
 
+
+    // GET http://localhost:8080/api/member/auth/header
+    // 소셜 로그인 토큰저장 쿠키 -> 헤더 변경 API
     @GetMapping("/auth/header")
     public ResponseEntity<?> changeHeader(
         HttpServletRequest request

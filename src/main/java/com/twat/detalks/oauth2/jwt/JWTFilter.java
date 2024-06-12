@@ -61,7 +61,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             // 그렇지 않을 경우 -> 예외 발생
-            log.warn("no Authentication {}", e.getMessage());
+            log.warn("인증 오류 예외 발생 {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

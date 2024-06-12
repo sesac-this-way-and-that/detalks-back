@@ -96,7 +96,6 @@ public class MemberService {
             .memberName(memberDTO.getName())
             .memberImg("default" + (int) (Math.random() * 5 + 1) + ".png")
             .build();
-        log.warn("test toString {}",test.toString());
         memberRepository.save(test);
     }
 
@@ -126,7 +125,6 @@ public class MemberService {
             .memberVisited(LocalDateTime.now())
             .build();
 
-        log.warn("login {}", updateVisited.getMemberIdx());
         memberRepository.save(updateVisited);
         return updateVisited;
     }
@@ -147,14 +145,13 @@ public class MemberService {
                 // 실제 저장되는 경로 설정
                 String fullPath = this.fileStorageLocation.resolve(UUIDFileName).toString();
 
-                log.warn("fullPath {}", fullPath);
 
                 // 파일 생성
                 img.transferTo(new File(fullPath));
                 dbFileName = UUIDFileName; // 업로드 된 이미지로 변경
 
             } catch (IOException e) {
-                throw new RuntimeException("이미지 저장에 실패하였습니다.", e);
+                throw new RuntimeException("이미지 저장에 실패하였습니다.");
             }
         }
 
@@ -169,7 +166,6 @@ public class MemberService {
 
         memberRepository.save(updateMember);
     }
-
 
 
     // 회원 탈퇴
@@ -221,4 +217,81 @@ public class MemberService {
         memberRepository.save(updateMember);
     }
 
+    // 바운티 설정
+    public boolean setBounty(final String bounty, final String idx) {
+        try {
+            int intBounty = parseBounty(bounty);
+            validateBounty(intBounty);
+
+            MemberEntity member = findByMemberId(idx);
+            updateMemberReputation(member, intBounty);
+
+            return true;
+        } catch (IllegalArgumentException e) {
+            log.warn("setBounty 예외발생 {}", e.getMessage());
+            return false;
+        }
+    }
+
+    // 문자열 바운티 정수형 파싱  메서드
+    private int parseBounty(String bounty) {
+        return Integer.parseInt(bounty);
+    }
+
+    // 바운티 음수 예외처리 메서드
+    private void validateBounty(int bounty) {
+        if (bounty < 0) {
+            throw new IllegalArgumentException("바운티는 음수가 될 수 없습니다 :: " + bounty);
+        }
+    }
+
+    // 바운티 적용
+    private void updateMemberReputation(MemberEntity member, int bounty) {
+        int updatedRep = member.getMemberRep() - bounty;
+        if (updatedRep < 1) {
+            throw new IllegalArgumentException("현재 평판 점수보다 높게 바운티를 설정할 수 없습니다.");
+        }
+        memberRepository.save(member.toBuilder().memberRep(updatedRep).build());
+    }
+
+
+    // 평판 증감
+    // 평판 점수 증가표
+    // 질문 / 답변 작성시 + 5 , action = "WRITE"
+    // 답변 채택시 + 20 , action = "ACCEPTED"
+    // 질문 / 답변 투표 UP + 10 , action = "VOTE_UP"
+    // 질문 / 투표 DOWN - 5 , action = "VOTE_DOWN"
+    // 평판은 1이하로 떨어지지 않음
+    // 반환값 boolean
+    public void actionMemberReputation(final String idx, final String action) {
+        MemberEntity member = findByMemberId(idx);
+        int currRep = member.getMemberRep();
+
+        switch (action) {
+            case "WRITE":
+                currRep += 5;
+                break;
+            case "ACCEPTED":
+                currRep += 20;
+                break;
+            case "VOTE_UP":
+                currRep += 10;
+                break;
+            case "VOTE_DOWN":
+                currRep -= 10;
+                break;
+            default:
+                log.warn("알수없는 액션 타입 {}", action);
+                return;
+        }
+
+        // 평판 점수 하한선
+        if (currRep < 1) {
+            currRep = 1;
+        }
+
+        memberRepository.save(member.toBuilder()
+            .memberRep(currRep)
+            .build());
+    }
 }

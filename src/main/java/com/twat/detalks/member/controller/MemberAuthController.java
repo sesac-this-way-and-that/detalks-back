@@ -1,9 +1,6 @@
 package com.twat.detalks.member.controller;
 
-import com.twat.detalks.member.dto.MemberDeleteDto;
-import com.twat.detalks.member.dto.MemberReadDto;
-import com.twat.detalks.member.dto.MemberUpdateDto;
-import com.twat.detalks.member.dto.ResDto;
+import com.twat.detalks.member.dto.*;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
@@ -105,7 +102,7 @@ public class MemberAuthController {
     // 폼전송
     // 비밀번호(필수), 탈퇴 사유
     @DeleteMapping("/auth")
-    public ResponseEntity<?> deleteMemberProfile(@AuthenticationPrincipal CustomUserDetail user, @Valid MemberDeleteDto memberDeleteDto) {
+    public ResponseEntity<?> deleteMemberAuth(@AuthenticationPrincipal CustomUserDetail user, @Valid MemberDeleteDto memberDeleteDto) {
         memberService.deleteMember(user.getUserIdx(), memberDeleteDto);
         return ResponseEntity.ok().body(
             ResDto.builder()
@@ -114,6 +111,22 @@ public class MemberAuthController {
                 .status("200")
                 .build());
     }
+
+    // DELETE http://localhost:8080/api/member/auth/social
+    // 회원탈퇴(소셜 회원)
+    // 폼전송
+    // 탈퇴 사유
+    @DeleteMapping("/auth/social")
+    public ResponseEntity<?> deleteSocialMemberAuth(@AuthenticationPrincipal CustomUserDetail user, @Valid SocialMemberDeleteDto socialMemberDeleteDto) {
+        memberService.deleteSocialMember(user.getUserIdx(), socialMemberDeleteDto);
+        return ResponseEntity.ok().body(
+            ResDto.builder()
+                .msg("회원 탈퇴 성공")
+                .result(true)
+                .status("200")
+                .build());
+    }
+
 
     // PATCH http://localhost:8080/api/member/auth/password
     // 비밀번호변경

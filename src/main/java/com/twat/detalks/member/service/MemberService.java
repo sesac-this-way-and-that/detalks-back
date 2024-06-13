@@ -4,6 +4,7 @@ import com.twat.detalks.answer.repository.AnswerRepositroy;
 import com.twat.detalks.member.dto.MemberDeleteDto;
 import com.twat.detalks.member.dto.MemberCreateDto;
 import com.twat.detalks.member.dto.MemberUpdateDto;
+import com.twat.detalks.member.dto.SocialMemberDeleteDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.repository.MemberRepository;
 import com.twat.detalks.member.utils.FileNameUtils;
@@ -183,6 +184,10 @@ public class MemberService {
     public void deleteMember(final String idx, final MemberDeleteDto memberDeleteDto) {
         // 아이디로 회원 조회
         MemberEntity existMember = findByMemberId(idx);
+        // 일반 회원 검증
+        if(!existMember.getMemberSocial().equals(Social.NONE)){
+            throw new IllegalArgumentException("일반 회원 전용 탈퇴 기능입니다.");
+        }
         // 비밀번호 검증
         checkPassword(memberDeleteDto.getPwd(), existMember.getMemberPwd());
         // 논리 삭제
@@ -190,6 +195,24 @@ public class MemberService {
             .memberIsDeleted(true)
             .memberDeleted(LocalDateTime.now())
             .memberReason(memberDeleteDto.getReason())
+            .build();
+
+        memberRepository.save(deleteMember);
+    }
+
+    // 소셜회원 탈퇴
+    public void deleteSocialMember(final String idx, final SocialMemberDeleteDto socialMemberDeleteDto) {
+        // 아이디로 회원 조회
+        MemberEntity existMember = findByMemberId(idx);
+        // 소셜회원 검증
+        if(existMember.getMemberSocial().equals(Social.NONE)){
+            throw new IllegalArgumentException("소셜 회원 전용 탈퇴 기능입니다.");
+        }
+        // 논리 삭제
+        MemberEntity deleteMember = existMember.toBuilder()
+            .memberIsDeleted(true)
+            .memberDeleted(LocalDateTime.now())
+            .memberReason(socialMemberDeleteDto.getReason())
             .build();
 
         memberRepository.save(deleteMember);

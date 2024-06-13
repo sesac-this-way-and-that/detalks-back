@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +27,11 @@ public class QuestionSearchService {
     private final QuestionRepository questionRepository;
     private final AnswerRepositroy answerRepository;
 
-    public Page<QuestionDto> searchQuestions(String title, String content, String tag, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+    public Page<QuestionDto> searchQuestions(String title, String content, String tag, int pageNo, int pageSize, String sortBy) {
+        // 기본 정렬 : 최신순, 그 외 경우에 투표순
+        // Sort sort = "voteCount".equals(sortBy) ? Sort.by(Sort.Direction.DESC, "voteCount") : Sort.by(Sort.Direction.DESC, sortBy);
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Specification<QuestionEntity> spec = Specification.where(null);
 

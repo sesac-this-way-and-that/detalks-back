@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -32,22 +34,13 @@ public class QuestionController {
     @GetMapping("")
     public ResponseEntity<?> getQuestions(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        // List<QuestionDto> questions = questionService.getQuestions();
-        // if (questions.isEmpty()) {
-        //     ResDto response = ResDto.builder()
-        //             .result(false)
-        //             .msg("질문이 없습니다.")
-        //             .data(null)
-        //             .status("404")
-        //             .errorType("No Results Found")
-        //             .token(null)
-        //             .build();
-        //
-        //     return ResponseEntity.status(404).body(response);
-        // }
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy) {
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<QuestionDto> questionsPage = questionService.getQuestions(PageRequest.of(page, size));
+
+        Page<QuestionDto> questionsPage = questionService.getQuestions(pageable);
         if (questionsPage.isEmpty()) {
             ResDto response = ResDto.builder()
                     .result(false)
@@ -61,18 +54,10 @@ public class QuestionController {
             return ResponseEntity.status(404).body(response);
         }
 
-
-        // ResDto response = ResDto.builder()
-        //         .result(true)
-        //         .msg("질문 리스트 조회 성공")
-        //         .data(questions)
-        //         .status("200")
-        //         .token(null)
-        //         .build();
         ResDto response = ResDto.builder()
                 .result(true)
                 .msg("질문 리스트 조회 성공")
-                .data(questionsPage)
+                .data(questionsPage) // 만약 리스트 content만 전송 원한다면 getContent() 추가
                 .status("200")
                 .token(null)
                 .build();
@@ -223,15 +208,18 @@ public class QuestionController {
 
     // 검색 기능 - title, content, tag
     // GET /api/questions/search
+    // 예시 ) 제목 투표순 정렬
+    // GET /api/questions/search?title=example&sortBy=voteSum&page=0&size=10
     @GetMapping("/search")
     public ResponseEntity<?> searchQuestions(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content,
             @RequestParam(required = false) String tag,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy) {
 
-        Page<QuestionDto> questionsPage = questionSearchService.searchQuestions(title, content, tag, page, size);
+        Page<QuestionDto> questionsPage = questionSearchService.searchQuestions(title, content, tag, page, size, sortBy);
         if (questionsPage.isEmpty()) {
             ResDto response = ResDto.builder()
                     .result(false)

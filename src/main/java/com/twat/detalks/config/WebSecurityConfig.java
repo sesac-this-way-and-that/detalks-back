@@ -4,7 +4,6 @@ import com.twat.detalks.oauth2.jwt.JWTFilter;
 import com.twat.detalks.oauth2.service.CustomOAuth2UserService;
 import com.twat.detalks.oauth2.CustomSuccessHandler;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -19,18 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-
-    // private final JwtAuthFilter jwtAuthFilter;
-    // public WebSecurityConfig(JwtAuthFilter jwtAuthFilter, CustomOAuth2UserService customOAuth2UserService) {
-    //     this.jwtAuthFilter = jwtAuthFilter;
-    //     this.customOAuth2UserService = customOAuth2UserService;
-    // }
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
@@ -51,24 +43,20 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+            .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
 
-                @Override
-                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration configuration = new CorsConfiguration();
 
-                    CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                configuration.setAllowedMethods(Collections.singletonList("*"));
+                configuration.setAllowCredentials(true);
+                configuration.setAllowedHeaders(Collections.singletonList("*"));
+                configuration.setMaxAge(3600L);
 
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                    configuration.setAllowedMethods(Collections.singletonList("*"));
-                    configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Collections.singletonList("*"));
-                    configuration.setMaxAge(3600L);
+                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
-                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
-                    return configuration;
-                }
+                return configuration;
             }));
         //csrf disable
         http
@@ -114,20 +102,5 @@ public class WebSecurityConfig {
         return (web) -> web.ignoring()
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
-
-    // @Bean
-    // public CorsConfigurationSource corsConfigurationSource() {
-    //     CorsConfiguration config = new CorsConfiguration();
-    //
-    //     config.setAllowCredentials(true);
-    //     config.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 원본에서의 요청을 허용하는 설정
-    //     config.setAllowedMethods(Arrays.asList("HEAD", "POST", "PATCH", "DELETE", "PUT", "GET"));
-    //     config.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더의 요청을 허용
-    //
-    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    //     source.registerCorsConfiguration("/**", config);
-    //
-    //     return source;
-    // }
 
 }

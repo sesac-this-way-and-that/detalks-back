@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/member")
@@ -40,9 +41,11 @@ public class MemberAuthController {
     // 회원정보조회 (로그인 유저)
     @GetMapping("/auth")
     public ResponseEntity<?> getMemberAuth(@AuthenticationPrincipal CustomUserDetail user) {
-        MemberEntity result = memberService.findByMemberId(user.getUserIdx());
-        long questionCount = memberService.getQuestionCount(user.getUserIdx());
-        long answerCount = memberService.getAnswerCount(user.getUserIdx());
+        String idx = user.getUserIdx();
+        MemberEntity result = memberService.findByMemberId(idx);
+        long questionCount = memberService.getQuestionCount(idx);
+        long answerCount = memberService.getAnswerCount(idx);
+        List<String> tags = memberService.getTags(idx);
         MemberReadDto data = MemberReadDto.builder()
             .idx(result.getMemberIdx())
             .email(result.getMemberEmail())
@@ -57,6 +60,7 @@ public class MemberAuthController {
             .social(result.getMemberSocial())
             .qCount(questionCount)
             .aCount(answerCount)
+            .tags(tags)
             .created(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .visited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .role(result.getMemberRole().getKey())

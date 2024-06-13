@@ -215,11 +215,12 @@ public class QuestionController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content,
             @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy) {
 
-        Page<QuestionDto> questionsPage = questionSearchService.searchQuestions(title, content, tag, page, size, sortBy);
+        Page<QuestionDto> questionsPage = questionSearchService.searchQuestions(title, content, tag, name, page, size, sortBy);
         if (questionsPage.isEmpty()) {
             ResDto response = ResDto.builder()
                     .result(false)

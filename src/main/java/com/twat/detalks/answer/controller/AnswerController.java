@@ -28,11 +28,19 @@ public class AnswerController {
     public ResponseEntity<?> createAnswer(
             @AuthenticationPrincipal CustomUserDetail user,
             @PathVariable Long questionId,
-             @RequestBody AnswerCreateDto answerCreateDto) {
+            @RequestBody AnswerCreateDto answerCreateDto) {
         String memberIdx = user.getUserIdx();
         try {
             AnswerEntity newAnswer = answerService.createAnswer(memberIdx, questionId, answerCreateDto);
-            return ResponseEntity.ok(newAnswer);
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("질문 조회 성공")
+                    .data(newAnswer)
+                    .status("200")
+                    .token(String.valueOf(memberIdx))
+                    .build();
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResDto.builder()
@@ -54,7 +62,15 @@ public class AnswerController {
         String memberIdx = user.getUserIdx();
         try {
             AnswerEntity updatedAnswer = answerService.updateAnswer(memberIdx, answerId, answerCreateDto);
-            return ResponseEntity.ok(updatedAnswer);
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg("질문 조회 성공")
+                    .data(updatedAnswer)
+                    .status("200")
+                    .token(String.valueOf(memberIdx))
+                    .build();
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResDto.builder()

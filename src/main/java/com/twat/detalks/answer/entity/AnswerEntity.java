@@ -55,7 +55,7 @@ public class AnswerEntity {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "member_idx", nullable = false)  // 차후에 탈퇴 회원 관리시 nullable을 true로 바꿀 필요있음
+    @JoinColumn(name = "member_idx", nullable = true)  // 차후에 탈퇴 회원 관리시 nullable을 true로 바꿀 필요있음
     private MemberEntity members;
 
     @OneToMany(mappedBy = "answer")

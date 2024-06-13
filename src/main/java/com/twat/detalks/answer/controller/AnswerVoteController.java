@@ -30,7 +30,14 @@ public class AnswerVoteController {
                 msg = "답변에 찬성했습니다.";
             }
             else msg = "답변에 반대 했습니다.";
-            return ResponseEntity.ok(msg);
+            ResDto response = ResDto.builder()
+                    .result(true)
+                    .msg(msg)
+                    .status("200")
+                    .token(memberIdx)
+                    .build();
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     ResDto.builder()

@@ -58,8 +58,6 @@ public class QuestionService {
     @Autowired
     private TagService tagService;
 
-    @Autowired
-    private BookmarkService bookmarkService;
 
     // 질문 리스트 조회
     public Page<QuestionDto> getQuestions(Pageable pageable) {
@@ -73,7 +71,7 @@ public class QuestionService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
         // 북마크 상태 업데이트
-        Boolean bookmarkState = bookmarkService.updateBookmarkState(memberIdx, questionId);
+        Boolean bookmarkState = updateBookmarkState(memberIdx, questionId);
 
         // 조회수 업데이트
         questionRepository.updateViewCount(questionId);
@@ -182,6 +180,20 @@ public class QuestionService {
     // 회원 별로 질문 리스트 조회
     public List<QuestionEntity> getQuestionsByMember(Long memberIdx) {
         return questionRepository.findByMembers_MemberIdx(memberIdx);
+    }
+
+
+    // 상세 질문 조회 시 북마크 상태 업데이트
+    public Boolean updateBookmarkState(Long memberIdx, Long questionId) {
+        Boolean bookmarkState = false;
+        if (memberIdx != null) {
+            BookmarkEntity bookmark = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId)
+                    .orElse(null);
+            if (bookmark != null) {
+                bookmarkState = bookmark.getBookmarkState();
+            }
+        }
+        return bookmarkState;
     }
 
     // 질문 entity를 dto로 변환

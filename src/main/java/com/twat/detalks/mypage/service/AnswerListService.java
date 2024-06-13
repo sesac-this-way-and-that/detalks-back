@@ -7,6 +7,10 @@ import com.twat.detalks.mypage.dto.QuestionListDto;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +21,10 @@ public class AnswerListService {
     @Autowired
     private AnswerRepositroy answerRepositroy;
 
-    public List<AnswerListDto> getAnswersByMemberId(Long memberIdx) {
-        List<AnswerEntity> answers = answerRepositroy.findByMembers_MemberIdx(memberIdx);
-        return answers.stream().map(this::convertToDto).collect(Collectors.toList());
+    public Page<AnswerListDto> getAnswersByMemberId(Long memberIdx, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+        Page<AnswerEntity> answersPage = answerRepositroy.findByMembers_MemberIdxAndIsSelectedFalse(memberIdx, pageable);
+        return answersPage.map(this::convertToDto);
     }
 
     private AnswerListDto convertToDto(AnswerEntity answer) {

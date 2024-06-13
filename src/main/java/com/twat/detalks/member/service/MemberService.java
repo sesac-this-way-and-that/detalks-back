@@ -4,7 +4,6 @@ import com.twat.detalks.answer.repository.AnswerRepositroy;
 import com.twat.detalks.member.dto.MemberDeleteDto;
 import com.twat.detalks.member.dto.MemberCreateDto;
 import com.twat.detalks.member.dto.MemberUpdateDto;
-import com.twat.detalks.member.dto.SocialMemberDeleteDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.repository.MemberRepository;
 import com.twat.detalks.member.utils.FileNameUtils;
@@ -25,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -185,7 +185,7 @@ public class MemberService {
         // 아이디로 회원 조회
         MemberEntity existMember = findByMemberId(idx);
         // 일반 회원 검증
-        if(!existMember.getMemberSocial().equals(Social.NONE)){
+        if (!existMember.getMemberSocial().equals(Social.NONE)) {
             throw new IllegalArgumentException("일반 회원 전용 탈퇴 기능입니다.");
         }
         // 비밀번호 검증
@@ -201,18 +201,18 @@ public class MemberService {
     }
 
     // 소셜회원 탈퇴
-    public void deleteSocialMember(final String idx, final SocialMemberDeleteDto socialMemberDeleteDto) {
+    public void deleteSocialMember(final String idx, final String reason) {
         // 아이디로 회원 조회
         MemberEntity existMember = findByMemberId(idx);
         // 소셜회원 검증
-        if(existMember.getMemberSocial().equals(Social.NONE)){
+        if (existMember.getMemberSocial().equals(Social.NONE)) {
             throw new IllegalArgumentException("소셜 회원 전용 탈퇴 기능입니다.");
         }
         // 논리 삭제
         MemberEntity deleteMember = existMember.toBuilder()
             .memberIsDeleted(true)
             .memberDeleted(LocalDateTime.now())
-            .memberReason(socialMemberDeleteDto.getReason())
+            .memberReason(reason)
             .build();
 
         memberRepository.save(deleteMember);
@@ -339,5 +339,25 @@ public class MemberService {
     public long getAnswerCount(final String idx) {
         MemberEntity member = findByMemberId(idx);
         return answerRepositroy.countAllByMembersEquals(member);
+    }
+
+    // 회원 이메일로 조회 (비밀번호 찾기용)
+    public MemberEntity findByMemberEmail(final String email) {
+        MemberEntity member = memberRepository.findByMemberEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        if(!member.getMemberSocial().equals(Social.NONE)) {
+            throw new IllegalArgumentException("소셜 회원은 비밀번호 찾기가 불가능 합니다.");
+        }
+
+        return member;
+    }
+
+    // 비밀번호 초기화
+    public void initPassword(final MemberEntity member, final String pwd) {
+        MemberEntity updateMember = member.toBuilder()
+            .memberPwd(passwordEncoder.encode(pwd))
+            .build();
+        memberRepository.save(updateMember);
     }
 }

@@ -4,10 +4,10 @@ import com.twat.detalks.member.vo.Social;
 import lombok.Builder;
 import lombok.Getter;
 
-
 @Getter
 @Builder
 public class MemberReadDto {
+
     private Long idx;
     private String email;
     private String name;

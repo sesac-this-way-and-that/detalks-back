@@ -5,8 +5,8 @@ import com.twat.detalks.member.dto.*;
 import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,17 +15,12 @@ import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/member")
+@RequiredArgsConstructor
 @Slf4j
 public class MemberController {
 
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
-
-    @Autowired
-    public MemberController(MemberService memberService, JWTUtil jwtUtil) {
-        this.memberService = memberService;
-        this.jwtUtil = jwtUtil;
-    }
 
     // POST http://localhost:8080/api/member/signup
     // 회원가입
@@ -117,6 +112,26 @@ public class MemberController {
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("사용 가능한 이름입니다.")
+                .result(true)
+                .status("200")
+                .build());
+    }
+
+    // PATCH http://localhost:8080/api/member/pwd
+    // 비밀번호 찾기
+    // 이메일(필수), 비밀번호(필수)
+    @PatchMapping("/pwd")
+    public ResponseEntity<?> initPassword(
+        @RequestBody FindPwdDto findPwdDto) {
+        String email = findPwdDto.getEmail();
+        String pwd = findPwdDto.getPwd();
+        MemberEntity member = memberService.findByMemberEmail(email);
+        memberService.regexPwdCheck(pwd);
+        memberService.initPassword(member, pwd);
+
+        return ResponseEntity.ok().body(
+            ResDto.builder()
+                .msg("비밀 번호가 변경되었습니다")
                 .result(true)
                 .status("200")
                 .build());

@@ -4,6 +4,7 @@ import com.twat.detalks.oauth2.jwt.JWTFilter;
 import com.twat.detalks.oauth2.service.CustomOAuth2UserService;
 import com.twat.detalks.oauth2.CustomSuccessHandler;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -22,17 +23,12 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
-
-    @Autowired
-    public WebSecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.customSuccessHandler = customSuccessHandler;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -95,6 +91,7 @@ public class WebSecurityConfig {
             );
         return http.build();
     }
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()

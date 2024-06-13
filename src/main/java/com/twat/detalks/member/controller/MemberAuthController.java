@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +22,12 @@ import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/member")
+@RequiredArgsConstructor
 @Slf4j
 public class MemberAuthController {
 
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
-
-    @Autowired
-    public MemberAuthController(MemberService memberService, JWTUtil jwtUtil) {
-        this.memberService = memberService;
-        this.jwtUtil = jwtUtil;
-    }
 
     // GET http://localhost:8080/api/member/auth
     // 회원정보조회 (로그인 유저)
@@ -117,8 +113,8 @@ public class MemberAuthController {
     // 폼전송
     // 탈퇴 사유
     @DeleteMapping("/auth/social")
-    public ResponseEntity<?> deleteSocialMemberAuth(@AuthenticationPrincipal CustomUserDetail user, @Valid SocialMemberDeleteDto socialMemberDeleteDto) {
-        memberService.deleteSocialMember(user.getUserIdx(), socialMemberDeleteDto);
+    public ResponseEntity<?> deleteSocialMemberAuth(@AuthenticationPrincipal CustomUserDetail user, String reason) {
+        memberService.deleteSocialMember(user.getUserIdx(), reason);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("회원 탈퇴 성공")

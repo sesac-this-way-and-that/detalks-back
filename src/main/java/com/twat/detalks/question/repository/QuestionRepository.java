@@ -4,6 +4,7 @@ package com.twat.detalks.question.repository;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,4 +26,14 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Long>,
     void updateViewCount(@Param("questionId") Long questionId);
 
     long countAllByMembersEquals(MemberEntity members);
+
+    // 회원이 작성한 글에서 사용한 태그 목록 조회 (내림차순)
+    @Query("SELECT t.tagName " +
+        "FROM QuestionEntity q " +
+        "JOIN q.questionTagList qt " +
+        "JOIN qt.tags t " +
+        "WHERE q.members.memberIdx = :memberIdx " +
+        "GROUP BY t.tagName " +
+        "ORDER BY COUNT (t) DESC")
+    List<String> findTagsByMemberId(@Param("memberIdx") Long memberIdx, Pageable pageable);
 }

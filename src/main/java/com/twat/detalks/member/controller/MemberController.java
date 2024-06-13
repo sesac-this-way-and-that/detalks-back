@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 
 @RestController
@@ -70,6 +71,7 @@ public class MemberController {
         MemberEntity result = memberService.findByMemberId(idx);
         long questionCount = memberService.getQuestionCount(idx);
         long answerCount = memberService.getAnswerCount(idx);
+        List<String> tags = memberService.getTags(idx);
         MemberReadDto data = MemberReadDto.builder()
             .name(result.getMemberName())
             .state(result.getMemberState())
@@ -79,6 +81,7 @@ public class MemberController {
             .rep(result.getMemberRep())
             .qCount(questionCount)
             .aCount(answerCount)
+            .tags(tags)
             .created(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .visited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .build();

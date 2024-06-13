@@ -1,5 +1,6 @@
 package com.twat.detalks.question;
 
+import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.tag.entity.QuestionTagEntity;
 import com.twat.detalks.tag.entity.TagEntity;
@@ -22,6 +23,14 @@ public class QuestionSpecification {
             Join<QuestionEntity, QuestionTagEntity> questionTagJoin = root.join("questionTagList", JoinType.INNER);
             Join<QuestionTagEntity, TagEntity> tagJoin = questionTagJoin.join("tags", JoinType.INNER);
             return criteriaBuilder.equal(tagJoin.get("tagName"), tagName);
+        };
+    }
+
+    // 회원이름으로 질문 조회
+    public static Specification<QuestionEntity> hasName(String memberName) {
+        return (root, query, criteriaBuilder) -> {
+            Join<QuestionEntity, MemberEntity> memberJoin = root.join("members", JoinType.INNER);
+            return criteriaBuilder.equal(memberJoin.get("memberName"), memberName);
         };
     }
 }

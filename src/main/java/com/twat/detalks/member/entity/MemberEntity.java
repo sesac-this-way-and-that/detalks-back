@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Members")
+@Table(name = "members")
 @DynamicUpdate
 public class MemberEntity {
 
@@ -66,14 +66,6 @@ public class MemberEntity {
     @Column(name = "member_rep", nullable = false)
     @Builder.Default
     private Integer memberRep = 1;
-
-    // @Column(name = "member_q_count", nullable = false)
-    // @Builder.Default
-    // private Integer memberQcount = 0;
-    //
-    // @Column(name = "member_a_count", nullable = false)
-    // @Builder.Default
-    // private Integer memberAcount = 0;
 
     @Column(name = "member_created", nullable = false)
     @Builder.Default

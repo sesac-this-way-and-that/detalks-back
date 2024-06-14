@@ -6,10 +6,10 @@ import lombok.Getter;
 
 import java.util.List;
 
-
 @Getter
 @Builder
 public class MemberReadDto {
+
     private Long idx;
     private String email;
     private String name;
@@ -28,5 +28,4 @@ public class MemberReadDto {
     private String updated;
     private String role;
     private List<String> tags;
-
 }

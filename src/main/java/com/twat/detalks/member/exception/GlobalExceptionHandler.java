@@ -54,10 +54,10 @@ public class GlobalExceptionHandler {
             errorMessage = "알 수 없는 오류가 발생했습니다.";
         }
 
-        return ResponseEntity.badRequest().body(
+        return ResponseEntity.status(404).body(
             ResDto.builder()
                 .result(false)
-                .status("400")
+                .status("404")
                 .msg(errorMessage)
                 .errorType(e.getClass().toString())
                 .build());

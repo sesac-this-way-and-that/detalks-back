@@ -278,8 +278,7 @@ public class MemberService {
     // 평판은 1이하로 떨어지지 않음
     // 반환값 boolean
     public void actionMemberReputation(final String idx, final String action) {
-        MemberEntity member = memberRepository.findById(Long.valueOf(idx))
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        MemberEntity member = findByMemberId(idx);
 
         int currRep = member.getMemberRep();
 

@@ -12,6 +12,8 @@ import com.twat.detalks.question.repository.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -359,5 +362,11 @@ public class MemberService {
             .memberPwd(passwordEncoder.encode(pwd))
             .build();
         memberRepository.save(updateMember);
+    }
+
+    public List<String> getTags(final String idx) {
+        Long memberIdx = Long.parseLong(idx);
+        Pageable tags = PageRequest.of(0, 3);
+        return questionRepository.findTagsByMemberId(memberIdx, tags);
     }
 }

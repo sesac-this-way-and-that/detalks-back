@@ -4,6 +4,8 @@ import com.twat.detalks.member.vo.Social;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder
 public class MemberReadDto {
@@ -25,5 +27,5 @@ public class MemberReadDto {
     private String visited;
     private String updated;
     private String role;
-
+    private List<String> tags;
 }

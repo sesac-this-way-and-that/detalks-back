@@ -18,7 +18,7 @@ import java.util.Set;
 @Table(name = "questions")
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionEntity {

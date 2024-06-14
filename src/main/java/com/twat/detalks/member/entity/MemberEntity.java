@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor

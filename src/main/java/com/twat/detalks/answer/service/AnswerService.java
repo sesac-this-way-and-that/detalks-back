@@ -106,11 +106,17 @@ public class AnswerService {
         int questionRep = question.getQuestionRep();
 
         // 질문 작성자의 평판 점수를 답변 작성자에게 이전
-        answerAuthor.setMemberRep(answerAuthor.getMemberRep() + questionRep);
-        memberRepository.save(answerAuthor);
+        MemberEntity updatedAnswerAuthor = answerAuthor.toBuilder()
+                .memberRep(answerAuthor.getMemberRep() + questionRep)
+                .build();
+        memberRepository.save(updatedAnswerAuthor);
 
-        question.setIsSolved(true);
-        answer.setIsSelected(true);
+        QuestionEntity updatedQuestion = question.toBuilder()
+                .isSolved(true)
+                .build();
+        AnswerEntity updatedAnswer = answer.toBuilder()
+                .isSelected(true)
+                .build();
 
         questionRepository.save(question);
         answerRepositroy.save(answer);

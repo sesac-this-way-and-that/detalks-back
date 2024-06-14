@@ -106,8 +106,10 @@ public class QuestionService {
         }
 
         // 멤버 rep - 질문 rep
-        member.setMemberRep(member.getMemberRep() - questionRep);
-        memberRepository.save(member);
+        MemberEntity updatedMember = member.toBuilder()
+                .memberRep(member.getMemberRep() - questionRep)
+                .build();
+        memberRepository.save(updatedMember);
 
         // 새 질문 생성
         QuestionEntity newQuestion = QuestionEntity.builder()

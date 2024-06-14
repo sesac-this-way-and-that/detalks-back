@@ -34,6 +34,7 @@ public class AnswerService {
         QuestionEntity question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다."));
 
+        // 본인 질문에 답변했을 경우
         if (question.getMembers().getMemberIdx().equals(member.getMemberIdx())) {
             throw new RuntimeException("자신의 질문에는 답변할 수 없습니다.");
         }
@@ -99,8 +100,23 @@ public class AnswerService {
             throw new RuntimeException("해당 질문의 답변이 아닙니다.");
         }
 
-        question.setIsSolved(true);
-        answer.setIsSelected(true);
+        MemberEntity questionAuthor = question.getMembers();
+        MemberEntity answerAuthor = answer.getMembers();
+
+        int questionRep = question.getQuestionRep();
+
+        // 질문 작성자의 평판 점수를 답변 작성자에게 이전
+        MemberEntity updatedAnswerAuthor = answerAuthor.toBuilder()
+                .memberRep(answerAuthor.getMemberRep() + questionRep)
+                .build();
+        memberRepository.save(updatedAnswerAuthor);
+
+        QuestionEntity updatedQuestion = question.toBuilder()
+                .isSolved(true)
+                .build();
+        AnswerEntity updatedAnswer = answer.toBuilder()
+                .isSelected(true)
+                .build();
 
         questionRepository.save(question);
         answerRepositroy.save(answer);

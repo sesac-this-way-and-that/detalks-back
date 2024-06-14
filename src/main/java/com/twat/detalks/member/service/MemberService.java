@@ -302,6 +302,7 @@ public class MemberService {
     // 반환값 boolean
     public void actionMemberReputation(final String idx, final String action) {
         MemberEntity member = findByMemberId(idx);
+
         int currRep = member.getMemberRep();
 
         switch (action) {
@@ -319,7 +320,7 @@ public class MemberService {
                 break;
             default:
                 log.warn("알수없는 액션 타입 {}", action);
-                return;
+                throw new IllegalArgumentException("알 수 없는 액션 타입입니다.");
         }
 
         // 평판 점수 하한선

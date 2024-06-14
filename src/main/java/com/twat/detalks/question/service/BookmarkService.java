@@ -11,6 +11,10 @@ import com.twat.detalks.question.dto.MemberQuestionDto;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +32,9 @@ public class BookmarkService {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private QuestionService questionService;
 
     // 북마크 추가
     public BookmarkEntity addBookmark(Long memberIdx, Long questionId) {
@@ -66,20 +73,18 @@ public class BookmarkService {
     }
 
     // 북마크 리스트 조회
-    public List<BookmarkEntity> getBookmarksByMember(Long memberIdx) {
-        return bookmarkRepository.findByMember_MemberIdxAndBookmarkState(memberIdx, true);
+    public Page<BookmarkedQuestionDto> getBookmarksByMember(Long memberIdx, int page, int size, String sortBy) {
+        Pageable pageable;
+        if ("voteCount".equals(sortBy)) {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "question.voteCount"));
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+        }
+        Page<BookmarkEntity> bookmarksPage = bookmarkRepository.findByMember_MemberIdx(memberIdx, pageable);
+        return bookmarksPage.map(bookmark -> {
+            QuestionDto questionDto = questionService.convertToDTO(bookmark.getQuestion(), bookmark.getBookmarkState());
+            return new BookmarkedQuestionDto(bookmark.getBookmarkId(), questionDto);
+        });
     }
 
-    // 상세 질문 조회 시 북마크 상태 업데이트
-    public Boolean updateBookmarkState(Long memberIdx, Long questionId) {
-        Boolean bookmarkState = false;
-        if (memberIdx != null) {
-            BookmarkEntity bookmark = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId)
-                    .orElse(null);
-            if (bookmark != null) {
-                bookmarkState = bookmark.getBookmarkState();
-            }
-        }
-        return bookmarkState;
-    }
 }

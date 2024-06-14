@@ -58,8 +58,6 @@ public class QuestionService {
     @Autowired
     private TagService tagService;
 
-    @Autowired
-    private BookmarkService bookmarkService;
 
     // 질문 리스트 조회
     public Page<QuestionDto> getQuestions(Pageable pageable) {
@@ -73,7 +71,7 @@ public class QuestionService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
         // 북마크 상태 업데이트
-        Boolean bookmarkState = bookmarkService.updateBookmarkState(memberIdx, questionId);
+        Boolean bookmarkState = updateBookmarkState(memberIdx, questionId);
 
         // 조회수 업데이트
         questionRepository.updateViewCount(questionId);
@@ -96,17 +94,35 @@ public class QuestionService {
         MemberEntity member = memberRepository.findById(memberIdx)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
 
+        Integer questionRep = questionCreateDto.getQuestionRep();
+
+        // 평판 점수가 설정되지 않은 경우 기본값 0으로 설정
+        if (questionRep == null) {
+            questionRep = 0;
+        }
+
+        if (member.getMemberRep() < questionRep) {
+            throw new IllegalArgumentException("회원의 평판 점수가 충분하지 않습니다.");
+        }
+
+        // 멤버 rep - 질문 rep
+        MemberEntity updatedMember = member.toBuilder()
+                .memberRep(member.getMemberRep() - questionRep)
+                .build();
+        memberRepository.save(updatedMember);
+
         // 새 질문 생성
         QuestionEntity newQuestion = QuestionEntity.builder()
                 .questionTitle(questionCreateDto.getQuestionTitle())
                 .questionContent(questionCreateDto.getQuestionContent())
                 .members(member)
+                .questionRep(questionRep)
                 .build();
 
         questionRepository.save(newQuestion);
 
         // 태그 저장
-        if (questionCreateDto.getTagNames() != null) {
+        if (questionCreateDto.getTagNames() != null && !questionCreateDto.getTagNames().isEmpty()) {
             // 태그명 추가
             List<TagEntity> tagsList = questionCreateDto.getTagNames().stream()
                     .distinct()
@@ -184,6 +200,20 @@ public class QuestionService {
         return questionRepository.findByMembers_MemberIdx(memberIdx);
     }
 
+
+    // 상세 질문 조회 시 북마크 상태 업데이트
+    public Boolean updateBookmarkState(Long memberIdx, Long questionId) {
+        Boolean bookmarkState = false;
+        if (memberIdx != null) {
+            BookmarkEntity bookmark = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId)
+                    .orElse(null);
+            if (bookmark != null) {
+                bookmarkState = bookmark.getBookmarkState();
+            }
+        }
+        return bookmarkState;
+    }
+
     // 질문 entity를 dto로 변환
     public QuestionDto convertToDTO(QuestionEntity questionEntity, Boolean bookmarkState) {
         // 답변 정보
@@ -225,6 +255,7 @@ public class QuestionService {
                 .answerCount(answerDtoList.size())
                 .tagNameList(tagNameList)
                 .bookmarkState(bookmarkState)
+                .questionRep(questionEntity.getQuestionRep())
                 .build();
     }
 }

@@ -8,10 +8,7 @@ import com.twat.detalks.member.vo.Social;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.entity.QuestionVoteEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;

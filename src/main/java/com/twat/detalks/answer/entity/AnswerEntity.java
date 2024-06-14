@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "answers")
 @AllArgsConstructor
 @NoArgsConstructor

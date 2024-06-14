@@ -10,14 +10,17 @@ import org.springframework.data.jpa.domain.Specification;
 
 // DB에서 데이터 조회시 동적 쿼리를 작성 가능한 것
 public class QuestionSpecification {
+    // 질문 제목으로 질문 조회
     public static Specification<QuestionEntity> hasTitle(String title) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("questionTitle"), "%" + title + "%");
     }
 
+    // 질문 내용으로 질문 조회
     public static Specification<QuestionEntity> hasContent(String content) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("questionContent"), "%" + content + "%");
     }
 
+    // 태그명으로 질문 조회
     public static Specification<QuestionEntity> hasTag(String tagName) {
         return (root, query, criteriaBuilder) -> {
             Join<QuestionEntity, QuestionTagEntity> questionTagJoin = root.join("questionTagList", JoinType.INNER);

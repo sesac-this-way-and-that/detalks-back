@@ -8,6 +8,7 @@ import com.twat.detalks.question.entity.BookmarkEntity;
 import com.twat.detalks.question.service.BookmarkService;
 import com.twat.detalks.question.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -85,18 +86,20 @@ public class BookmarkController {
     // 북마크 리스트 조회
     // GET /api/bookmarks
     @GetMapping
-    public ResponseEntity<?> getBookmarks(@AuthenticationPrincipal CustomUserDetail user) {
+    public ResponseEntity<?> getBookmarks(
+            @AuthenticationPrincipal CustomUserDetail user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "bookmarkId") String sortBy
+    ) {
         if (user != null) {
             Long memberIdx = Long.valueOf(user.getUserIdx());
-            List<BookmarkEntity> bookmarks = bookmarkService.getBookmarksByMember(memberIdx);
-            List<QuestionDto> bookmarkedQuestions = bookmarks.stream()
-                    .map(bookmark -> questionService.convertToDTO(bookmark.getQuestion(), bookmark.getBookmarkState()))
-                    .collect(Collectors.toList());
-            // return ResponseEntity.ok(bookmarkedQuestions);
+            Page<BookmarkedQuestionDto> bookmarkedQuestionsPage = bookmarkService.getBookmarksByMember(memberIdx, page, size, sortBy);
+
             return ResponseEntity.ok().body(
                     ResDto.builder()
                             .msg("북마크 리스트 조회 성공")
-                            .data(bookmarkedQuestions)
+                            .data(bookmarkedQuestionsPage)
                             .result(true)
                             .status("200")
                             .token(String.valueOf(memberIdx))

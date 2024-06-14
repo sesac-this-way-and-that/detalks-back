@@ -26,4 +26,5 @@ public class QuestionDto {
     private int answerCount; // 추가 answerList의 인덱스 총 개수
     private List<AnswerDto> answerList;
     private List<String> tagNameList;
+    private Integer questionRep; // 질문 평판 점수
 }

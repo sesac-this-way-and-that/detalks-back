@@ -18,7 +18,7 @@ import java.util.Set;
 @Table(name = "questions")
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionEntity {
@@ -73,9 +73,10 @@ public class QuestionEntity {
     private List<QuestionVoteEntity> questionVoteList;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<BookmarkEntity> bookmarks;
+    private List<BookmarkEntity> bookmarks;
+    // private Set<BookmarkEntity> bookmarks;
 
     @Column(name = "question_rep", nullable = false)
     @Builder.Default
-    private int questionRep = 0;
+    private Integer questionRep = 0;
 }

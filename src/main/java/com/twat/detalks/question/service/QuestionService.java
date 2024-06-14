@@ -94,17 +94,33 @@ public class QuestionService {
         MemberEntity member = memberRepository.findById(memberIdx)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
 
+        Integer questionRep = questionCreateDto.getQuestionRep();
+
+        // 평판 점수가 설정되지 않은 경우 기본값 0으로 설정
+        if (questionRep == null) {
+            questionRep = 0;
+        }
+
+        if (member.getMemberRep() < questionRep) {
+            throw new IllegalArgumentException("회원의 평판 점수가 충분하지 않습니다.");
+        }
+
+        // 멤버 rep - 질문 rep
+        member.setMemberRep(member.getMemberRep() - questionRep);
+        memberRepository.save(member);
+
         // 새 질문 생성
         QuestionEntity newQuestion = QuestionEntity.builder()
                 .questionTitle(questionCreateDto.getQuestionTitle())
                 .questionContent(questionCreateDto.getQuestionContent())
                 .members(member)
+                .questionRep(questionRep)
                 .build();
 
         questionRepository.save(newQuestion);
 
         // 태그 저장
-        if (questionCreateDto.getTagNames() != null) {
+        if (questionCreateDto.getTagNames() != null && !questionCreateDto.getTagNames().isEmpty()) {
             // 태그명 추가
             List<TagEntity> tagsList = questionCreateDto.getTagNames().stream()
                     .distinct()
@@ -237,6 +253,7 @@ public class QuestionService {
                 .answerCount(answerDtoList.size())
                 .tagNameList(tagNameList)
                 .bookmarkState(bookmarkState)
+                .questionRep(questionEntity.getQuestionRep())
                 .build();
     }
 }

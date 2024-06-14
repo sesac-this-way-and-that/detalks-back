@@ -12,4 +12,5 @@ public class QuestionCreateDto {
     private String questionContent;
     private Long memberIdx;
     private List<String> tagNames;
+    private Integer questionRep;
 }

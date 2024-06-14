@@ -78,5 +78,5 @@ public class QuestionEntity {
 
     @Column(name = "question_rep", nullable = false)
     @Builder.Default
-    private int questionRep = 0;
+    private Integer questionRep = 0;
 }

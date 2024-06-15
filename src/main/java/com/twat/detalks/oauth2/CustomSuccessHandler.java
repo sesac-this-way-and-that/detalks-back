@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -16,12 +18,14 @@ import java.util.Collection;
 import java.util.Iterator;
 
 @Component
+@Slf4j
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
 
+    @Value("${redirect.server.header-uri}")
+    private String redirectUrl;
     public CustomSuccessHandler(JWTUtil jwtUtil) {
-
         this.jwtUtil = jwtUtil;
     }
 
@@ -31,7 +35,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //OAuth2User
         CustomUserDetail customUserDetails = (CustomUserDetail) authentication.getPrincipal();
 
-        // String username = customUserDetails.getUserName();
         String userId = customUserDetails.getUserIdx();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -41,7 +44,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = jwtUtil.createJwtSocial(userId, role, 60*60*24*1000L);
 
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:3000/oauth2/google/redirect/header");
+        response.sendRedirect(redirectUrl);
     }
 
     private Cookie createCookie(String key, String value) {

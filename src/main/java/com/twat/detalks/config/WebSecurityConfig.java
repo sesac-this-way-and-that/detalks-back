@@ -4,6 +4,7 @@ import com.twat.detalks.oauth2.jwt.JWTFilter;
 import com.twat.detalks.oauth2.service.CustomOAuth2UserService;
 import com.twat.detalks.oauth2.CustomSuccessHandler;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -37,20 +39,19 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // cors
         http
             .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
                 CorsConfiguration configuration = new CorsConfiguration();
-
-                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                configuration.setAllowedOrigins(Arrays.asList(
+                    "http://localhost:3000",
+                    "http://ec2-52-78-163-112.ap-northeast-2.compute.amazonaws.com",
+                    "http://52.78.163.112"));
                 configuration.setAllowedMethods(Collections.singletonList("*"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
                 configuration.setMaxAge(3600L);
-
-                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
-
+                configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
                 return configuration;
             }));
         // csrf disable
@@ -65,13 +66,6 @@ public class WebSecurityConfig {
         // JWTFilter 추가
         http
             .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-        // oauth2
-        http
-            .oauth2Login((oauth2) -> oauth2
-                .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                    .userService(customOAuth2UserService))
-                .successHandler(customSuccessHandler)
-            );
         // 세션 설정 : STATELESS
         http
             .sessionManagement((session) -> session
@@ -79,16 +73,32 @@ public class WebSecurityConfig {
         // 경로별 인가 작업
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/member/auth").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/questions/**").authenticated()
-                .requestMatchers(HttpMethod.PATCH, "/api/questions/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/questions/**").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/answers/**").authenticated()
-                .requestMatchers(HttpMethod.PATCH, "/api/answers/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/answers/**").authenticated()
-                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/member/signup").permitAll() // 회원 가입
+                .requestMatchers("/api/member/idx/**").permitAll() // 회원 프로필 조회(비인증)
+                .requestMatchers("/api/member/email/**").permitAll() // 이메일 중복체크
+                .requestMatchers("/api/member/name/**").permitAll() // 이름 중복체크
+                .requestMatchers("/api/member/signin").permitAll() //  일반 로그인
+                .requestMatchers("/api/member/auth/header").permitAll() // 소셜 로그인
+                .requestMatchers("/api/email").permitAll() // 이메일 인증
+                .requestMatchers("/api/member/pwd").permitAll() // 이메일 인증
+                .requestMatchers(HttpMethod.GET,"/api/questions/**").permitAll() // 질문 조회 관련
                 .anyRequest().authenticated()
             );
+        // oauth2
+        http
+            .oauth2Login((oauth2) -> oauth2
+                .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                    .userService(customOAuth2UserService))
+                .successHandler(customSuccessHandler)
+            );
+        http
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("access denied !!!!");
+                })
+            );
+
         return http.build();
     }
 

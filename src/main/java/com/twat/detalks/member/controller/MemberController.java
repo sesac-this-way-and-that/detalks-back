@@ -4,6 +4,9 @@ import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.dto.*;
 import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
+@Tag(name = "회원 API", description = "비로그인 유저도 사용가능한 API")
 @Slf4j
 public class MemberController {
 
@@ -27,8 +31,10 @@ public class MemberController {
     // 회원가입
     // 폼전송
     // 이메일(필수), 비밀번호(필수), 이름(필수)
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid MemberCreateDto memberDTO) {
+    @PostMapping(value = "/signup", consumes = "application/x-www-form-urlencoded")
+    @Operation(summary = "일반 회원가입")
+    public ResponseEntity<?> signUp(
+        @ModelAttribute @Valid MemberCreateDto memberDTO) {
         memberService.duplicateEmailCheck(memberDTO.getEmail());
         memberService.duplicateNameCheck(memberDTO.getName());
         memberService.saveMember(memberDTO);
@@ -44,10 +50,11 @@ public class MemberController {
     // 로그인
     // 폼전송
     // 이메일(필수), 비밀번호(필수)
-    @PostMapping("/signin")
+    @PostMapping(value = "/signin", consumes = "application/x-www-form-urlencoded")
+    @Operation(summary = "일반 로그인")
     public ResponseEntity<?> signIn(
-        @RequestParam String email, @RequestParam String pwd) {
-        MemberEntity member = memberService.getByCredentials(email, pwd);
+        @ModelAttribute MemberForm memberForm ) {
+        MemberEntity member = memberService.getByCredentials(memberForm.getEmail(), memberForm.getPwd());
         String token = jwtUtil.createJwtNone(member, 60 * 60 * 24 * 1000L);
         return ResponseEntity.ok().body(
             ResDto.builder()
@@ -62,7 +69,10 @@ public class MemberController {
     // 회원 정보 조회
     // 회원 IDX (필수)
     @GetMapping("/idx/{idx}")
-    public ResponseEntity<?> getMember(@PathVariable String idx) {
+    @Operation(summary = "회원 정보 조회")
+    public ResponseEntity<?> getMember(
+        @Parameter(description = "회원아이디", required = true, example = "1")
+        @PathVariable String idx) {
         MemberEntity result = memberService.findByMemberId(idx);
         long questionCount = memberService.getQuestionCount(idx);
         long answerCount = memberService.getAnswerCount(idx);
@@ -93,9 +103,10 @@ public class MemberController {
     // 이메일 중복조회
     // 이메일(필수)
     @GetMapping("/email/{email}")
+    @Operation(summary = "이메일 중복 조회")
     public ResponseEntity<?> checkEmail(
-        @PathVariable
-        String email) {
+        @Parameter(description = "회원이메일", required = true, example = "test@test.com")
+        @PathVariable String email) {
         memberService.regexEmailCheck(email);
         memberService.duplicateEmailCheck(email);
         return ResponseEntity.ok().body(
@@ -110,7 +121,10 @@ public class MemberController {
     // 이름 중복조회
     // 이름(필수)
     @GetMapping("/name/{name}")
-    public ResponseEntity<?> checkName(@PathVariable String name) {
+    @Operation(summary = "이름 중복 조회")
+    public ResponseEntity<?> checkName(
+        @Parameter(description = "회원이름", required = true, example = "test")
+        @PathVariable String name) {
         memberService.duplicateNameCheck(name);
         return ResponseEntity.ok().body(
             ResDto.builder()
@@ -124,6 +138,7 @@ public class MemberController {
     // 비밀번호 찾기
     // 이메일(필수), 비밀번호(필수)
     @PatchMapping("/pwd")
+    @Operation(summary = "비밀번호 찾기")
     public ResponseEntity<?> initPassword(
         @RequestBody FindPwdDto findPwdDto) {
         String email = findPwdDto.getEmail();

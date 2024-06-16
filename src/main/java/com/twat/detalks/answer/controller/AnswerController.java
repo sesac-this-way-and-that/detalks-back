@@ -34,7 +34,7 @@ public class AnswerController {
             AnswerEntity newAnswer = answerService.createAnswer(memberIdx, questionId, answerCreateDto);
             ResDto response = ResDto.builder()
                     .result(true)
-                    .msg("질문 조회 성공")
+                    .msg("답변 생성 성공")
                     .data(newAnswer)
                     .status("200")
                     .token(String.valueOf(memberIdx))
@@ -64,7 +64,7 @@ public class AnswerController {
             AnswerEntity updatedAnswer = answerService.updateAnswer(memberIdx, answerId, answerCreateDto);
             ResDto response = ResDto.builder()
                     .result(true)
-                    .msg("질문 조회 성공")
+                    .msg("답변 수정 성공")
                     .data(updatedAnswer)
                     .status("200")
                     .token(String.valueOf(memberIdx))

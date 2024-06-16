@@ -1,5 +1,6 @@
 package com.twat.detalks.question.service;
 
+import com.twat.detalks.answer.entity.AnswerVoteEntity;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.repository.MemberRepository;
 import com.twat.detalks.question.entity.QuestionEntity;
@@ -9,6 +10,8 @@ import com.twat.detalks.question.repository.QuestionVoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -35,20 +38,27 @@ public class QuestionVoteService {
         }
 
         // 기존 투표 여부 확인
-        QuestionVoteEntity existingVote = voteRepository.findByQuestions_QuestionIdAndMembers_MemberIdx(questionId, memberIdx).orElse(null);
+        Optional<QuestionVoteEntity> existingVote = voteRepository.findByQuestions_QuestionIdAndMembers_MemberIdx(questionId, memberIdx);
+        QuestionVoteEntity vote;
 
         if (existingVote != null) {
+            vote = existingVote.get();
             // 기존 투표가 있으면 voteState 수정
-            existingVote.setVoteState(voteState);
-            voteRepository.saveAndFlush(existingVote);
+            if (voteState == null) {
+                voteRepository.delete(vote);
+            } else {
+                vote.setVoteState(voteState);
+                voteRepository.save(vote);
+            }
         } else {
-            // 기존 투표가 없다면 새로 추가
-            QuestionVoteEntity newVote = QuestionVoteEntity.builder()
-                    .questions(question)
-                    .members(member)
-                    .voteState(voteState)
-                    .build();
-            voteRepository.saveAndFlush(newVote);
+            if (voteState != null) {
+                vote = QuestionVoteEntity.builder()
+                        .questions(question)
+                        .members(member)
+                        .voteState(voteState)
+                        .build();
+                voteRepository.save(vote);
+            }
         }
 
         // 투표 수 업데이트

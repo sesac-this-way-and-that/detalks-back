@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AnswerVoteService {
     @Autowired
@@ -22,7 +24,7 @@ public class AnswerVoteService {
     private MemberRepository memberRepository;
 
     @Transactional
-    public void voteAnswer(Long answerId, Long memberIdx, boolean voteState) {
+    public void voteAnswer(Long answerId, Long memberIdx, Boolean voteState) {
         AnswerEntity answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 답변입니다."));
         MemberEntity member = memberRepository.findById(memberIdx)
@@ -33,17 +35,26 @@ public class AnswerVoteService {
         }
 
         // 투표 존재 여부 확인
-        AnswerVoteEntity existingVote = answerVoteRepository.findByAnswer_AnswerIdAndMember_MemberIdx(answerId, memberIdx).orElse(null);
-        if (existingVote != null) {
-            existingVote.setVoteState(voteState);
-            answerVoteRepository.save(existingVote);
+        Optional<AnswerVoteEntity> existingVoteOpt = answerVoteRepository.findByAnswer_AnswerIdAndMember_MemberIdx(answerId, memberIdx);
+        AnswerVoteEntity vote;
+
+        if (existingVoteOpt.isPresent()) {
+            vote = existingVoteOpt.get();
+            if (voteState == null) {
+                answerVoteRepository.delete(vote);
+            } else {
+                vote.setVoteState(voteState);
+                answerVoteRepository.save(vote);
+            }
         } else {
-            AnswerVoteEntity vote = AnswerVoteEntity.builder()
-                    .answer(answer)
-                    .member(member)
-                    .voteState(voteState)
-                    .build();
-            answerVoteRepository.save(vote);
+            if (voteState != null) {
+                vote = AnswerVoteEntity.builder()
+                        .answer(answer)
+                        .member(member)
+                        .voteState(voteState)
+                        .build();
+                answerVoteRepository.save(vote);
+            }
         }
 
         // 답변에 대한 총 투표 수 업데이트

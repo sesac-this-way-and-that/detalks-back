@@ -58,10 +58,10 @@ public class MemberController {
                 .build());
     }
 
-    // GET http://localhost:8080/api/member/{id}
+    // GET http://localhost:8080/api/member/idx/{idx}
     // 회원 정보 조회
     // 회원 IDX (필수)
-    @GetMapping("/{idx}")
+    @GetMapping("/idx/{idx}")
     public ResponseEntity<?> getMember(@PathVariable String idx) {
         MemberEntity result = memberService.findByMemberId(idx);
         long questionCount = memberService.getQuestionCount(idx);

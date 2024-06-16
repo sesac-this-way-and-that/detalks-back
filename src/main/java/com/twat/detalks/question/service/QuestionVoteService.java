@@ -45,7 +45,7 @@ public class QuestionVoteService {
             // 기존 투표가 있으면 voteState 수정
             // 기존 투표가 있고 현재 voteState 상태와 요청으로 온 voteState 상태가 같다면 중복 투표!
             if(existingVote.getVoteState().equals(voteState)){
-                throw new IllegalArgumentException("이미 투표한 질문 입니다.");
+                throw new RuntimeException("이미 투표한 질문 입니다.");
             }
             // 여기로 넘어온다면 중복 투표 X
             existingVote.setVoteState(voteState);

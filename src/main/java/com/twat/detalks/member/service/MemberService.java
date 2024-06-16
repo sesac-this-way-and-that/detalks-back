@@ -27,7 +27,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -115,7 +114,7 @@ public class MemberService {
     }
 
     // 회원정보조회(id)
-    public MemberEntity findByMemberId(final String idx) {
+    public MemberEntity findByMemberId(final String idx) throws NumberFormatException {
         Long memberId = Long.parseLong(idx);
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
@@ -255,23 +254,19 @@ public class MemberService {
     }
 
     // 바운티 설정
-    public boolean setBounty(final String bounty, final String idx) {
-        try {
-            int intBounty = parseBounty(bounty);
-            validateBounty(intBounty);
+    public void setBounty(final String bounty, final String idx) {
+        // 문자열 -> 정수형
+        int intBounty = parseBounty(bounty);
+        // 음수 체크
+        validateBounty(intBounty);
 
-            MemberEntity member = findByMemberId(idx);
-            updateMemberReputation(member, intBounty);
-
-            return true;
-        } catch (IllegalArgumentException e) {
-            log.warn("setBounty 예외발생 {}", e.getMessage());
-            return false;
-        }
+        MemberEntity member = findByMemberId(idx);
+        // 평판점수와 바운티 비교해서 1 미만이 아니면 변경
+        updateMemberReputation(member, intBounty);
     }
 
-    // 문자열 바운티 정수형 파싱  메서드
-    private int parseBounty(String bounty) {
+    // 문자열 바운티 정수형 파싱 메서드
+    private int parseBounty(String bounty) throws NumberFormatException {
         return Integer.parseInt(bounty);
     }
 
@@ -285,7 +280,8 @@ public class MemberService {
     // 바운티 적용
     private void updateMemberReputation(MemberEntity member, int bounty) {
         int updatedRep = member.getMemberRep() - bounty;
-        if (updatedRep < 1) {
+        // 평판은 1 미만으로 떨어질 수 없음
+        if (updatedRep < 1 ) {
             throw new IllegalArgumentException("현재 평판 점수보다 높게 바운티를 설정할 수 없습니다.");
         }
         memberRepository.save(member.toBuilder().memberRep(updatedRep).build());
@@ -350,7 +346,7 @@ public class MemberService {
         MemberEntity member = memberRepository.findByMemberEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        if(!member.getMemberSocial().equals(Social.NONE)) {
+        if (!member.getMemberSocial().equals(Social.NONE)) {
             throw new IllegalArgumentException("소셜 회원은 비밀번호 찾기가 불가능 합니다.");
         }
 
@@ -365,7 +361,8 @@ public class MemberService {
         memberRepository.save(updateMember);
     }
 
-    public List<String> getTags(final String idx) {
+    // 태그 조회
+    public List<String> getTags(final String idx) throws NumberFormatException {
         Long memberIdx = Long.parseLong(idx);
         Pageable tags = PageRequest.of(0, 3);
         return questionRepository.findTagsByMemberId(memberIdx, tags);

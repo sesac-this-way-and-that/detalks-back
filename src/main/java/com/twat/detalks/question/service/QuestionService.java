@@ -90,10 +90,16 @@ public class QuestionService {
     }
 
     // 질문 생성
-    public QuestionDto createQuestion(Long memberIdx, QuestionCreateDto questionCreateDto) {
-        MemberEntity member = memberRepository.findById(memberIdx)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+    public QuestionDto createQuestion(String memberIdx, QuestionCreateDto questionCreateDto) throws NumberFormatException{
+        /* 기존 코드
+        // MemberEntity member = memberRepository.findById(memberIdx)
+        //         .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+         */
 
+        // 이미 멤버 서비스에 예외처리 포함된 메서드 구현되어 있음
+        MemberEntity member = memberService.findByMemberId(memberIdx);
+
+        // 이부분 만약 평판점수가 문자열로 들어온다면 예외 발생 가능성이 있음!!!!
         Integer questionRep = questionCreateDto.getQuestionRep();
 
         // 평판 점수가 설정되지 않은 경우 기본값 0으로 설정
@@ -101,15 +107,23 @@ public class QuestionService {
             questionRep = 0;
         }
 
-        if (member.getMemberRep() < questionRep) {
-            throw new IllegalArgumentException("회원의 평판 점수가 충분하지 않습니다.");
-        }
+        // 이미 구현되어 있음
+        // if (member.getMemberRep() <= questionRep) {
+        //     throw new IllegalArgumentException("회원의 평판 점수가 충분하지 않습니다.");
+        // }
 
+        /* 기존 코드
         // 멤버 rep - 질문 rep
-        MemberEntity updatedMember = member.toBuilder()
-                .memberRep(member.getMemberRep() - questionRep)
-                .build();
-        memberRepository.save(updatedMember);
+        // MemberEntity updatedMember = member.toBuilder()
+        //         .memberRep(member.getMemberRep() - questionRep)
+        //         .build();
+        // memberRepository.save(updatedMember);
+        */
+
+        // 바운티 설정
+        String bounty = String.valueOf(questionRep);
+        memberService.setBounty(bounty,memberIdx);
+
 
         // 새 질문 생성
         QuestionEntity newQuestion = QuestionEntity.builder()

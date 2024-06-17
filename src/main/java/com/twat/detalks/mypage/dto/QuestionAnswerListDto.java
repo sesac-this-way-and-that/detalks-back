@@ -18,4 +18,5 @@ public class QuestionAnswerListDto {
         // 여기서 만약 isSolved가 null값일 경우 답변이고, isSelected가 null 값일 경우 질문
         private Boolean isSolved;
         private Boolean isSelected;
+        private Long questionId;
 }

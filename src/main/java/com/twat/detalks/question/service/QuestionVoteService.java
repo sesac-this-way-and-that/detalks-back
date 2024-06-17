@@ -1,8 +1,8 @@
 package com.twat.detalks.question.service;
 
-import com.twat.detalks.answer.entity.AnswerVoteEntity;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.repository.MemberRepository;
+import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
 import com.twat.detalks.question.entity.QuestionVoteEntity;
@@ -10,8 +10,6 @@ import com.twat.detalks.question.repository.QuestionVoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,6 +22,9 @@ public class QuestionVoteService {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberService memberService;
 
     public void vote(Long questionId, Long memberIdx, Boolean voteState) {
         QuestionEntity question = questionRepository.findById(questionId)
@@ -38,27 +39,36 @@ public class QuestionVoteService {
         }
 
         // 기존 투표 여부 확인
-        Optional<QuestionVoteEntity> existingVote = voteRepository.findByQuestions_QuestionIdAndMembers_MemberIdx(questionId, memberIdx);
-        QuestionVoteEntity vote;
+        QuestionVoteEntity existingVote = voteRepository.findByQuestions_QuestionIdAndMembers_MemberIdx(questionId, memberIdx).orElse(null);
 
         if (existingVote != null) {
-            vote = existingVote.get();
             // 기존 투표가 있으면 voteState 수정
-            if (voteState == null) {
-                voteRepository.delete(vote);
-            } else {
-                vote.setVoteState(voteState);
-                voteRepository.save(vote);
+            // 기존 투표가 있고 현재 voteState 상태와 요청으로 온 voteState 상태가 같다면 중복 투표!
+            if(existingVote.getVoteState().equals(voteState)){
+                throw new RuntimeException("이미 투표한 질문 입니다.");
             }
+            // 여기로 넘어온다면 중복 투표 X
+            existingVote.setVoteState(voteState);
+
+            // 해당 질문의 작성자 평판 수정
+            String writeMemberIdx = String.valueOf(question.getMembers().getMemberIdx());
+            // voteState 따라 action 변경
+            memberService.actionMemberReputation(writeMemberIdx, voteState ? "VOTE_UP" : "VOTE_DOWN");
+
+            voteRepository.saveAndFlush(existingVote);
         } else {
-            if (voteState != null) {
-                vote = QuestionVoteEntity.builder()
-                        .questions(question)
-                        .members(member)
-                        .voteState(voteState)
-                        .build();
-                voteRepository.save(vote);
-            }
+            // 기존 투표가 없다면 새로 추가
+            QuestionVoteEntity newVote = QuestionVoteEntity.builder()
+                    .questions(question)
+                    .members(member)
+                    .voteState(voteState)
+                    .build();
+            voteRepository.saveAndFlush(newVote);
+
+            // 해당 질문의 작성자 평판 수정
+            String writeMemberIdx = String.valueOf(question.getMembers().getMemberIdx());
+            // voteState 따라 action 변경
+            memberService.actionMemberReputation(writeMemberIdx, voteState ? "VOTE_UP" : "VOTE_DOWN");
         }
 
         // 투표 수 업데이트

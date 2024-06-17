@@ -69,7 +69,7 @@ public class QuestionController {
 
     // answerList가 null인 질문 리스트 조회
     // GET /api/questions/unanswered
-    @GetMapping("/api/questions/unAnswered")
+    @GetMapping("/unAnswered")
     public ResponseEntity<?> getUnansweredQuestions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -78,18 +78,16 @@ public class QuestionController {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<QuestionDto> questionsPage = questionService.getQuestionsWithoutAnswers(pageable);
-        if (questionsPage.isEmpty()) {
-            ResDto response = ResDto.builder()
-                    .result(false)
-                    .msg("답변이 없는 질문이 없습니다.")
-                    .data(null)
-                    .status("404")
-                    .errorType("No Results Found")
-                    .token(null)
-                    .build();
-
-            return ResponseEntity.status(404).body(response);
-        }
+            // ResDto response = ResDto.builder()
+            //         .result(false)
+            //         .msg("답변이 없는 질문을 조회 했습니다.")
+            //         .data(questionsPage)
+            //         .status("200")
+            //         .errorType("No Results Found")
+            //         .token(null)
+            //         .build();
+            //
+            // return ResponseEntity.status(200).body(response);
 
         ResDto response = ResDto.builder()
                 .result(true)

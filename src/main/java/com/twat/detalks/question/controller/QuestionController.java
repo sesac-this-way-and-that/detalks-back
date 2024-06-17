@@ -59,7 +59,7 @@ public class QuestionController {
         ResDto response = ResDto.builder()
                 .result(true)
                 .msg("질문 리스트 조회 성공")
-                .data(questionsPage) // 만약 리스트 content만 전송 원한다면 getContent() 추가
+                .data(questionsPage)
                 .status("200")
                 .token(null)
                 .build();
@@ -181,7 +181,7 @@ public class QuestionController {
     public ResponseEntity<?> deleteQuestion(
             @PathVariable Long questionId,
             @AuthenticationPrincipal CustomUserDetail user
-            ) {
+    ) {
         String memberIdx = user.getUserIdx();
         try {
             questionService.deleteQuestion(questionId, Long.valueOf(memberIdx));

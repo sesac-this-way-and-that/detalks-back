@@ -58,6 +58,7 @@ public class QuestionAnswerListService {
                 .createdAt(question.getCreatedAt())
                 .voteCount(question.getVoteCount())
                 .isSolved(question.getIsSolved())
+                .questionId(question.getQuestionId())
                 .build();
     }
 
@@ -69,6 +70,7 @@ public class QuestionAnswerListService {
                 .createdAt(answer.getCreatedAt())
                 .voteCount(answer.getVoteCount())
                 .isSelected(answer.getIsSelected())
+                .questionId(answer.getQuestions().getQuestionId())
                 .build();
     }
 }

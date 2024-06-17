@@ -39,4 +39,7 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Long>,
         "GROUP BY t.tagName " +
         "ORDER BY COUNT (t) DESC")
     List<String> findTagsByMemberId(@Param("memberIdx") Long memberIdx, Pageable pageable);
+
+    @Query("SELECT q FROM Question q WHERE q.answerList IS EMPTY")
+    Page<QuestionEntity> findQuestionsWithoutAnswers(Pageable pageable);
 }

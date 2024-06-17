@@ -20,7 +20,8 @@ public class QuestionVoteEntity {
     private Long voteId;
 
     @Column(name = "q_vote_state", nullable = true)
-    private Boolean voteState;
+    @Builder.Default
+    private Boolean voteState = null;
 
     public Boolean isVoteState() {
         return voteState;

@@ -27,10 +27,10 @@ public class QuestionEntity {
     @Column(name = "question_id", nullable = false)
     private Long questionId;
 
-    @Column(name = "question_title", nullable = false, length = 30)
+    @Column(name = "question_title", nullable = false)
     private String questionTitle;
 
-    @Column(name = "question_content", nullable = false, length = 255)
+    @Column(name = "question_content", nullable = false)
     private String questionContent;
 
     @CreationTimestamp
@@ -41,10 +41,10 @@ public class QuestionEntity {
     @Column(name = "q_modified_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime modifiedAt;
 
-    @Column(name = "q_view_count", nullable = false, length = 100)
+    @Column(name = "q_view_count", nullable = false)
     private int viewCount;
 
-    @Column(name = "q_vote_count", nullable = false, length = 100)
+    @Column(name = "q_vote_count", nullable = false)
     private int voteCount;
 
     @Column(name = "question_state", nullable = false)
@@ -64,11 +64,11 @@ public class QuestionEntity {
     @JsonManagedReference
     private List<AnswerEntity> answerList;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<QuestionTagEntity> questionTagList;
 
-    @OneToMany(mappedBy = "questions")
+    @OneToMany(mappedBy = "questions", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<QuestionVoteEntity> questionVoteList;
 

@@ -9,6 +9,7 @@ import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.service.QuestionSearchService;
 import com.twat.detalks.question.service.QuestionService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
+@Slf4j
 public class QuestionController {
     @Autowired
     private QuestionService questionService;
@@ -112,13 +114,13 @@ public class QuestionController {
             @RequestBody QuestionCreateDto questionCreateDto) {
         String memberIdx = user.getUserIdx();
         try{
-            QuestionDto newQuestion = questionService.createQuestion(Long.valueOf(memberIdx), questionCreateDto);
+            QuestionDto newQuestion = questionService.createQuestion(memberIdx, questionCreateDto);
             ResDto response = ResDto.builder()
                     .result(true)
                     .msg("질문 생성 성공")
                     .data(newQuestion)
                     .status("200")
-                    .token(memberIdx)
+                    .token(memberIdx) // 넣어주는 이유??
                     .build();
 
             return ResponseEntity.ok(response);

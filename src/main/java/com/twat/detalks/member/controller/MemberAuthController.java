@@ -5,6 +5,10 @@ import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
+@Tag(name = "회원 API (로그인 유저)", description = "로그인 회원만 사용가능한 API")
 @Slf4j
 public class MemberAuthController {
 
@@ -32,6 +37,7 @@ public class MemberAuthController {
     // GET http://localhost:8080/api/member/auth
     // 회원정보조회 (로그인 유저)
     @GetMapping("/auth")
+    @Operation(summary = "회원 정보 조회 (로그인 유저)")
     public ResponseEntity<?> getMemberAuth(@AuthenticationPrincipal CustomUserDetail user) {
         String idx = user.getUserIdx();
         MemberEntity result = memberService.findByMemberId(idx);
@@ -59,7 +65,7 @@ public class MemberAuthController {
             .build();
         return ResponseEntity.ok().body(
             ResDto.builder()
-                .msg("회원 정보 조회(로그인 유저) 성공")
+                .msg("회원 정보 조회 (로그인 유저) 성공")
                 .result(true)
                 .data(data)
                 .build());
@@ -70,9 +76,10 @@ public class MemberAuthController {
     // 폼전송
     // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
     @PatchMapping("/auth")
+    @Operation(summary = "회원 정보 수정")
     public ResponseEntity<?> updateMemberAuth(
         @AuthenticationPrincipal CustomUserDetail user,
-        @Valid MemberUpdateDto memberUpdateDto,
+        @ModelAttribute @Valid MemberUpdateDto memberUpdateDto,
         @RequestPart(required = false) MultipartFile img) {
         memberService.updateMember(user.getUserIdx(), memberUpdateDto, img);
         return ResponseEntity.ok().body(
@@ -86,6 +93,7 @@ public class MemberAuthController {
     // POST http://localhost:8080/api/member/auth
     // 회원탈퇴복구
     @PostMapping("/auth")
+    @Operation(summary = "회원 탈퇴 복구")
     public ResponseEntity<?> restoreMemberAuth(@AuthenticationPrincipal CustomUserDetail user) {
         memberService.restoreMember(user.getUserIdx());
         return ResponseEntity.ok().body(
@@ -101,7 +109,9 @@ public class MemberAuthController {
     // 폼전송
     // 비밀번호(필수), 탈퇴 사유
     @DeleteMapping("/auth")
-    public ResponseEntity<?> deleteMemberAuth(@AuthenticationPrincipal CustomUserDetail user, @Valid MemberDeleteDto memberDeleteDto) {
+    @Operation(summary = "회원 탈퇴 (일반회원)")
+    public ResponseEntity<?> deleteMemberAuth(@AuthenticationPrincipal CustomUserDetail user,
+                                              @ModelAttribute @Valid MemberDeleteDto memberDeleteDto) {
         memberService.deleteMember(user.getUserIdx(), memberDeleteDto);
         return ResponseEntity.ok().body(
             ResDto.builder()
@@ -113,14 +123,16 @@ public class MemberAuthController {
 
     // DELETE http://localhost:8080/api/member/auth/social
     // 회원탈퇴(소셜 회원)
-    // 폼전송
     // 탈퇴 사유
     @DeleteMapping("/auth/social")
-    public ResponseEntity<?> deleteSocialMemberAuth(@AuthenticationPrincipal CustomUserDetail user, String reason) {
+    @Operation(summary = "회원 탈퇴 (소셜회원)")
+    public ResponseEntity<?> deleteSocialMemberAuth(@AuthenticationPrincipal CustomUserDetail user,
+                                                    @Schema(description = "탈퇴사유", example = "더 이상 서비스를 이용하지 않습니다.")
+                                                    @RequestBody String reason) {
         memberService.deleteSocialMember(user.getUserIdx(), reason);
         return ResponseEntity.ok().body(
             ResDto.builder()
-                .msg("회원 탈퇴 성공")
+                .msg("회원 탈퇴 (소셜회원) 성공")
                 .result(true)
                 .status("200")
                 .build());
@@ -133,9 +145,12 @@ public class MemberAuthController {
     // 현재 비밀번호(필수), 바꿀 비밀번호(필수)
     // 소셜 로그인 제외
     @PatchMapping("/auth/password")
+    @Operation(summary = "비밀번호 변경 (일반회원)")
     public ResponseEntity<?> changePassword(
         @AuthenticationPrincipal CustomUserDetail user,
+        @Schema(description = "비밀번호", example = "qwer123!@#")
         @RequestParam String pwd,
+        @Schema(description = "변경된 비밀번호", example = "qwer123!")
         @RequestParam String changePwd) {
         memberService.changePassword(user.getUserIdx(), pwd, changePwd);
         return ResponseEntity.ok().body(
@@ -150,6 +165,8 @@ public class MemberAuthController {
     // GET http://localhost:8080/api/member/auth/header
     // 소셜 로그인 토큰저장 쿠키 -> 헤더 변경 API
     @GetMapping("/auth/header")
+    @Operation(summary = "소셜 로그인 유저 쿠키값 헤더 토큰 저장",
+        description = "쿠키에 있는 토큰을 백엔드로 다시 보내서 헤더로 받아오는 API (스웨거 쿠키 설정 이슈로 미작동중)")
     public ResponseEntity<?> changeHeader(
         HttpServletRequest request
     ) throws ServletException, IOException {

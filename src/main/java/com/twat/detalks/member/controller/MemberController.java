@@ -31,7 +31,7 @@ public class MemberController {
     // 회원가입
     // 폼전송
     // 이메일(필수), 비밀번호(필수), 이름(필수)
-    @PostMapping(value = "/signup", consumes = "application/x-www-form-urlencoded")
+    @PostMapping("/signup")
     @Operation(summary = "일반 회원가입")
     public ResponseEntity<?> signUp(
         @ModelAttribute @Valid MemberCreateDto memberDTO) {
@@ -50,7 +50,7 @@ public class MemberController {
     // 로그인
     // 폼전송
     // 이메일(필수), 비밀번호(필수)
-    @PostMapping(value = "/signin", consumes = "application/x-www-form-urlencoded")
+    @PostMapping("/signin")
     @Operation(summary = "일반 로그인")
     public ResponseEntity<?> signIn(
         @ModelAttribute MemberForm memberForm ) {

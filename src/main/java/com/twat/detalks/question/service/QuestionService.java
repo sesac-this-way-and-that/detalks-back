@@ -65,6 +65,12 @@ public class QuestionService {
                 .map(question -> convertToDTO(question, false));
     }
 
+    // 답변이 없는 질문 리스트 조회
+    public Page<QuestionDto> getQuestionsWithoutAnswers(Pageable pageable) {
+        return questionRepository.findQuestionsWithoutAnswers(pageable)
+                .map(question -> convertToDTO(question, false));
+    }
+
     // 상세 질문 조회
     public QuestionDto getQuestionById(Long questionId, Long memberIdx) {
         QuestionEntity findQuestion = questionRepository.findById(questionId)

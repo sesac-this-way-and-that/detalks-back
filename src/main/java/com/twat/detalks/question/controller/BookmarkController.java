@@ -88,7 +88,7 @@ public class BookmarkController {
     @GetMapping
     public ResponseEntity<?> getBookmarks(
             @AuthenticationPrincipal CustomUserDetail user,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "bookmarkId") String sortBy
     ) {

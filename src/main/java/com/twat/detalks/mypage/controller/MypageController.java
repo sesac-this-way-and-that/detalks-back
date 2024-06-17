@@ -35,7 +35,7 @@ public class MypageController {
     @GetMapping("/{memberIdx}/questions")
     public ResponseEntity<?> getQuestionsByMemberId(
             @PathVariable String memberIdx,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy) {
         Long memberId = Long.parseLong(memberIdx);
@@ -56,7 +56,7 @@ public class MypageController {
     @GetMapping("/{memberIdx}/answers")
     public ResponseEntity<?> getAnswersByMemberId(
             @PathVariable String memberIdx,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy) {
         Long memberId = Long.parseLong(memberIdx);

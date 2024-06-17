@@ -35,10 +35,11 @@ public class QuestionController {
     // GET /api/questions
     @GetMapping("")
     public ResponseEntity<?> getQuestions(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy) {
         Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+
         Pageable pageable = PageRequest.of(page, size, sort);
 
 
@@ -71,7 +72,7 @@ public class QuestionController {
     // GET /api/questions/unanswered
     @GetMapping("/unAnswered")
     public ResponseEntity<?> getUnansweredQuestions(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy) {
         Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
@@ -251,7 +252,7 @@ public class QuestionController {
             @RequestParam(required = false) String content,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String name,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy) {
 

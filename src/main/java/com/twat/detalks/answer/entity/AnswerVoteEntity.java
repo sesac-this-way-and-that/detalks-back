@@ -19,7 +19,8 @@ public class AnswerVoteEntity {
     private Long voteId;
 
     @Column(name = "a_vote_state", nullable = true)
-    private Boolean voteState;
+    @Builder.Default
+    private Boolean voteState = null;
 
     @ManyToOne
     @JoinColumn(name = "answer_id", nullable = false)

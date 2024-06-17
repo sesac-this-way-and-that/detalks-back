@@ -58,7 +58,7 @@ public class AnswerEntity {
     @JoinColumn(name = "member_idx", nullable = true)  // 차후에 탈퇴 회원 관리시 nullable을 true로 바꿀 필요있음
     private MemberEntity members;
 
-    @OneToMany(mappedBy = "answer")
+    @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<AnswerVoteEntity> answerVoteList;
 }

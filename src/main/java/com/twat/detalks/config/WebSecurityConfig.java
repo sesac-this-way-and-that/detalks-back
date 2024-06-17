@@ -80,8 +80,8 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/member/name/**").permitAll() // 이름 중복체크
                 .requestMatchers("/api/member/signin").permitAll() //  일반 로그인
                 .requestMatchers("/api/member/auth/header").permitAll() // 소셜 로그인
-                .requestMatchers("/api/email").permitAll() // 이메일 인증
-                .requestMatchers("/api/member/pwd").permitAll() // 이메일 인증
+                .requestMatchers("/api/email/**").permitAll() // 이메일 인증
+                .requestMatchers("/api/member/pwd").permitAll() // 비밀번호 재설정
                 .requestMatchers(HttpMethod.GET,"/api/questions/**").permitAll() // 질문 조회 관련
                 .requestMatchers(("/api/mypage/**")).permitAll() // 마이 페이지 관련
                 .anyRequest().authenticated()

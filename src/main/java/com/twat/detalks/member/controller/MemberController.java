@@ -29,12 +29,11 @@ public class MemberController {
 
     // POST http://localhost:8080/api/member/signup
     // 회원가입
-    // 폼전송
     // 이메일(필수), 비밀번호(필수), 이름(필수)
     @PostMapping("/signup")
     @Operation(summary = "일반 회원가입")
     public ResponseEntity<?> signUp(
-        @ModelAttribute @Valid MemberCreateDto memberDTO) {
+        @RequestBody @Valid MemberCreateDto memberDTO) {
         memberService.duplicateEmailCheck(memberDTO.getEmail());
         memberService.duplicateNameCheck(memberDTO.getName());
         memberService.saveMember(memberDTO);
@@ -48,12 +47,11 @@ public class MemberController {
 
     // POST http://localhost:8080/api/member/signin
     // 로그인
-    // 폼전송
     // 이메일(필수), 비밀번호(필수)
     @PostMapping("/signin")
     @Operation(summary = "일반 로그인")
     public ResponseEntity<?> signIn(
-        @ModelAttribute MemberForm memberForm ) {
+        @RequestBody @Valid MemberForm memberForm ) {
         MemberEntity member = memberService.getByCredentials(memberForm.getEmail(), memberForm.getPwd());
         String token = jwtUtil.createJwtNone(member, 60 * 60 * 24 * 1000L);
         return ResponseEntity.ok().body(

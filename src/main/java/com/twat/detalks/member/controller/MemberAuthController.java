@@ -7,7 +7,6 @@ import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -73,18 +72,33 @@ public class MemberAuthController {
 
     // PATCH http://localhost:8080/api/member/auth
     // 회원정보수정
-    // 폼전송
-    // 이름(필수), 프로필 이미지 경로(필수), 한줄소개, 자기소개
+    // 이름(필수), 한줄소개, 자기소개
     @PatchMapping("/auth")
     @Operation(summary = "회원 정보 수정")
     public ResponseEntity<?> updateMemberAuth(
         @AuthenticationPrincipal CustomUserDetail user,
-        @ModelAttribute @Valid MemberUpdateDto memberUpdateDto,
-        @RequestPart(required = false) MultipartFile img) {
-        memberService.updateMember(user.getUserIdx(), memberUpdateDto, img);
+        @RequestBody @Valid MemberUpdateDto memberUpdateDto) {
+        memberService.updateMember(user.getUserIdx(), memberUpdateDto);
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("회원 정보 수정 성공")
+                .result(true)
+                .status("200")
+                .build());
+    }
+
+    // PATCH http://localhost:8080/api/member/auth
+    // 회원 프로필 이미지 수정
+    // 프로필 이미지 경로(필수)
+    @PatchMapping("/auth/profile")
+    @Operation(summary = "회원 프로필 이미지 수정")
+    public ResponseEntity<?> updateImgAuth(
+        @AuthenticationPrincipal CustomUserDetail user,
+        @RequestPart(required = false) MultipartFile img) {
+        memberService.updateImg(user.getUserIdx(), img);
+        return ResponseEntity.ok().body(
+            ResDto.builder()
+                .msg("회원 프로필 이미지 수정 성공")
                 .result(true)
                 .status("200")
                 .build());
@@ -106,12 +120,11 @@ public class MemberAuthController {
 
     // DELETE http://localhost:8080/api/member/auth
     // 회원탈퇴
-    // 폼전송
     // 비밀번호(필수), 탈퇴 사유
     @DeleteMapping("/auth")
     @Operation(summary = "회원 탈퇴 (일반회원)")
     public ResponseEntity<?> deleteMemberAuth(@AuthenticationPrincipal CustomUserDetail user,
-                                              @ModelAttribute @Valid MemberDeleteDto memberDeleteDto) {
+                                              @RequestBody @Valid MemberDeleteDto memberDeleteDto) {
         memberService.deleteMember(user.getUserIdx(), memberDeleteDto);
         return ResponseEntity.ok().body(
             ResDto.builder()
@@ -141,18 +154,16 @@ public class MemberAuthController {
 
     // PATCH http://localhost:8080/api/member/auth/password
     // 비밀번호변경
-    // 폼전송
     // 현재 비밀번호(필수), 바꿀 비밀번호(필수)
     // 소셜 로그인 제외
     @PatchMapping("/auth/password")
     @Operation(summary = "비밀번호 변경 (일반회원)")
     public ResponseEntity<?> changePassword(
         @AuthenticationPrincipal CustomUserDetail user,
-        @Schema(description = "비밀번호", example = "qwer123!@#")
-        @RequestParam String pwd,
-        @Schema(description = "변경된 비밀번호", example = "qwer123!")
-        @RequestParam String changePwd) {
-        memberService.changePassword(user.getUserIdx(), pwd, changePwd);
+        @RequestBody @Valid ChangePwdDto changePwdDto) {
+        log.warn(changePwdDto.getPwd());
+        log.warn(changePwdDto.getChangePwd());
+        memberService.changePassword(user.getUserIdx(), changePwdDto.getPwd(), changePwdDto.getChangePwd());
         return ResponseEntity.ok().body(
             ResDto.builder()
                 .msg("비밀번호 변경 성공")

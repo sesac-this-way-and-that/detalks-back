@@ -144,7 +144,23 @@ public class MemberService {
     }
 
     // 회원 정보 수정
-    public void updateMember(final String idx, final MemberUpdateDto memberUpdateDto, MultipartFile img) {
+    public void updateMember(final String idx, final MemberUpdateDto memberUpdateDto) {
+        // 아이디로 회원 조회
+        MemberEntity prevMember = findByMemberId(idx);
+
+        // 회원 정보 업데이트
+        MemberEntity updateMember = prevMember.toBuilder()
+            .memberName(memberUpdateDto.getName())
+            .memberSummary(memberUpdateDto.getSummary())
+            .memberAbout(memberUpdateDto.getAbout())
+            .memberUpdated(LocalDateTime.now())
+            .build();
+
+        memberRepository.save(updateMember);
+    }
+
+    // 회원 프로필 이미지 수정
+    public void updateImg(final String idx, final MultipartFile img){
         // 아이디로 회원 조회
         MemberEntity prevMember = findByMemberId(idx);
 
@@ -171,11 +187,7 @@ public class MemberService {
 
         // 회원 정보 업데이트
         MemberEntity updateMember = prevMember.toBuilder()
-            .memberName(memberUpdateDto.getName())
-            .memberImg(dbFileName) // 변경된 이미지
-            .memberSummary(memberUpdateDto.getSummary())
-            .memberAbout(memberUpdateDto.getAbout())
-            .memberUpdated(LocalDateTime.now())
+            .memberImg(dbFileName)
             .build();
 
         memberRepository.save(updateMember);

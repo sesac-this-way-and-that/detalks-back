@@ -1,5 +1,6 @@
 package com.twat.detalks.answer.controller;
 
+import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.service.AnswerVoteService;
 import com.twat.detalks.member.dto.ResDto;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
@@ -24,14 +25,12 @@ public class AnswerVoteController {
             @AuthenticationPrincipal CustomUserDetail user) {
         String memberIdx = user.getUserIdx();
         try {
-            answerVoteService.voteAnswer(answerId, Long.parseLong(memberIdx), voteState);
-            String msg = "";
-            if (voteState) {
-                msg = "답변에 찬성했습니다.";
-            }
-            else msg = "답변에 반대 했습니다.";
+            AnswerEntity updatedAnswer = answerVoteService.addVote(answerId, Long.parseLong(memberIdx), voteState);
+            String msg = voteState ? "답변에 찬성했습니다." : "답변에 반대 했습니다.";
+
             ResDto response = ResDto.builder()
                     .result(true)
+                    .data(updatedAnswer)
                     .msg(msg)
                     .status("200")
                     .token(memberIdx)

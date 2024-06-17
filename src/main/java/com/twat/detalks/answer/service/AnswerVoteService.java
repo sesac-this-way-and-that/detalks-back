@@ -26,7 +26,7 @@ public class AnswerVoteService {
     private MemberService memberService;
 
     @Transactional
-    public void voteAnswer(Long answerId, Long memberIdx, boolean voteState) {
+    public AnswerEntity addVote(Long answerId, Long memberIdx, Boolean voteState) {
         AnswerEntity answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 답변입니다."));
         MemberEntity member = memberRepository.findById(memberIdx)
@@ -41,7 +41,7 @@ public class AnswerVoteService {
         if (existingVote != null) {
             // 기존 투표가 있으면 voteState 수정
             // 기존 투표가 있고 현재 voteState 상태와 요청으로 온 voteState 상태가 같다면 중복 투표!
-            if(existingVote.getVoteState().equals(voteState)){
+            if (existingVote.getVoteState().equals(voteState)) {
                 throw new RuntimeException("이미 투표한 답변입니다.");
             }
             // 여기로 넘어온다면 중복 투표 X
@@ -74,6 +74,8 @@ public class AnswerVoteService {
 
         answer.setVoteCount(voteSum);
         answerRepository.save(answer);
+
+        return answer;
     }
 
     @Transactional

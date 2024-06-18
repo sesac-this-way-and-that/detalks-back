@@ -1,7 +1,10 @@
 package com.twat.detalks.question.service;
 
 import com.twat.detalks.answer.dto.AnswerDto;
+import com.twat.detalks.answer.dto.AnswerVoteDto;
 import com.twat.detalks.answer.entity.AnswerEntity;
+import com.twat.detalks.answer.entity.AnswerVoteEntity;
+import com.twat.detalks.answer.repository.AnswerVoteRepository;
 import com.twat.detalks.question.dto.MemberQuestionDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.dto.QuestionCreateDto;
@@ -51,6 +54,9 @@ public class QuestionService {
 
     @Autowired
     private BookmarkRepository bookmarkRepository;
+
+    @Autowired
+    private AnswerVoteRepository answerVoteRepository;
 
     @Autowired
     private MemberService memberService;
@@ -112,19 +118,6 @@ public class QuestionService {
         if (questionRep == null) {
             questionRep = 0;
         }
-
-        // 이미 구현되어 있음
-        // if (member.getMemberRep() <= questionRep) {
-        //     throw new IllegalArgumentException("회원의 평판 점수가 충분하지 않습니다.");
-        // }
-
-        /* 기존 코드
-        // 멤버 rep - 질문 rep
-        // MemberEntity updatedMember = member.toBuilder()
-        //         .memberRep(member.getMemberRep() - questionRep)
-        //         .build();
-        // memberRepository.save(updatedMember);
-        */
 
         // 바운티 설정
         String bounty = String.valueOf(questionRep);
@@ -248,7 +241,17 @@ public class QuestionService {
                         .isSelected(answer.getIsSelected())
                         .author(new MemberQuestionDto(
                                 answer.getMembers().getMemberIdx(),
-                                answer.getMembers().getMemberName()))
+                                answer.getMembers().getMemberName(),
+                                answer.getMembers().getMemberImg(),
+                                answer.getMembers().getMemberRep()
+                        ))
+                        .answerVoteDtoList(answerVoteRepository.findByAnswer_AnswerId(answer.getAnswerId()).stream()
+                                .map(vote -> AnswerVoteDto.builder()
+                                        .voteId(vote.getVoteId())
+                                        .voteState(vote.getVoteState())
+                                        .memberIdx(vote.getMember().getMemberIdx().toString())
+                                        .build())
+                                .collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -270,7 +273,10 @@ public class QuestionService {
                 .isSolved(questionEntity.getIsSolved())
                 .author(new MemberQuestionDto(
                         questionEntity.getMembers().getMemberIdx(),
-                        questionEntity.getMembers().getMemberName()))
+                        questionEntity.getMembers().getMemberName(),
+                        questionEntity.getMembers().getMemberImg(),
+                        questionEntity.getMembers().getMemberRep()
+                ))
                 .answerList(answerDtoList)
                 .answerCount(answerDtoList.size())
                 .tagNameList(tagNameList)

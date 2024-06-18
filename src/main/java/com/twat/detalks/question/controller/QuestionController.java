@@ -42,7 +42,6 @@ public class QuestionController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-
         Page<QuestionDto> questionsPage = questionService.getQuestions(pageable);
         if (questionsPage.isEmpty()) {
             ResDto response = ResDto.builder()
@@ -79,16 +78,6 @@ public class QuestionController {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<QuestionDto> questionsPage = questionService.getQuestionsWithoutAnswers(pageable);
-            // ResDto response = ResDto.builder()
-            //         .result(false)
-            //         .msg("답변이 없는 질문을 조회 했습니다.")
-            //         .data(questionsPage)
-            //         .status("200")
-            //         .errorType("No Results Found")
-            //         .token(null)
-            //         .build();
-            //
-            // return ResponseEntity.status(200).body(response);
 
         ResDto response = ResDto.builder()
                 .result(true)

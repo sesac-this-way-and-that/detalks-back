@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class MemberQuestionDto {
     private Long memberIdx;
     private String memberName;
+    private String memberImg;
+    private Integer memberRep;
 }

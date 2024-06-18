@@ -66,9 +66,9 @@ public class AnswerVoteService {
             // existingVote.setVoteState(voteState);
 
             // 해당 답변의 작성자 평판 수정
-            // String writeMemberIdx = String.valueOf(answer.getMembers().getMemberIdx());
+            String writeMemberIdx = String.valueOf(answer.getMembers().getMemberIdx());
             // voteState 따라 action 변경
-            // memberService.actionMemberReputation(writeMemberIdx, voteState ? "VOTE_UP" : "VOTE_DOWN");
+            memberService.actionMemberReputation(writeMemberIdx, voteState ? "VOTE_UP" : "VOTE_DOWN");
 
         } else {
             AnswerVoteEntity vote = AnswerVoteEntity.builder()

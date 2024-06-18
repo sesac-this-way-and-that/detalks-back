@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,15 +32,16 @@ public class QuestionEntity {
     @Column(name = "question_title", nullable = false)
     private String questionTitle;
 
-    @Column(name = "question_content", nullable = false)
+    @Lob //  데이터베이스의 BLOB, CLOB 타입과 매핑되어 파일이나 이미지 같은 큰 데이터를 저장하는 데 사용
+    @Column(name = "question_content", columnDefinition = "TEXT", nullable = false) //특정 데이터베이스에서만 지원하는 텍스트 타입을 지정하고 싶을 때 사용
     private String questionContent;
 
-    @CreationTimestamp
-    @Column(name = "q_created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @CreatedDate
+    @Column(name = "q_created_at", nullable = false) // columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "q_modified_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @LastModifiedDate
+    @Column(name = "q_modified_at", nullable = false) //  columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
     private LocalDateTime modifiedAt;
 
     @Column(name = "q_view_count", nullable = false)

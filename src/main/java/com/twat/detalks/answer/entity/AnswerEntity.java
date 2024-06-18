@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,14 +28,14 @@ public class AnswerEntity {
     @Column(name = "answer_id", nullable = false)
     private Long answerId;
 
-    @Column(name = "answer_content", nullable = false)
+    @Column(name = "answer_content", columnDefinition = "TEXT", nullable = false)
     private String answerContent;
 
-    @CreationTimestamp
+    @CreatedDate
     @Column(name = "a_created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @LastModifiedDate
     @Column(name = "a_modified_at", nullable = false)
     private LocalDateTime modifiedAt;
 
@@ -41,7 +43,7 @@ public class AnswerEntity {
     @Builder.Default
     private Boolean answerState = true;
 
-    @Column(name = "a_vote_count", nullable = false, length = 100)
+    @Column(name = "a_vote_count", nullable = false)
     private int voteCount;
 
     @Column(name = "is_selected", nullable = false)

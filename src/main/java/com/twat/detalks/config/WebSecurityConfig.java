@@ -83,6 +83,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/email").permitAll() // 이메일 인증
                 .requestMatchers("/api/member/pwd").permitAll() // 이메일 인증
                 .requestMatchers(HttpMethod.GET,"/api/questions/**").permitAll() // 질문 조회 관련
+                // .requestMatchers("/api/votes/**").permitAll() // 투표
                 .requestMatchers(("/api/mypage/**")).permitAll() // 마이 페이지 관련
                 .anyRequest().authenticated()
             );

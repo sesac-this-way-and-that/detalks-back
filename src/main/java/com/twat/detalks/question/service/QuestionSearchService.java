@@ -73,7 +73,7 @@ public class QuestionSearchService {
                 .voteCount(question.getVoteCount())
                 .questionState(question.getQuestionState())
                 .isSolved(question.getIsSolved())
-                .author(new MemberQuestionDto(question.getMembers().getMemberIdx(), question.getMembers().getMemberName()))
+                .author(new MemberQuestionDto(question.getMembers().getMemberIdx(), question.getMembers().getMemberName(), question.getMembers().getMemberImg(), question.getMembers().getMemberRep()))
                 .answerList(answerDtos)
                 .tagNameList(tagNames)
                 .build();
@@ -85,7 +85,7 @@ public class QuestionSearchService {
                 .answerContent(answer.getAnswerContent())
                 .createdAt(answer.getCreatedAt())
                 .isSelected(answer.getIsSelected())
-                .author(new MemberQuestionDto(answer.getMembers().getMemberIdx(), answer.getMembers().getMemberName()))
+                .author(new MemberQuestionDto(answer.getMembers().getMemberIdx(), answer.getMembers().getMemberName(), answer.getMembers().getMemberImg(), answer.getMembers().getMemberRep()))
                 .build();
     }
 }

@@ -108,7 +108,8 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+            .requestMatchers("/upload/**"); // 정적 파일경로 제외
     }
 
 }

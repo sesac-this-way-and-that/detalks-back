@@ -4,6 +4,7 @@ import com.twat.detalks.question.dto.MemberQuestionDto;
 import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -16,4 +17,5 @@ public class AnswerDto {
     private int voteCount;
     private Boolean isSelected;
     private MemberQuestionDto author;
+    private List<AnswerVoteDto> answerVoteDtoList;
 }

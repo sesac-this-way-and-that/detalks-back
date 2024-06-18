@@ -9,4 +9,6 @@ public class AnswerVoteDto {
     private Long voteId;
     private Boolean voteState;
     private String memberIdx;
+
 }
+

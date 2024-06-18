@@ -11,7 +11,6 @@ import com.twat.detalks.member.vo.Social;
 import com.twat.detalks.question.repository.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,20 +48,33 @@ public class MemberService {
     public MemberService(MemberRepository memberRepository,
                          QuestionRepository questionRepository,
                          AnswerRepositroy answerRepositroy,
-                         BCryptPasswordEncoder passwordEncoder,
-                         @Value("${file.upload-dir}") String uploadDir) {
+                         BCryptPasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
-        this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
-        this.questionRepository = questionRepository;
-        this.answerRepositroy = answerRepositroy;
-
+        this.fileStorageLocation = setFileStorageLocation();
         try {
             Files.createDirectories(this.fileStorageLocation); // 파일 저장 디렉토리가 없으면 생성
         } catch (Exception e) {
             throw new RuntimeException("디렉토리 생성 오류");
         }
+        this.questionRepository = questionRepository;
+        this.answerRepositroy = answerRepositroy;
     }
+
+    // 운영체제에 따른 파일 저장 경로 설정 메서드
+    private Path setFileStorageLocation() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            return Paths.get("C:\\upload").toAbsolutePath().normalize();
+        } else if (os.contains("mac")) {
+            return Paths.get("/Users/jarajiri/upload").toAbsolutePath().normalize();
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+            return Paths.get("/home/ubuntu/detalks/server/upload").toAbsolutePath().normalize();
+        } else {
+            throw new IllegalStateException("Unsupported OS: " + os);
+        }
+    }
+
 
     // 이메일 유효성 검사
     public void regexEmailCheck(final String email) {

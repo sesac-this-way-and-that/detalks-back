@@ -44,7 +44,6 @@ public class AnswerVoteService {
         if (existingVote != null) {
             // 기존 투표가 있으면 voteState 수정
             // 기존 투표가 있고 현재 voteState 상태와 요청으로 온 voteState 상태가 같다면 중복 투표!
-
             // if (existingVote.getVoteState().equals(voteState)) {
             //     log.warn("찍히나요? {}", voteState);
             //     throw new RuntimeException("이미 투표한 답변입니다.");
@@ -70,7 +69,8 @@ public class AnswerVoteService {
             // voteState 따라 action 변경
             // memberService.actionMemberReputation(writeMemberIdx, voteState ? "VOTE_UP" : "VOTE_DOWN");
 
-        } else {
+        }
+        else if(voteState != null) {
             AnswerVoteEntity vote = AnswerVoteEntity.builder()
                     .answer(answer)
                     .member(member)

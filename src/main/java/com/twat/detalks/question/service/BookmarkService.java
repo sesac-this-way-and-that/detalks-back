@@ -83,9 +83,13 @@ public class BookmarkService {
             pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
         }
         Page<BookmarkEntity> bookmarksPage = bookmarkRepository.findByMember_MemberIdx(memberIdx, pageable);
+        // QuestionDto questionDto = questionService.convertToDTO(bookmar.getQuestion(), bookmark.getBookmarkState());
         return bookmarksPage.map(bookmark -> {
             QuestionDto questionDto = questionService.convertToDTO(bookmark.getQuestion(), bookmark.getBookmarkState());
-            return new BookmarkedQuestionDto(bookmark.getBookmarkId(), questionDto);
+            return new BookmarkedQuestionDto(
+                    bookmark.getBookmarkId(),
+                    questionDto
+            );
         });
     }
 

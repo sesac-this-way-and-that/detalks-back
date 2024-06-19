@@ -5,7 +5,9 @@ import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.service.AnswerService;
 import com.twat.detalks.member.dto.ResDto;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
-import com.twat.detalks.question.dto.ResErrorDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @Slf4j
 @RequestMapping("/api/questions")
+@Tag(name = "답변 API", description = "답변 관련 정보 API")
 public class AnswerController {
     @Autowired
     private AnswerService answerService;
@@ -25,8 +27,10 @@ public class AnswerController {
     // 답변 생성
     // POST /api/questions/{questionId}/answers
     @PostMapping("/{questionId}/answers")
+    @Operation(summary = "답변 작성")
     public ResponseEntity<?> createAnswer(
             @AuthenticationPrincipal CustomUserDetail user,
+            @Parameter(name = "questionId",description = "질문 아이디")
             @PathVariable Long questionId,
             @RequestBody AnswerCreateDto answerCreateDto) {
         String memberIdx = user.getUserIdx();
@@ -55,8 +59,10 @@ public class AnswerController {
     // 답변 수정
     // PATCH /api/questions/answers/{answerId}
     @PatchMapping("/answers/{answerId}")
+    @Operation(summary = "답변 수정")
     public ResponseEntity<?> updateAnswer(
             @AuthenticationPrincipal CustomUserDetail user,
+            @Parameter(name = "answerId",description = "답변 아이디")
             @PathVariable Long answerId,
             @Valid @RequestBody AnswerCreateDto answerCreateDto) {
         String memberIdx = user.getUserIdx();
@@ -85,8 +91,10 @@ public class AnswerController {
     // 답변 삭제
     // DELETE /api/questions/answers/{answerId}
     @DeleteMapping("/answers/{answerId}")
+    @Operation(summary = "답변 삭제")
     public ResponseEntity<?> deleteAnswer(
             @AuthenticationPrincipal CustomUserDetail user,
+            @Parameter(name = "answerId",description = "답변 아이디")
             @PathVariable Long answerId) {
         String memberIdx = user.getUserIdx();
         try {
@@ -109,10 +117,13 @@ public class AnswerController {
     }
 
     // 답변 채택
-    // PATCH /api/questions/{questionId}/{answerId}/select
+    // Patch /api/questions/{questionId}/{answerId}/select
     @PatchMapping("/{questionId}/{answerId}/select")
+    @Operation(summary = "답변 채택 ")
     public ResponseEntity<?> selectAnswer(
+        @Parameter(name="questionId",description = "질문 아이디")
             @PathVariable Long questionId,
+        @Parameter(name="answerId",description = "답변 아이디")
             @PathVariable Long answerId,
             @AuthenticationPrincipal CustomUserDetail user) {
         log.warn("userrrrrrrr  {}", user);

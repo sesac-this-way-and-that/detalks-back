@@ -46,7 +46,8 @@ public class WebSecurityConfig {
                 configuration.setAllowedOrigins(Arrays.asList(
                     "http://localhost:3000",
                     "http://ec2-52-78-163-112.ap-northeast-2.compute.amazonaws.com",
-                    "http://52.78.163.112"));
+                    "http://52.78.163.112",
+                    "http://www.detalks.store"));
                 configuration.setAllowedMethods(Collections.singletonList("*"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -85,6 +86,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/questions/**").permitAll() // 질문 조회 관련
                 // .requestMatchers("/api/votes/**").permitAll() // 투표
                 .requestMatchers(("/api/mypage/**")).permitAll() // 마이 페이지 관련
+                .requestMatchers("/upload/**").permitAll()
                 .anyRequest().authenticated()
             );
         // oauth2
@@ -105,11 +107,10 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-            .requestMatchers("/upload/**"); // 정적 파일경로 제외
-    }
+    // @Bean
+    // public WebSecurityCustomizer webSecurityCustomizer() {
+    //     return (web) -> web.ignoring()
+    //         .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    // }
 
 }

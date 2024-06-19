@@ -28,4 +28,5 @@ public class MemberReadDto {
     private String updated;
     private String role;
     private List<String> tags;
+    private Long bookmarkCount;
 }

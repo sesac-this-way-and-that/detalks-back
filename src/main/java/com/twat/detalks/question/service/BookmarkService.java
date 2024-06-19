@@ -10,6 +10,7 @@ import com.twat.detalks.question.dto.QuestionDto;
 import com.twat.detalks.question.dto.MemberQuestionDto;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class BookmarkService {
 
     @Autowired
@@ -39,9 +41,9 @@ public class BookmarkService {
     // 북마크 추가
     public BookmarkEntity addBookmark(Long memberIdx, Long questionId) {
         MemberEntity member = memberRepository.findById(memberIdx)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+            .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
         QuestionEntity question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
+            .orElseThrow(() -> new RuntimeException("존재하지 않는 질문입니다."));
 
         Optional<BookmarkEntity> bookmarkOpt = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
         BookmarkEntity bookmark;
@@ -51,10 +53,10 @@ public class BookmarkService {
             bookmark.setBookmarkState(true);
         } else {
             bookmark = BookmarkEntity.builder()
-                    .member(member)
-                    .question(question)
-                    .bookmarkState(true)
-                    .build();
+                .member(member)
+                .question(question)
+                .bookmarkState(true)
+                .build();
         }
 
         return bookmarkRepository.save(bookmark);
@@ -87,4 +89,8 @@ public class BookmarkService {
         });
     }
 
+    // 회원 아이디로 북마크 리스트 카운트
+    public Long countBookMark(final Long idx) {
+        return bookmarkRepository.countAllByMember_MemberIdx(idx);
+    }
 }

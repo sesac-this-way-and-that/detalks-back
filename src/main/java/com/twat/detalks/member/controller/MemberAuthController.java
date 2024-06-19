@@ -5,6 +5,7 @@ import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.oauth2.jwt.JWTUtil;
+import com.twat.detalks.question.service.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,7 @@ public class MemberAuthController {
 
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
+    private final BookmarkService bookmarkService;
 
     // GET http://localhost:8080/api/member/auth
     // 회원정보조회 (로그인 유저)
@@ -43,6 +46,7 @@ public class MemberAuthController {
         long questionCount = memberService.getQuestionCount(idx);
         long answerCount = memberService.getAnswerCount(idx);
         List<String> tags = memberService.getTags(idx);
+        Long bookmarkCount = bookmarkService.countBookMark(result.getMemberIdx());
         MemberReadDto data = MemberReadDto.builder()
             .idx(result.getMemberIdx())
             .email(result.getMemberEmail())
@@ -61,6 +65,7 @@ public class MemberAuthController {
             .created(result.getMemberCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .visited(result.getMemberVisited().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             .role(result.getMemberRole().getKey())
+            .bookmarkCount(bookmarkCount)
             .build();
         return ResponseEntity.ok().body(
             ResDto.builder()
@@ -87,13 +92,14 @@ public class MemberAuthController {
                 .build());
     }
 
-    // PATCH http://localhost:8080/api/member/auth
+    // PATCH http://localhost:8080/api/member/auth/profile
     // 회원 프로필 이미지 수정
     // 프로필 이미지 경로(필수)
-    @PatchMapping("/auth/profile")
+    @PatchMapping(value = "/auth/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "회원 프로필 이미지 수정")
     public ResponseEntity<?> updateImgAuth(
         @AuthenticationPrincipal CustomUserDetail user,
+
         @RequestPart(required = false) MultipartFile img) {
         memberService.updateImg(user.getUserIdx(), img);
         return ResponseEntity.ok().body(
@@ -216,4 +222,5 @@ public class MemberAuthController {
                 .token(token)
                 .build());
     }
+
 }

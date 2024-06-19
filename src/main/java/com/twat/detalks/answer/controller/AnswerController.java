@@ -109,12 +109,13 @@ public class AnswerController {
     }
 
     // 답변 채택
-    // POST /api/questions/{questionId}/{answerId}/select
-    @PostMapping("/{questionId}/{answerId}/select")
+    // PATCH /api/questions/{questionId}/{answerId}/select
+    @PatchMapping("/{questionId}/{answerId}/select")
     public ResponseEntity<?> selectAnswer(
             @PathVariable Long questionId,
             @PathVariable Long answerId,
             @AuthenticationPrincipal CustomUserDetail user) {
+        log.warn("userrrrrrrr  {}", user);
         String memberIdx = user.getUserIdx();
         try {
             answerService.selectAnswer(questionId, answerId, Long.parseLong(memberIdx));

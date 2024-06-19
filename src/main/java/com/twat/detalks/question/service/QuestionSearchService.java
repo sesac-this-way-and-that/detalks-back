@@ -27,7 +27,10 @@ public class QuestionSearchService {
     private final QuestionRepository questionRepository;
     private final AnswerRepositroy answerRepository;
 
-    public Page<QuestionDto> searchQuestions(String title, String content, String tag, String name, int pageNo, int pageSize, String sortBy) {
+    public Page<QuestionDto> searchQuestions(String title, String content, String tag, String name,
+                                             int pageNo,
+                                             int pageSize,
+                                             String sortBy) {
         // 기본 정렬 : 최신순, 그 외 경우에 투표순
         // Sort sort = "voteCount".equals(sortBy) ? Sort.by(Sort.Direction.DESC, "voteCount") : Sort.by(Sort.Direction.DESC, sortBy);
         Sort sort = Sort.by(Sort.Direction.DESC, sortBy);

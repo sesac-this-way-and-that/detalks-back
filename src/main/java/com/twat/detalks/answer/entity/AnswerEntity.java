@@ -6,6 +6,7 @@ import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.entity.QuestionVoteEntity;
 import jakarta.persistence.*;
+import jdk.jfr.Timestamp;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -31,11 +32,11 @@ public class AnswerEntity {
     @Column(name = "answer_content", columnDefinition = "TEXT", nullable = false)
     private String answerContent;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "a_created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(name = "a_modified_at", nullable = false)
     private LocalDateTime modifiedAt;
 

@@ -6,6 +6,7 @@ import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.tag.entity.QuestionTagEntity;
 import jakarta.persistence.*;
+import jdk.jfr.Timestamp;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,12 +37,12 @@ public class QuestionEntity {
     @Column(name = "question_content", columnDefinition = "TEXT", nullable = false) //특정 데이터베이스에서만 지원하는 텍스트 타입을 지정하고 싶을 때 사용
     private String questionContent;
 
-    @CreatedDate
-    @Column(name = "q_created_at", nullable = false) // columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+    @CreationTimestamp
+    @Column(name = "q_created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    @Column(name = "q_modified_at", nullable = false) //  columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+    @UpdateTimestamp
+    @Column(name = "q_modified_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime modifiedAt;
 
     @Column(name = "q_view_count", nullable = false)

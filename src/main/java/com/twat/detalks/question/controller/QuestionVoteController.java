@@ -32,7 +32,7 @@ public class QuestionVoteController {
                 msg = "질문에 찬성했습니다.";
             }
             else msg = "질문에 반대 했습니다.";
-            // return ResponseEntity.ok(msg);
+
             ResDto response = ResDto.builder()
                     .result(true)
                     .msg(msg)

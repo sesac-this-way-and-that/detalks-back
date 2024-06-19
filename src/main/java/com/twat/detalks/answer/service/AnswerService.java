@@ -118,8 +118,8 @@ public class AnswerService {
                 .isSelected(true)
                 .build();
 
-        questionRepository.save(question);
-        answerRepositroy.save(answer);
+        questionRepository.save(updatedQuestion);
+        answerRepositroy.save(updatedAnswer);
     }
 
     // 회원 별로 답변 리스트 조회

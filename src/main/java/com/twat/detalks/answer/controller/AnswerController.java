@@ -115,6 +115,7 @@ public class AnswerController {
             @PathVariable Long questionId,
             @PathVariable Long answerId,
             @AuthenticationPrincipal CustomUserDetail user) {
+        log.warn("userrrrrrrr  {}", user);
         String memberIdx = user.getUserIdx();
         try {
             answerService.selectAnswer(questionId, answerId, Long.parseLong(memberIdx));

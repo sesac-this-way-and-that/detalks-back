@@ -42,8 +42,7 @@ public class AnswerVoteController {
 
         Boolean voteState = requestBody.get("voteState");
         String memberIdx = user.getUserIdx();
-        log.warn("aaaaa : {}", memberIdx);
-        log.warn("vvvv : {}", voteState);
+
         try {
             answerVoteService.addVote(answerId, Long.parseLong(memberIdx), voteState);
 

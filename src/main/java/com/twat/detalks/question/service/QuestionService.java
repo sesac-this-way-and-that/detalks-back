@@ -154,6 +154,9 @@ public class QuestionService {
             questionTagRepository.saveAll(questionTagsList);
         }
 
+        // 질문 작성시 평판 점수 추가
+        memberService.actionMemberReputation(memberIdx, "WRITE");
+
         return convertToDTO(newQuestion, false);
     }
 

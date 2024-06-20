@@ -88,9 +88,23 @@ public class QuestionService {
     }
 
     // 답변이 없는 질문 리스트 조회
-    public Page<QuestionDto> getQuestionsWithoutAnswers(Pageable pageable) {
+    public Page<QuestionDto> getQuestionsWithoutAnswers(Pageable pageable, CustomUserDetail user) {
+        final boolean isAuthenticated = user != null;
+        final List<Long> bookmarkedQuestionIds; // 회원의 북마크된 질문 리스트
+
+        if (isAuthenticated) {
+            Long userId = Long.parseLong(user.getUserIdx());
+            bookmarkedQuestionIds = bookmarkRepository.findQuestionIdsByMemberId(userId);
+        } else {
+            bookmarkedQuestionIds = List.of();
+        }
+
         return questionRepository.findQuestionsWithoutAnswers(pageable)
-                .map(question -> convertToDTO(question, false));
+                .map(question -> {
+                    Long questionId = question.getQuestionId();
+                    Boolean bookmarkState = isAuthenticated && bookmarkedQuestionIds.contains(questionId);
+                    return convertToDTO(question, bookmarkState);
+                });
     }
 
     // 상세 질문 조회

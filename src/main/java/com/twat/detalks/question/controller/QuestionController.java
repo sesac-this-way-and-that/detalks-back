@@ -92,11 +92,12 @@ public class QuestionController {
         @Parameter(name = "size", description = "한 페이지에 보여줄 갯수 [기본값 0]")
         @RequestParam(defaultValue = "10") int size,
         @Parameter(name = "sortBy", description = "createAt-최신순, voteCount-투표순")
-        @RequestParam(defaultValue = "createdAt") String sortBy) {
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @AuthenticationPrincipal CustomUserDetail user) {
         Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<QuestionDto> questionsPage = questionService.getQuestionsWithoutAnswers(pageable);
+        Page<QuestionDto> questionsPage = questionService.getQuestionsWithoutAnswers(pageable, user);
 
         ResDto response = ResDto.builder()
             .result(true)

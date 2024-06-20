@@ -72,7 +72,7 @@ public class WebSecurityConfig {
         // 경로별 인가 작업
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll() // 스웨거
+                .requestMatchers("/swagger-ui/**","/v3/api-docs/**","/api-docs/**").permitAll() // 스웨거
                 .requestMatchers("/api/member/signup").permitAll() // 회원 가입
                 .requestMatchers("/api/member/idx/**").permitAll() // 회원 프로필 조회(비인증)
                 .requestMatchers("/api/member/email/**").permitAll() // 이메일 중복체크

@@ -4,6 +4,7 @@ import com.twat.detalks.answer.dto.AnswerCreateDto;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.repository.AnswerRepositroy;
 import com.twat.detalks.member.entity.MemberEntity;
+import com.twat.detalks.member.service.MemberService;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.repository.QuestionRepository;
 import com.twat.detalks.member.repository.MemberRepository;
@@ -27,6 +28,9 @@ public class AnswerService {
     @Autowired
     private AnswerRepositroy answerRepositroy;
 
+    @Autowired
+    private MemberService memberService;
+
     // 질문에 대한 답변 생성
     public AnswerEntity createAnswer(String memberIdx, Long questionId, AnswerCreateDto answerCreateDto) {
         MemberEntity member = memberRepository.findById(Long.parseLong(memberIdx))
@@ -49,6 +53,11 @@ public class AnswerService {
                 .members(member)
                 .questions(question)
                 .build();
+
+        // 해당 답변의 작성자 평판 수정
+        String writeMemberIdx = String.valueOf(newAnswer.getMembers().getMemberIdx());
+        // 답변 작성시 평판 점수 추가
+        memberService.actionMemberReputation(writeMemberIdx, "WRITE");
 
         return answerRepositroy.save(newAnswer);
     }
@@ -105,7 +114,7 @@ public class AnswerService {
 
         int questionRep = question.getQuestionRep();
 
-        // 질문 작성자의 평판 점수를 답변 작성자에게 이전
+        // 질문의 현상금을 답변 작성자에게 이전
         MemberEntity updatedAnswerAuthor = answerAuthor.toBuilder()
                 .memberRep(answerAuthor.getMemberRep() + questionRep)
                 .build();
@@ -117,6 +126,11 @@ public class AnswerService {
         AnswerEntity updatedAnswer = answer.toBuilder()
                 .isSelected(true)
                 .build();
+
+        // 해당 답변의 작성자 평판 수정
+        String writeMemberIdx = String.valueOf(updatedAnswerAuthor.getMemberIdx());
+        // 채택 받는 사람에게 평판 점수 추가
+        memberService.actionMemberReputation(writeMemberIdx, "ACCEPTED");
 
         questionRepository.save(updatedQuestion);
         answerRepositroy.save(updatedAnswer);

@@ -5,6 +5,7 @@ import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.entity.AnswerVoteEntity;
 import com.twat.detalks.member.vo.Role;
 import com.twat.detalks.member.vo.Social;
+import com.twat.detalks.question.entity.BookmarkEntity;
 import com.twat.detalks.question.entity.QuestionEntity;
 import com.twat.detalks.question.entity.QuestionVoteEntity;
 import jakarta.persistence.*;
@@ -93,6 +94,9 @@ public class MemberEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<AnswerVoteEntity> answerVoteList;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookmarkEntity> bookmarkList;
 
     @Column(name = "member_role", nullable = false)
     @Enumerated(EnumType.STRING)

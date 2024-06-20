@@ -6,6 +6,7 @@ import com.twat.detalks.question.dto.QuestionCreateDto;
 import com.twat.detalks.question.dto.QuestionDto;
 import com.twat.detalks.question.dto.ResErrorDto;
 import com.twat.detalks.question.entity.QuestionEntity;
+import com.twat.detalks.question.repository.BookmarkRepository;
 import com.twat.detalks.question.service.QuestionSearchService;
 import com.twat.detalks.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,6 +37,9 @@ public class QuestionController {
     @Autowired
     private QuestionSearchService questionSearchService;
 
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
+
     // 질문 리스트 조회
     // GET /api/questions
     @GetMapping("")
@@ -45,12 +50,14 @@ public class QuestionController {
         @Parameter(name = "size", description = "한 페이지에 보여줄 갯수 [기본값 0]")
         @RequestParam(defaultValue = "10") int size,
         @Parameter(name = "createdAt", description = "생성날짜로 내림차순")
-        @RequestParam(defaultValue = "createdAt") String sortBy) {
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @AuthenticationPrincipal CustomUserDetail user) {
+
         Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<QuestionDto> questionsPage = questionService.getQuestions(pageable);
+        Page<QuestionDto> questionsPage = questionService.getQuestions(pageable, user);
         if (questionsPage.isEmpty()) {
             ResDto response = ResDto.builder()
                 .result(false)

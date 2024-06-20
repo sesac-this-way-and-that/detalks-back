@@ -5,6 +5,7 @@ import com.twat.detalks.answer.dto.AnswerVoteDto;
 import com.twat.detalks.answer.entity.AnswerEntity;
 import com.twat.detalks.answer.entity.AnswerVoteEntity;
 import com.twat.detalks.answer.repository.AnswerVoteRepository;
+import com.twat.detalks.oauth2.dto.CustomUserDetail;
 import com.twat.detalks.question.dto.MemberQuestionDto;
 import com.twat.detalks.member.entity.MemberEntity;
 import com.twat.detalks.question.dto.QuestionCreateDto;
@@ -66,9 +67,24 @@ public class QuestionService {
 
 
     // 질문 리스트 조회
-    public Page<QuestionDto> getQuestions(Pageable pageable) {
-        return questionRepository.findAll(pageable)
-                .map(question -> convertToDTO(question, false));
+    public Page<QuestionDto> getQuestions(Pageable pageable, CustomUserDetail user) {
+        Page<QuestionEntity> questionsPage = questionRepository.findAll(pageable);
+
+        final boolean isAuthenticated = user != null;
+        final List<Long> bookmarkedQuestionIds; // 회원의 북마크된 질문 리스트
+
+        if (isAuthenticated) {
+            Long userId = Long.parseLong(user.getUserIdx());
+            bookmarkedQuestionIds = bookmarkRepository.findQuestionIdsByMemberId(userId);
+        } else {
+            bookmarkedQuestionIds = List.of();
+        }
+
+        return questionsPage.map(question -> {
+            Long questionId = question.getQuestionId();
+            Boolean bookmarkState = isAuthenticated && bookmarkedQuestionIds.contains(questionId);
+            return convertToDTO(question, bookmarkState);
+        });
     }
 
     // 답변이 없는 질문 리스트 조회

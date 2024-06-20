@@ -2,6 +2,7 @@ package com.twat.detalks.answer.controller;
 
 import com.twat.detalks.answer.dto.AnswerVoteDto;
 import com.twat.detalks.answer.entity.AnswerEntity;
+import com.twat.detalks.answer.entity.AnswerVoteEntity;
 import com.twat.detalks.answer.repository.AnswerRepositroy;
 import com.twat.detalks.answer.repository.AnswerVoteRepository;
 import com.twat.detalks.answer.service.AnswerVoteService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,32 +40,45 @@ public class AnswerVoteController {
     private AnswerVoteRepository answerVoteRepository;
 
     // 답변 투표
-    // POST /api/votes/answer/{answerId}
     @PostMapping("/answer/{answerId}")
     @Operation(summary = "답변 투표")
     public ResponseEntity<?> voteAnswer(
-        @Parameter(name = "answerId", description = "질문 아이디")
-        @PathVariable Long answerId,
-        @Schema(name = "voteState", description = "투표 UP/DOWN 여부", example = "{\"voteState\":\"true\"}")
-        @RequestBody Map<String, Boolean> requestBody,
-        @AuthenticationPrincipal CustomUserDetail user) {
+            @Parameter(name = "answerId", description = "질문 아이디")
+            @PathVariable Long answerId,
+            @Schema(name = "voteState", description = "투표 UP/DOWN 여부", example = "{\"voteState\":\"true\"}")
+            @RequestBody Map<String, Boolean> requestBody,
+            @AuthenticationPrincipal CustomUserDetail user) {
 
         Boolean voteState = requestBody.get("voteState");
         String memberIdx = user.getUserIdx();
 
         try {
+            // 사용자가 이미 해당 답변에 투표했는지 확인
+            Optional<AnswerVoteEntity> answerVoteOptional = answerVoteRepository.findByAnswer_AnswerIdAndMember_MemberIdx(answerId, Long.parseLong(memberIdx));
+            boolean hasVoted = answerVoteOptional.isPresent();
+
+            if (hasVoted) {
+                return ResponseEntity.badRequest().body(
+                        ResDto.builder()
+                                .msg("이미 투표한 답변입니다.")
+                                .status("400")
+                                .result(false)
+                                .build());
+            }
+
+            // 투표 추가 로직
             answerVoteService.addVote(answerId, Long.parseLong(memberIdx), voteState);
 
             AnswerEntity answer = answerRepositroy.findById(answerId)
-                .orElseThrow(() -> new RuntimeException("답변을 찾을 수 없습니다."));
+                    .orElseThrow(() -> new RuntimeException("답변을 찾을 수 없습니다."));
 
             List<AnswerVoteDto> answerVoteList = answerVoteRepository.findByAnswer_AnswerId(answerId).stream()
-                .map(vote -> AnswerVoteDto.builder()
-                    .voteId(vote.getVoteId())
-                    .voteState(vote.getVoteState())
-                    .memberIdx(vote.getMember().getMemberIdx().toString())
-                    .build())
-                .collect(Collectors.toList());
+                    .map(vote -> AnswerVoteDto.builder()
+                            .voteId(vote.getVoteId())
+                            .voteState(vote.getVoteState())
+                            .memberIdx(vote.getMember().getMemberIdx().toString())
+                            .build())
+                    .collect(Collectors.toList());
 
             Map<String, Object> responseData = new HashMap<>();
             responseData.put("answerId", answer.getAnswerId());
@@ -75,28 +90,28 @@ public class AnswerVoteController {
             responseData.put("isSelected", answer.getIsSelected());
             responseData.put("answerVoteList", answerVoteList);
 
-            // String msg = BeVoteState ? "답변에 찬성했습니다." : "답변에 반대 했습니다.";
             String msg = voteState ? "답변에 찬성했습니다." : "답변에 반대 했습니다.";
 
             ResDto response = ResDto.builder()
-                .result(true)
-                .data(responseData)
-                .msg(msg)
-                .status("200")
-                .token(user.getUserIdx())
-                .build();
+                    .result(true)
+                    .data(responseData)
+                    .msg(msg)
+                    .status("200")
+                    .token(user.getUserIdx())
+                    .build();
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                ResDto.builder()
-                    .msg("답변 투표 실패")
-                    .status("400")
-                    .errorType(e.getMessage())
-                    .result(false)
-                    .build());
+                    ResDto.builder()
+                            .msg("답변 투표 실패")
+                            .status("400")
+                            .errorType(e.getMessage())
+                            .result(false)
+                            .build());
         }
     }
+
 
     // 답변 투표 취소
     // DELETE /api/votes/answer/{answerId}

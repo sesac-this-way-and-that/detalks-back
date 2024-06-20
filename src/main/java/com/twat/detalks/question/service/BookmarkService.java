@@ -67,8 +67,7 @@ public class BookmarkService {
         Optional<BookmarkEntity> bookmarkOpt = bookmarkRepository.findByMember_MemberIdxAndQuestion_QuestionId(memberIdx, questionId);
         if (bookmarkOpt.isPresent()) {
             BookmarkEntity bookmark = bookmarkOpt.get();
-            bookmark.setBookmarkState(false);
-            bookmarkRepository.save(bookmark);
+            bookmarkRepository.delete(bookmark);
         } else {
             throw new RuntimeException("북마크가 존재하지 않습니다.");
         }

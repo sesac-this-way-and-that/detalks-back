@@ -3,6 +3,8 @@ package com.twat.detalks.email.controller;
 import com.twat.detalks.email.dto.EmailDto;
 import com.twat.detalks.email.service.EmailService;
 import com.twat.detalks.member.dto.ResDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/email")
+@Tag(name = "이메일 인증 API", description = "회원가입, 비밀번호 찾기시 사용")
 public class EmailController {
     private final EmailService emailService;
 
     // 회원가입 인증코드 메일 발송
     @PostMapping("/send")
+    @Operation(summary = "회원가입 인증코드 메일 발송")
     public ResponseEntity<?> signUpMailSend(@RequestBody EmailDto emailDto) throws MessagingException {
         emailService.signUpSendEmail(emailDto.getEmail());
         return ResponseEntity.ok().body(
@@ -32,6 +36,7 @@ public class EmailController {
 
     // 인증코드 검증
     @PostMapping("/verify")
+    @Operation(summary = "인증 코드 검증", description = "인증 코드 필수!")
     public ResponseEntity<ResDto> verify(@RequestBody EmailDto emailDto) {
         boolean isVerify = emailService.verifyEmailCode(emailDto.getEmail(), emailDto.getCode());
         if (isVerify) {
@@ -49,8 +54,9 @@ public class EmailController {
         }
     }
 
-    // 회원가입 인증코드 메일 발송
+    // 비밀번호 찾기 인증코드 메일 발송
     @PostMapping("/password/send")
+    @Operation(summary = "비밀번호 찾기 인증코드 메일 발송")
     public ResponseEntity<?> findPwdMailSend(@RequestBody EmailDto emailDto) throws MessagingException {
         emailService.findPwdSendEmail(emailDto.getEmail());
         return ResponseEntity.ok().body(

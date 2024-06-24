@@ -44,8 +44,6 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             String token = parseBearerToken(request);
 
-            log.warn("filter token check {}", token);
-
             if (token != null && !token.equalsIgnoreCase("null")) {
 
                 // 토큰에서 username과 role 획득

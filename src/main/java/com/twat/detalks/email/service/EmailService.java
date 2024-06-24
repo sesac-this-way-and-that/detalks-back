@@ -114,7 +114,6 @@ public class EmailService {
     // 인증코드 검증
     public Boolean verifyEmailCode(String email, String code) {
         String codeFoundByEmail = redisUtil.getData(email);
-        log.info("code found by email: " + codeFoundByEmail);
         if (codeFoundByEmail == null) {
             return false;
         }

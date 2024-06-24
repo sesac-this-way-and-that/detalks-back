@@ -167,8 +167,6 @@ public class MemberAuthController {
     public ResponseEntity<?> changePassword(
         @AuthenticationPrincipal CustomUserDetail user,
         @RequestBody @Valid ChangePwdDto changePwdDto) {
-        log.warn(changePwdDto.getPwd());
-        log.warn(changePwdDto.getChangePwd());
         memberService.changePassword(user.getUserIdx(), changePwdDto.getPwd(), changePwdDto.getChangePwd());
         return ResponseEntity.ok().body(
             ResDto.builder()

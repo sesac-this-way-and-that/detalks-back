@@ -38,34 +38,111 @@
 
 ---
 ## 📒 시작 가이드
-### .env
-DB_USERNAME=로컬DB계정 </br>
-DB_PASSWORD=로컬DB비밀번호 </br>
-DB_DATABASE=tetris </br>
-PORT=8080 </br>
-PORT_SOCKET=8081 </br>
-PORT_SOCKET_GAME=8082 </br>
+<details>
+  <summary>Front-end</summary>
 
-### Installation
-``` bash
-$ git clone https://github.com/sesac-laters-team/tetrist.git
-$ cd tetrist
+### 1. git clone
+```bash
+$ git clone https://github.com/sesac-this-way-and-that/detalks-front.git
 ```
-#### Backend
+### 2. npm
+```bash
+$ cd detalks-front
+$ npm i
 ```
-$ cd server
-$ npm install
-$ npm run dev
+### 3. 환경변수 설정(.env.development)
+```
+REACT_APP_API_SERVER=http://localhost:8080/api
+REACT_APP_STATIC_SERVER=http://localhost:8080/upload
+REACT_APP_GOOGLE_OAUTH_API_SERVER=http://localhost:8080/oauth2/authorization/google
+REACT_APP_GOOGLE_OAUTH_REDIRECT=http://localhost:8080/api/member/auth/header
+REACT_APP_MODE=development
+```
+### 4. 실행
+```
+npm start
+```
+</details>
+<details>
+  <summary>Back-End</summary>
+
+### 1. git clone
+```bash
+https://github.com/sesac-this-way-and-that/detalks-back.git
 ```
 
-#### Frontend
+### 2. 환경변수 설정(application.properties)
 ```
-$ cd client
-$ npm install 
-$ npm run start
+# DB
+spring.datasource.url=jdbc:mysql://localhost:3306/{db_name}?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+spring.datasource.username={db_username}
+spring.datasource.password={db_password}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+
+# JPA
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+
+# JWT
+jwt.secret=de129a885ee97baee6bf174c9f5f59865a5f215c62ab5621848c0be3be2ab4e9
+
+# MULTIPART
+file.upload.path=/upload/**
+file.resource.path.win=file:///C:\\upload\\
+file.resource.path.mac=file:///Users/{username}/upload/
+file.resource.path.nix=file:///home/ubuntu/detalks/server/upload/
+
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.max-file-size=2MB
+spring.servlet.multipart.max-request-size=2MB
+
+# MAIL
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username={google_app_email}
+spring.mail.password={google_app_password}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=5000
+spring.mail.properties.mail.smtp.writetimeout=5000
+spring.mail.properties.auth-code-expiration-millis =1800000
+
+# REDIS
+# spring.data.redis.host=localhost
+# spring.data.redis.port=6379
+# spring.data.redis.password=4014
+
+# PROPERTIES
+mail.sender.email={sender_email}
+redirect.server.header-uri=http://localhost:3000/oauth2/google/redirect/header
+
+# OAUTH
+spring.security.oauth2.client.registration.google.client-name=google
+spring.security.oauth2.client.registration.google.client-id={oauth_client_id}
+spring.security.oauth2.client.registration.google.client-secret={oauth_client_secret}
+spring.security.oauth2.client.registration.google.redirect-uri=http://localhost:8080/login/oauth2/code/google
+spring.security.oauth2.client.registration.google.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.google.scope=profile,email
+
+# SWAGGER
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/api-docs
 ```
 
----
+### 3. 빌드 후 실행
+빌드
+```
+./gradlew build
+```
+실행
+```
+java -jar detalks-0.0.1-SNAPSHOT.jar
+```
+</details>
+
 
 ## 🤖 사용 스택 Stacks 
 

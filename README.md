@@ -74,8 +74,8 @@ https://www.figma.com/design/4xB64yTeT8LmHpCDvh1WyD/%EC%9D%B4%EC%AA%BD%EC%A0%80%
 
 
 ### 4. 마이페이지
-![마이페이지 - 본인](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/af82a6e9-2956-4fa6-a1a7-6eb832efb176)  
-![마이페이지 - 본인 (1)](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/833ce1b0-37f1-4ac2-8a81-ec6be23235e0)
+| ![마이페이지 - 본인](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/af82a6e9-2956-4fa6-a1a7-6eb832efb176)  |
+![마이페이지 - 본인 (1)](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/833ce1b0-37f1-4ac2-8a81-ec6be23235e0) |
 
 ##### - 질문 글의 태그에 따라서 가장 많은 횟수의 태그 3개 마이페이지 반영(색을 5개 선정 후 랜덤으로 매치)
 ##### - 닉네임, 태그, 나의 능력치, 자기소개를 다른 사람도 볼 수 있도록 함

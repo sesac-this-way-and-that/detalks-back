@@ -42,6 +42,20 @@
 ## 📜 API 명세
 > **Swagger** : [http://www.detalks.store:8080/api-docs](http://www.detalks.store/api-docs) 
 
+
+---
+## ⭐ 주요 기능 
+### 1. 메인
+![메인 페이지](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/f523e75c-0dae-46bd-addd-37166756fa47)
+##### - SCSS Transform, Transition을 통해 지속적 움직임
+##### - Mouse 올리고 내리는 것을 통해 현재 Div 높이 계산 후 슬라이드 작업
+<br/>
+
+### 2. 헤더
+![검색](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/4665b0d2-671c-40d1-b876-edb436d251e2)
+##### - 닉네임 6자 이상 시, 글자 수 제한 함수 이용 ... 으로 표시
+##### - 검색 창 Focus시 검색 예시 표시, 내용 클릭시 "[sort]:" 형식이 Input 창에 자동 완성
+
 <br/>
 
 ## 🧾 ERD
@@ -52,7 +66,24 @@
 ## ⚙️ 아키텍쳐
 ![아키텍쳐](https://github.com/sesac-this-way-and-that/detalks-back/assets/140472588/858d2cdc-5b58-45b8-983d-e61fb1b01a69)
 
+### 4. 마이페이지
+![마이페이지 - 본인](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/af82a6e9-2956-4fa6-a1a7-6eb832efb176)  
+![마이페이지 - 본인 (1)](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/833ce1b0-37f1-4ac2-8a81-ec6be23235e0)
 
+##### - 질문 글의 태그에 따라서 가장 많은 횟수의 태그 3개 마이페이지 반영(색을 5개 선정 후 랜덤으로 매치)
+##### - 닉네임, 태그, 나의 능력치, 자기소개를 다른 사람도 볼 수 있도록 함
+##### - 내 활동 글에서 switch문을 통해 filter 함수 작성하여 질문, 답변 분류
+##### - sort 이용해서 최신순, 평점순, 채택없는 글 정렬 가능
+##### - 로그인한 본인의 마이페이지일 경우에만, 정보 수정 컴포넌트 보이게 하고 수행 가능하도록 함 
+#####  (북마크 리스트, 프로필 수정, 닉네임 변경, 자기소개 변경, 비밀번호 변경, 탈퇴 등)
+<br/>
+
+### 5. 질문 
+![질문 리스트 필터링](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/c4c7f902-4a7b-4d71-aac2-25377accd051)
+#### 🏷️ 질문 리스트
+##### - 질문 글의 상태에 따라 다양하게 반영 
+#####  (채택됐을 경우 메달, 현상금이 걸린 질문일 경우, 파란 테두리, 투표의 +/-에 따라서 색 변동, 채택 질문일 경우 체크 표시 등)
+##### - 페이지네이션과 정렬(최신순, 투표순, 답변없는 질문) 가능
 <br/>
 
 
@@ -81,6 +112,14 @@
 - 중간 테이블 사용: 1:N 관계 테이블로 구현
 - 검색 및 정보 관리: 정규화를 통해 중복 최소화, 해시태그를 이용한 검색이나 추가 정보 필요시 확장 가능
 
+### 6. 평판
+![채택](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/6782f048-7dfe-40f3-b5d0-6dc6e6cda6be)
+
+##### -  질문 / 답변 작성시 + 5
+##### -  답변 채택시 + 20
+##### -  질문 / 답변 투표 UP + 10
+##### -  질문 / 투표 DOWN - 5
+##### -  평판은 1이하로 떨어지지 않음
 <br />
 
 ## 📒 시작 가이드

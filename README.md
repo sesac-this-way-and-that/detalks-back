@@ -9,12 +9,6 @@
 
 <br/>
 
-## 📬 배포 주소
-
-> **배포 버전** : [http://www.detalks.store/](http://www.detalks.store/) <br>
-
-<br/>
-
 ## 👨‍👩‍👧‍👦 팀 소개
 
 |      김성민       |         이기혁         |       임학민         |      김예지       |      강혜인       |
@@ -32,22 +26,21 @@
 <br />
 
 ### 🗓️ 프로젝트 일정
-- 프로젝트 기획 및 피그마/기능 정리 : 24.05.31 - 24.06.03
+- 프로젝트 기획 및 피그마/ERD 설계 : 24.05.31 - 24.06.03
 - 개발 : 24.06.04 - 24.06.13 
 - 배포 및 문제 수정 : 24.06.14 - 24.06.19
 - 발표 준비 및 테스트 : 24.06.20 - 24.06.21
 
 <br />
 
-## 🧾 ERD
-![image](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/ca27417e-7329-4114-960e-8d4ad4a46b8c)
+## 📬 배포 주소
 
-<br/>
+> **배포 버전** : [http://www.detalks.store/](http://www.detalks.store/)
 
-## 🎈 Figma
-https://www.figma.com/design/4xB64yTeT8LmHpCDvh1WyD/%EC%9D%B4%EC%AA%BD%EC%A0%80%EC%AA%BD?node-id=0-1&t=q7nFwwg2E1oTayCQ-0
+<br />
 
-<br/>
+## 📜 API 명세
+> **Swagger** : [http://www.detalks.store:8080/api-docs](http://www.detalks.store/api-docs) 
 
 
 ---
@@ -62,16 +55,16 @@ https://www.figma.com/design/4xB64yTeT8LmHpCDvh1WyD/%EC%9D%B4%EC%AA%BD%EC%A0%80%
 ![검색](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/4665b0d2-671c-40d1-b876-edb436d251e2)
 ##### - 닉네임 6자 이상 시, 글자 수 제한 함수 이용 ... 으로 표시
 ##### - 검색 창 Focus시 검색 예시 표시, 내용 클릭시 "[sort]:" 형식이 Input 창에 자동 완성
+
 <br/>
 
+## 🧾 ERD
+![image](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/ca27417e-7329-4114-960e-8d4ad4a46b8c)
 
-### 3. 로그인 & 회원가입 & 비밀번호 찾기
-##### - 컴포넌트 활용해서 페이지마다 다른 내용을 props를 통해 type으로 구분해서 사용
-##### - onChange와 useState 사용해서 유저 입력에 따라 상태 즉각적 피드백
-##### - 각 Input값 별로 체크하여 유효하지 않은 값이 존재할 경우, 다음 단계로 넘어갈 수 없도록 차단
-##### - 유저가 입력한 이메일로 인증 코드를 전송하고 실제 유저임을 인증
 <br/>
 
+## ⚙️ 아키텍쳐
+![아키텍쳐](https://github.com/sesac-this-way-and-that/detalks-back/assets/140472588/858d2cdc-5b58-45b8-983d-e61fb1b01a69)
 
 ### 4. 마이페이지
 ![마이페이지 - 본인](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/af82a6e9-2956-4fa6-a1a7-6eb832efb176)  
@@ -93,18 +86,31 @@ https://www.figma.com/design/4xB64yTeT8LmHpCDvh1WyD/%EC%9D%B4%EC%AA%BD%EC%A0%80%
 ##### - 페이지네이션과 정렬(최신순, 투표순, 답변없는 질문) 가능
 <br/>
 
-#### 🏷️ 질문 작성
-##### - 질문의 제목, 내용, 태그 모두 입력 여부 확인
-##### - </> 클릭 시 코드 블록 및 글자 색상 생성
-##### - 태그 입력 후, Enter 누르면 태그 생성 가능(삭제 가능)
-##### - 본인의 평판점수를 사용해서 질문에 현상금 걸기 가능 (질문이 잘보이도록 효과)
-<br/>
 
-#### 🏷️ 질문 상세
-##### - 질문의 작성자만 질문 수정 / 삭제 가능, 본인 질문에 투표 및 답변 불가능
-##### - 투표, 북마크 가능, 채택된 질문일 경우, 체크 표시
-##### - 현상금 걸린 질문에 채택됐을 경우, 질문 현상금이 채택된 답변 작성자에게 이전
-<br/>
+## ⭐ 주요 기능 
+### 1. 회원
+- 로그인 방식: 스프링 시큐리티와 JWT를 사용한 토큰 기반 인증 / 인가 사용
+- 비밀번호 암호화: BcryptPasswordEncoder 클래스 사용
+### 2. 이메일 인증
+- 이메일 인증: JavaMailSender 인터페이스와 구글 SMTP 서버 사용
+- 보안 개선: Redis를 활용한 인증코드 검증 로직 추가
+### 3. 소셜 로그인
+- 구현 방식: OAuth 2.0 프로토콜의 Authorization Code Grant 방식
+- 일반 로그인과 통합 관리: 쿠키를 통한 토큰 발급 후 헤더로 토큰 전달
+### 4. 파일 업로드
+- 프로필 이미지 업로드: UUID로 파일 이름 중복 방지
+- 업로드 경로 개선: 외부 경로로 변경하여 이미지 지연 로딩 문제 해결
+### 5. 회원 탈퇴
+- 논리 삭제 방식: 탈퇴 여부 컬럼 추가, 일정 기간 후 물리적 삭제
+### 6. 검색
+- 검색 기능 구현: JPA Specification 사용
+- 동적 쿼리: 코드 가독성과 유지보수성 향상
+### 7. 페이지 네이션
+- 페이지네이션: JPA의 Pageable 기능 사용
+- PageRequest 객체: 정렬 정보와 함께 페이지네이션 구현
+### 8. Hash Tag
+- 중간 테이블 사용: 1:N 관계 테이블로 구현
+- 검색 및 정보 관리: 정규화를 통해 중복 최소화, 해시태그를 이용한 검색이나 추가 정보 필요시 확장 가능
 
 ### 6. 평판
 ![채택](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/6782f048-7dfe-40f3-b5d0-6dc6e6cda6be)
@@ -116,55 +122,117 @@ https://www.figma.com/design/4xB64yTeT8LmHpCDvh1WyD/%EC%9D%B4%EC%AA%BD%EC%A0%80%
 ##### -  평판은 1이하로 떨어지지 않음
 <br />
 
-
----
 ## 📒 시작 가이드
-### .env
-> DB_USERNAME=로컬DB계정 </br>
-> DB_PASSWORD=로컬DB비밀번호 </br>
-> DB_DATABASE=detalks </br>
-> PORT=8080 </br>
+<details>
+<summary>Front-end</summary>
+
+### 1. git clone
+```
+$ git clone https://github.com/sesac-this-way-and-that/detalks-front.git
+```
+### 2. npm
+```
+$ cd detalks-front
+$ npm i
+```
+
+### 3. 환경변수 설정(.env.development)
+```
+REACT_APP_API_SERVER=http://localhost:8080/api
+REACT_APP_STATIC_SERVER=http://localhost:8080/upload
+REACT_APP_GOOGLE_OAUTH_API_SERVER=http://localhost:8080/oauth2/authorization/google
+REACT_APP_GOOGLE_OAUTH_REDIRECT=http://localhost:8080/api/member/auth/header
+REACT_APP_MODE=development
+```
+### 4. 실행
+```
+npm start
+```
+</details>
+
+<details>
+<summary>Back-End</summary>
+
+### 1. git clone
+```
+$ https://github.com/sesac-this-way-and-that/detalks-back.git
+```
+### 2. 환경변수 설정(application.properties)
+```
+# DB
+spring.datasource.url=jdbc:mysql://localhost:3306/{db_name}?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+spring.datasource.username={db_username}
+spring.datasource.password={db_password}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+
+# JWT
+jwt.secret=de129a885ee97baee6bf174c9f5f59865a5f215c62ab5621848c0be3be2ab4e9
+
+# MULTIPART
+file.upload.path=/upload/**
+file.resource.path.win=file:///C:\\\\upload\\\\
+file.resource.path.mac=file:///Users/{username}/upload/
+file.resource.path.nix=file:///home/ubuntu/detalks/server/upload/
+
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.max-file-size=2MB
+spring.servlet.multipart.max-request-size=2MB
+
+# MAIL
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username={google_app_email}
+spring.mail.password={google_app_password}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=5000
+spring.mail.properties.mail.smtp.writetimeout=5000
+spring.mail.properties.auth-code-expiration-millis =1800000
+
+# REDIS
+# spring.data.redis.host=localhost
+# spring.data.redis.port=6379
+# spring.data.redis.password=4014
+
+# PROPERTIES
+mail.sender.email={sender_email}
+redirect.server.header-uri=http://localhost:3000/oauth2/google/redirect/header
+
+# OAUTH
+spring.security.oauth2.client.registration.google.client-name=google
+spring.security.oauth2.client.registration.google.client-id={oauth_client_id}
+spring.security.oauth2.client.registration.google.client-secret={oauth_client_secret}
+spring.security.oauth2.client.registration.google.redirect-uri=http://localhost:8080/login/oauth2/code/google
+spring.security.oauth2.client.registration.google.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.google.scope=profile,email
+
+# SWAGGER
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/api-docs
+```
+### 3. 빌드 후 실행
+```
+$ ./gradlew build
+$ java -jar detalks-0.0.1-SNAPSHOT.jar
+```
+</details>
 
 <br />
 
-### Installation
+## 🤖 사용 기술
 
-##### Backend
-```
-$ git clone https://github.com/sesac-this-way-and-that/detalks-back.git
-$ cd detalks-back
-$ npm install
-$ npm run dev
-```
-
-##### Frontend
-```
-$ git clone https://github.com/sesac-this-way-and-that/detalks-front.git
-$ cd detalks-front
-$ npm install 
-$ npm run start
-```
-
----
-
-## 🤖 사용 스택 Stacks 
-
-### - Environment
+### Environment
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-007ACC?style=for-the-badge&logo=Visual%20Studio%20Code&logoColor=white)
 ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white)
 ![Github](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white)             
-
-<br/>
-
-### - Config
-![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)        
-
-<br/>
-
-### - Development
-- Frameworks, Platforms and Libraries
- 
+### Frameworks, Platforms and Libraries
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/spring%20security-%236DB33F.svg?style=for-the-badge&logo=spring%20security&logoColor=white)
@@ -173,131 +241,101 @@ $ npm run start
 ![env](https://img.shields.io/badge/dotenv-ECD53F?style=for-the-badge&logo=dotenv&logoColor=white)
 ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 ![Sass](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=Sass&logoColor=white)
-
-- Languages
-
+### Language
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=Javascript&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=Typescript&logoColor=white)
-
-- Hosting
-
+### Hosting
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![EC2](https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
 ![RDS](https://img.shields.io/badge/amazonrds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white)
-
-- Design
-
+### Design
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
 ![Adobe Photoshop](https://img.shields.io/badge/adobe%20photoshop-%2331A8FF.svg?style=for-the-badge&logo=adobe%20photoshop&logoColor=white)
-
-- Database
-
+### Database
 ![Mysql](https://img.shields.io/badge/Mysql-4479A1?style=for-the-badge&logo=Mysql&logoColor=white)
 ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
-
-<br/>
-
-### - Communication
+### Communication
 ![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white)
 ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=Discord&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white)
-
 <br/>
 
----
+<br />
+
 ## 📺 화면 구성 
-#### - 메인 페이지  
+#### 메인 페이지  
 ![image](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/ee3961ac-c6ce-4c84-b783-3f18aaaf13c1)
 <br />
   
-#### - 로그인 & 회원가입 페이지
+#### 로그인 & 회원가입 페이지
 ![image](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/d99583ec-3061-4c0e-af52-5b26914ae44d)
 <br />
 
 
-#### - 질문 리스트 페이지
+#### 질문 리스트 페이지
 ![image](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/d6661039-2fc6-4b09-8862-9892fb2d0bdb)
 <br />
 
 
-#### - 질문 작성 페이지 
+#### 질문 작성 페이지 
 ![image](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/afcfca7b-3605-4506-8720-d335d8b7a2c1)
 <br />
 
-#### - 마이페이지
+#### 마이페이지
 ![image](https://github.com/sesac-this-way-and-that/detalks-back/assets/133750746/c24d5da1-efbf-4e18-9ebe-532744d1ccb3)
 <br />
 
-
----
-## 📑 아키텍쳐
-### API 명세서
-<b>SWAGGER<b/> : http://www.detalks.store:8080/api-docs
-<br/>
-<br/>
-
-
-### 디렉토리 구조
-#### - Back-end
+## 📁 디렉토리 구조
 ```bash
-server
+com.twat.detalks
 │
 │
-├──admin
+├── answer  # 답변 도메인
+│     ├── controller
+│     ├── dto
+│     ├── entity
+│     ├── repository
+│     └── service
+├── config  # 설정 파일
 │
-├── config
+├── email   # 이메일 도메인
+│     ├── controller
+│     ├── dto
+│     ├── entity
+│     ├── repository
+│     ├── util
+│     └── service
+├── member  # 회원 도메인
+│     ├── controller
+│     ├── dto
+│     ├── entity
+│     ├── repository
+│     ├── exception
+│     ├── utils
+│     ├── vo
+│     ├── validation
+│     └── service
+├── mypage  # 마이페이지
+│     ├── controller
+│     ├── dto
+│     └── service
+├── oauth2  # google
+│     ├── dto
+│     ├── jwt
+│     └── service
+├── question  # 질문 도메인
+│     ├── controller
+│     ├── dto
+│     ├── entity
+│     ├── repository
+│     └── service
+├── tag  # 태그 도메인
+│     ├── dto
+│     ├── entity
+│     ├── repository
+│     └── service
 │
-├── controller
-│
-├── models
-│
-├── routes
-│
-├── sockets
-│
-├── sql
-│
-├── utils
-└── App.js
+└── DetalksApplication
 ```
-
-#### - Front-end
-```bash
-client
-│
-│
-├──public
-│	   └──images
-│
-│
-├── components/
-│   ├── auth/                        #인증 관련 컴포넌트
-│   │
-│   ├── chat/                        #채팅 관련 컴포넌트
-│   │
-│   ├── common/                  # 공통 컴포넌트
-│   │
-│   ├── waitingRoom/            # 대기방 컴포넌트
-│   │
-│   ├── game/                       # 게임방 관련 컴포넌트
-│   │
-│   ├── page/                        # 페이지 관련 컴포넌트
-│   │
-│   └── App.js
-├── hooks                             #  관련 훅들
-├── styles/
-│        ├── scss/                    # 페이지 별로 조정
-├── redux/                            # Redux 관련 파일
-│       └── store.                    # 스토어 설정
-│	    │	  ├── module
-│        │	  └── index.js
-│        └── store.js
-│
-├── index.js                     # 진입점, 여기에서 React 앱을 DOM에 렌더링
-
-```
-
-
-
